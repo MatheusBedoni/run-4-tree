@@ -1,16 +1,28 @@
-# run_4_tree
+# Run4Tree 🌲🏃‍♂️
 
-A new Flutter project.
+**Run4Tree: um app de corrida que planta árvores reais.**
 
-## Getting Started
+O Run4Tree é um aplicativo sustentável e gamificado onde sua atividade física e seus quilômetros corridos se transformam em impacto ecológico real, ajudando no reflorestamento.
 
-This project is a starting point for a Flutter application.
+## 🚀 Atualizações Recentes e Ajustes
+- **Arquitetura (Clean Architecture):** O projeto foi estruturado seguindo os princípios de Clean Architecture para facilitar a escalabilidade e manutenção. Os diretórios já foram separados em `domain`, `data` e `presentation` (na feature de autenticação).
+- **Nova Tela de Login:** Interface moderna e atrativa (premium) implementada.
+- **Tematização Sustentável:** Adoção de uma paleta de cores verde (`#4CAF50` e `#006E1C`), combinada com a tipografia **Poppins** (`google_fonts`), para reforçar a temática da natureza e sustentabilidade.
+- **Widgets de Impacto:** Implementação inicial da barra de progresso visual de impacto, que exibe o número total de árvores plantadas pela comunidade de corredores.
 
-A few resources to get you started if this is your first Flutter project:
+## 🛠️ Tecnologias Utilizadas
+- [Flutter](https://flutter.dev/)
+- [Google Fonts](https://pub.dev/packages/google_fonts)
+- [Font Awesome Flutter](https://pub.dev/packages/font_awesome_flutter)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## 🏃 Como Rodar o Projeto
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. Certifique-se de ter o ambiente Flutter configurado.
+2. Acesse a pasta do projeto e baixe as dependências:
+   ```bash
+   flutter pub get
+   ```
+3. Rode o aplicativo:
+   ```bash
+   flutter run
+   ```
