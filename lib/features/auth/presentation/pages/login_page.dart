@@ -66,7 +66,8 @@ class LoginPage extends StatelessWidget {
                             Text(
                               'Bem-vindo ao\nRun4Tree',
                               textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                              style: Theme.of(context).textTheme.headlineMedium
+                                  ?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     height: 1.2,
                                   ),
@@ -96,7 +97,8 @@ class LoginPage extends StatelessWidget {
                                 onPressed: () {},
                                 icon: const Icon(
                                   FontAwesomeIcons.google,
-                                  color: Colors.red, // Approximation for Google logo
+                                  color: Colors
+                                      .red, // Approximation for Google logo
                                   size: 20,
                                 ),
                                 label: const Text('Continuar com Google'),
@@ -107,8 +109,16 @@ class LoginPage extends StatelessWidget {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton.icon(
-                                onPressed: () {},
-                                icon: const Icon(Icons.email_outlined, size: 20),
+                                onPressed: () {
+                                  Navigator.pushReplacementNamed(
+                                    context,
+                                    '/home',
+                                  );
+                                },
+                                icon: const Icon(
+                                  Icons.email_outlined,
+                                  size: 20,
+                                ),
                                 label: const Text('Entrar com e-mail'),
                               ),
                             ),
@@ -174,7 +184,8 @@ class LoginPage extends StatelessWidget {
                             Text(
                               'Milhares de corredores já plantaram 12.430 árvores',
                               textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
                                     fontSize: 10,
                                     color: AppColors.primaryLight,
                                   ),
@@ -187,7 +198,11 @@ class LoginPage extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          _buildChip(context, Icons.check_circle, 'SUSTENTÁVEL'),
+                          _buildChip(
+                            context,
+                            Icons.check_circle,
+                            'SUSTENTÁVEL',
+                          ),
                           const SizedBox(width: 16),
                           _buildChip(context, Icons.bolt, 'GAMIFICADO'),
                         ],
@@ -219,10 +234,10 @@ class LoginPage extends StatelessWidget {
           Text(
             label,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                  color: AppColors.textSecondary,
-                ),
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+              color: AppColors.textSecondary,
+            ),
           ),
         ],
       ),
