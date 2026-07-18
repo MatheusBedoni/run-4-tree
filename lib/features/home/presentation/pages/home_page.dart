@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -9,6 +10,8 @@ import '../../data/repositories/home_repository_impl.dart';
 import '../../domain/entities/run_stats_entity.dart';
 import '../../domain/usecases/get_run_stats_usecase.dart';
 import '../controllers/home_controller.dart';
+
+enum RunState { idle, running, paused }
 
 /// HomePage — Tela principal do Run4Tree.
 ///
@@ -51,6 +54,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // ─── Nav ───────────────────────────────────────────────────────────────────
   int _selectedNavIndex = 0;
+
+  // ─── Run State ─────────────────────────────────────────────────────────────
+  RunState _runState = RunState.idle;
+  int _runSeconds = 0;
+  Timer? _runTimer;
 
   // ─── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -99,6 +107,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    _runTimer?.cancel();
     _controller.removeListener(_onStatsLoaded);
     _controller.dispose();
     _progressAnimCtrl.dispose();
@@ -106,6 +115,33 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _floatCtrl.dispose();
     _mapController?.dispose();
     super.dispose();
+  }
+
+  void _startTimer() {
+    setState(() => _runState = RunState.running);
+    _runTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      setState(() => _runSeconds++);
+    });
+  }
+
+  void _pauseTimer() {
+    setState(() => _runState = RunState.paused);
+    _runTimer?.cancel();
+  }
+
+  void _resumeTimer() {
+    setState(() => _runState = RunState.running);
+    _runTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      setState(() => _runSeconds++);
+    });
+  }
+
+  void _stopTimer() {
+    setState(() {
+      _runState = RunState.idle;
+      _runSeconds = 0;
+    });
+    _runTimer?.cancel();
   }
 
   // ─── Build ─────────────────────────────────────────────────────────────────
@@ -152,6 +188,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
           // ── 6. Anel de progresso ─────────────────────────────────────────
           _buildProgressOverlay(),
+
+          // ── 7. Run Controls ──────────────────────────────────────────────
+          _buildRunControls(),
         ],
       ),
       bottomNavigationBar: _buildBottomNavBar(),
@@ -483,6 +522,89 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           ),
         ),
       ],
+    );
+  }
+
+  // ─── Run Controls ──────────────────────────────────────────────────────────
+
+  Widget _buildRunControls() {
+    if (_runState == RunState.idle) {
+      return Positioned(
+        bottom: kBottomNavigationBarHeight + 140,
+        left: 0,
+        right: 0,
+        child: Center(
+          child: ElevatedButton(
+            onPressed: _startTimer,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.accentOrange,
+              padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+              elevation: 8,
+            ),
+            child: const Text(
+              'START RUN',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    final hours = _runSeconds ~/ 3600;
+    final minutes = (_runSeconds % 3600) ~/ 60;
+    final seconds = _runSeconds % 60;
+    final timeStr = hours > 0
+        ? '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}'
+        : '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+
+    return Positioned(
+      bottom: kBottomNavigationBarHeight + 130,
+      left: 0,
+      right: 0,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.7),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              timeStr,
+              style: const TextStyle(
+                fontSize: 36,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FloatingActionButton(
+                heroTag: 'pause_resume',
+                onPressed: _runState == RunState.running ? _pauseTimer : _resumeTimer,
+                backgroundColor: _runState == RunState.running ? Colors.amber : AppColors.progressGreen,
+                child: Icon(_runState == RunState.running ? Icons.pause_rounded : Icons.play_arrow_rounded, color: Colors.white, size: 32),
+              ),
+              const SizedBox(width: 24),
+              FloatingActionButton(
+                heroTag: 'stop',
+                onPressed: _stopTimer,
+                backgroundColor: Colors.redAccent,
+                child: const Icon(Icons.stop_rounded, color: Colors.white, size: 32),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
