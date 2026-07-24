@@ -1,7 +1,11 @@
+import 'package:json_annotation/json_annotation.dart';
 import '../../domain/entities/run_stats_entity.dart';
+
+part 'run_stats_model.g.dart';
 
 /// Model da camada data: estende a entidade e adiciona serialização JSON.
 /// Pronto para integrar com uma API REST ou Firestore no futuro.
+@JsonSerializable(fieldRename: FieldRename.snake)
 class RunStatsModel extends RunStatsEntity {
   const RunStatsModel({
     required super.treesPlanted,
@@ -12,22 +16,8 @@ class RunStatsModel extends RunStatsEntity {
   });
 
   /// Cria um [RunStatsModel] a partir de um mapa JSON.
-  factory RunStatsModel.fromJson(Map<String, dynamic> json) {
-    return RunStatsModel(
-      treesPlanted: (json['trees_planted'] as num).toInt(),
-      distanceKm: (json['distance_km'] as num).toDouble(),
-      progressPercent: (json['progress_percent'] as num).toDouble(),
-      weatherTemp: (json['weather_temp'] as num).toInt(),
-      weatherCondition: json['weather_condition'] as String,
-    );
-  }
+  factory RunStatsModel.fromJson(Map<String, dynamic> json) => _$RunStatsModelFromJson(json);
 
   /// Serializa o model para JSON.
-  Map<String, dynamic> toJson() => {
-        'trees_planted': treesPlanted,
-        'distance_km': distanceKm,
-        'progress_percent': progressPercent,
-        'weather_temp': weatherTemp,
-        'weather_condition': weatherCondition,
-      };
+  Map<String, dynamic> toJson() => _$RunStatsModelToJson(this);
 }

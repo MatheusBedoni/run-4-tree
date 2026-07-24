@@ -1,5 +1,9 @@
+import 'package:json_annotation/json_annotation.dart';
 import '../../domain/entities/exercise_entity.dart';
 
+part 'exercise_model.g.dart';
+
+@JsonSerializable()
 class ExerciseModel extends ExerciseEntity {
   const ExerciseModel({
     required super.id,
@@ -10,25 +14,7 @@ class ExerciseModel extends ExerciseEntity {
     super.caloriesBurned,
   });
 
-  factory ExerciseModel.fromJson(Map<String, dynamic> json) {
-    return ExerciseModel(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      description: json['description'] as String,
-      category: json['category'] as String,
-      durationInMinutes: json['durationInMinutes'] as int?,
-      caloriesBurned: (json['caloriesBurned'] as num?)?.toDouble(),
-    );
-  }
+  factory ExerciseModel.fromJson(Map<String, dynamic> json) => _$ExerciseModelFromJson(json);
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'description': description,
-      'category': category,
-      'durationInMinutes': durationInMinutes,
-      'caloriesBurned': caloriesBurned,
-    };
-  }
+  Map<String, dynamic> toJson() => _$ExerciseModelToJson(this);
 }
