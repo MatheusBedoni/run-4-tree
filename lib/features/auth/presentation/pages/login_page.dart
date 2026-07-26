@@ -54,7 +54,7 @@ class LoginPage extends StatelessWidget {
                                 shape: BoxShape.circle,
                               ),
                               child: const Center(
-                                child: Icon(
+                                child: FaIcon(
                                   FontAwesomeIcons.tree,
                                   color: AppColors.primaryDark,
                                   size: 40,
@@ -95,7 +95,7 @@ class LoginPage extends StatelessWidget {
                               width: double.infinity,
                               child: OutlinedButton.icon(
                                 onPressed: () {},
-                                icon: const Icon(
+                                icon: const FaIcon(
                                   FontAwesomeIcons.google,
                                   color: Colors
                                       .red, // Approximation for Google logo
@@ -171,7 +171,7 @@ class LoginPage extends StatelessWidget {
                                       color: AppColors.primaryDark,
                                       borderRadius: BorderRadius.circular(8),
                                     ),
-                                    child: const Icon(
+                                    child: const FaIcon(
                                       FontAwesomeIcons.tree,
                                       color: Colors.white,
                                       size: 12,
