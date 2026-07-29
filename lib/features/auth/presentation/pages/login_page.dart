@@ -184,22 +184,33 @@ class _LoginPageState extends State<LoginPage>
 
                                 // Feature rows
                                 _buildFeatureRow(
-                                  Icons.wifi_off_rounded,
+                                  const Icon(
+                                    Icons.wifi_off_rounded,
+                                    size: 22,
+                                    color: AppColors.primaryDark,
+                                  ),
                                   'Sem internet necessária',
                                   'Registre corridas em qualquer lugar',
                                 ),
                                 const SizedBox(height: 14),
                                 _buildFeatureRow(
-                                  Icons.lock_open_rounded,
+                                  const Icon(
+                                    Icons.lock_open_rounded,
+                                    size: 22,
+                                    color: AppColors.primaryDark,
+                                  ),
                                   'Sem cadastro ou senha',
                                   'Comece a correr em segundos',
                                 ),
                                 const SizedBox(height: 14),
                                 _buildFeatureRow(
-                                  FontAwesomeIcons.tree,
+                                  const FaIcon(
+                                    FontAwesomeIcons.tree,
+                                    size: 18,
+                                    color: AppColors.primaryDark,
+                                  ),
                                   'Cada km vira uma árvore',
                                   'Acompanhe seu impacto real',
-                                  isFa: true,
                                 ),
                                 const SizedBox(height: 36),
 
@@ -236,41 +247,6 @@ class _LoginPageState extends State<LoginPage>
                                   ),
                                 ),
                                 const SizedBox(height: 20),
-
-                                // Counter social proof
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 10,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.background,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const FaIcon(
-                                        FontAwesomeIcons.tree,
-                                        size: 14,
-                                        color: AppColors.primaryDark,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        '12.430 árvores já plantadas pela comunidade',
-                                        textAlign: TextAlign.center,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall
-                                            ?.copyWith(
-                                              fontSize: 11,
-                                              color: AppColors.primaryDark,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
                               ],
                             ),
                           ),
@@ -291,12 +267,6 @@ class _LoginPageState extends State<LoginPage>
                                 Icons.bolt_rounded,
                                 'GAMIFICADO',
                               ),
-                              const SizedBox(width: 12),
-                              _buildChip(
-                                context,
-                                Icons.wifi_off_rounded,
-                                'OFFLINE',
-                              ),
                             ],
                           ),
                           const SizedBox(height: 32),
@@ -313,12 +283,7 @@ class _LoginPageState extends State<LoginPage>
     );
   }
 
-  Widget _buildFeatureRow(
-    dynamic icon,
-    String title,
-    String subtitle, {
-    bool isFa = false,
-  }) {
+  Widget _buildFeatureRow(Widget icon, String title, String subtitle) {
     return Row(
       children: [
         Container(
@@ -328,13 +293,7 @@ class _LoginPageState extends State<LoginPage>
             color: AppColors.background,
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Center(
-            child: Icon(
-              icon as IconData,
-              size: 22,
-              color: AppColors.primaryDark,
-            ),
-          ),
+          child: Center(child: icon),
         ),
         const SizedBox(width: 14),
         Expanded(
