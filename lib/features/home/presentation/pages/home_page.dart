@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../../core/constants/map_styles.dart';
@@ -203,7 +204,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return GoogleMap(
       initialCameraPosition: _initialPosition,
       style: MapStyles.cartoonStyle, // API moderna (não-deprecated)
-      onMapCreated: (controller) => _mapController = controller,
+      onMapCreated: (controller) {
+        _mapController = controller;
+        _determinePositionAndMoveMap();
+      },
       mapType: MapType.normal,
       myLocationEnabled: true,
       myLocationButtonEnabled: false,
@@ -212,6 +216,52 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       rotateGesturesEnabled: true,
       scrollGesturesEnabled: true,
     );
+  }
+
+  Future<void> _determinePositionAndMoveMap() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Testa se os serviços de localização estão habilitados
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      debugPrint('Serviços de localização desabilitados.');
+      return;
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        debugPrint('Permissões de localização negadas.');
+        return;
+      }
+    }
+    
+    if (permission == LocationPermission.deniedForever) {
+      debugPrint('Permissões de localização permanentemente negadas.');
+      return;
+    } 
+
+    // Permissão concedida, pega a posição
+    try {
+      final position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+      );
+      
+      _mapController?.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: LatLng(position.latitude, position.longitude),
+            zoom: 16.5,
+          ),
+        ),
+      );
+      // Força a atualização do estado para garantir que o myLocationEnabled desenhe o ponto se não tinha antes (embora o GoogleMap cuide disso se as permissões mudarem).
+      if (mounted) setState(() {});
+    } catch (e) {
+      debugPrint('Erro ao obter localização: $e');
+    }
   }
 
   // ─── Gradients ─────────────────────────────────────────────────────────────
