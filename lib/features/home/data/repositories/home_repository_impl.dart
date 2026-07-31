@@ -17,10 +17,10 @@ class HomeRepositoryImpl implements HomeRepository {
     await Future.delayed(const Duration(milliseconds: 600)); // simula latência
 
     return const RunStatsModel(
-      treesPlanted: 12,
-      distanceKm: 4.57,
-      progressPercent: 0.65,
-      weatherTemp: 24,
+      treesPlanted: 0,
+      distanceKm: 0,
+      progressPercent: 0,
+      weatherTemp: 0,
       weatherCondition: 'sunny',
     );
   }

@@ -47,8 +47,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // ─── Mapa ──────────────────────────────────────────────────────────────────
   GoogleMapController? _mapController;
 
-  // Posição inicial — São Paulo (ajustar com geolocator em produção)
-  static const CameraPosition _initialPosition = CameraPosition(
+  // ─── Variáveis (preparadas para receber dados reais) ───────────────────────
+  String? _userAvatarUrl;
+  String? _mascotImageUrl;
+  
+  // Posição inicial padrão (São Paulo)
+  late CameraPosition _initialPosition = CameraPosition(
     target: LatLng(-23.550520, -46.633308),
     zoom: 16.5,
   );
@@ -329,14 +333,22 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             offset: const Offset(0, 4),
           ),
         ],
+        image: _userAvatarUrl != null
+            ? DecorationImage(
+                image: NetworkImage(_userAvatarUrl!),
+                fit: BoxFit.cover,
+              )
+            : null,
       ),
-      child: Center(
-        child: FaIcon(
-          FontAwesomeIcons.seedling,
-          color: Colors.white,
-          size: 20,
-        ),
-      ),
+      child: _userAvatarUrl == null
+          ? const Center(
+              child: FaIcon(
+                FontAwesomeIcons.seedling,
+                color: Colors.white,
+                size: 20,
+              ),
+            )
+          : null,
     );
   }
 
@@ -476,14 +488,22 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 offset: const Offset(0, 4),
               ),
             ],
+            image: _mascotImageUrl != null
+                ? DecorationImage(
+                    image: NetworkImage(_mascotImageUrl!),
+                    fit: BoxFit.cover,
+                  )
+                : null,
           ),
-          child: Center(
-            child: FaIcon(
-              FontAwesomeIcons.leaf,
-              color: Colors.white,
-              size: 28,
-            ),
-          ),
+          child: _mascotImageUrl == null
+              ? const Center(
+                  child: FaIcon(
+                    FontAwesomeIcons.leaf,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                )
+              : null,
         ),
       ],
     );
