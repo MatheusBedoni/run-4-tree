@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:run_4_tree/features/exercises/presentation/pages/exercises_page.dart';
 
 import '../../../../../core/constants/map_styles.dart';
 import '../../../../../core/theme/app_colors.dart';
@@ -50,7 +51,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // ─── Variáveis (preparadas para receber dados reais) ───────────────────────
   String? _userAvatarUrl;
   String? _mascotImageUrl;
-  
+
   // Posição inicial padrão (São Paulo)
   late CameraPosition _initialPosition = CameraPosition(
     target: LatLng(-23.550520, -46.633308),
@@ -71,7 +72,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    _controller = HomeController(GetRunStatsUseCase(const HomeRepositoryImpl()));
+    _controller = HomeController(
+      GetRunStatsUseCase(const HomeRepositoryImpl()),
+    );
     _controller.addListener(_onStatsLoaded);
     _controller.loadStats();
 
@@ -90,18 +93,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 1800),
       vsync: this,
     )..repeat(reverse: true);
-    _pulseAnim = Tween<double>(begin: 0.95, end: 1.06).animate(
-      CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut),
-    );
+    _pulseAnim = Tween<double>(
+      begin: 0.95,
+      end: 1.06,
+    ).animate(CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut));
 
     // Flutuação vertical do mascote
     _floatCtrl = AnimationController(
       duration: const Duration(milliseconds: 2400),
       vsync: this,
     )..repeat(reverse: true);
-    _floatAnim = Tween<double>(begin: -6.0, end: 6.0).animate(
-      CurvedAnimation(parent: _floatCtrl, curve: Curves.easeInOut),
-    );
+    _floatAnim = Tween<double>(
+      begin: -6.0,
+      end: 6.0,
+    ).animate(CurvedAnimation(parent: _floatCtrl, curve: Curves.easeInOut));
   }
 
   void _onStatsLoaded() {
@@ -155,50 +160,62 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      body: Stack(
+      body: IndexedStack(
+        index: _selectedNavIndex,
         children: [
-          // ── 1. Google Maps (tela cheia) ─────────────────────────────────
-          _buildMap(),
-
-          // ── 2. Gradient overlay no topo (legibilidade dos cards) ────────
-          _buildTopGradient(),
-
-          // ── 3. Gradient overlay na base ─────────────────────────────────
-          _buildBottomGradient(),
-
-          // ── 4. Overlay do topo: avatar + stats ──────────────────────────
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildUserAvatar(),
-                  const Spacer(),
-                  ListenableBuilder(
-                    listenable: _controller,
-                    builder: (context, _) {
-                      final stats = _controller.stats;
-                      if (stats == null) return const SizedBox();
-                      return _buildStatsColumn(stats);
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // ── 5. Mascote centralizado ──────────────────────────────────────
-          _buildMascotOverlay(),
-
-          // ── 6. Anel de progresso ─────────────────────────────────────────
-          _buildProgressOverlay(),
-
-          // ── 7. Run Controls ──────────────────────────────────────────────
-          _buildRunControls(),
+          _buildMapPage(),
+          const ExercisesPage(),
+          const Center(child: Text('Jardim (Em breve)')),
+          const Center(child: Text('Perfil (Em breve)')),
         ],
       ),
       bottomNavigationBar: _buildBottomNavBar(),
+    );
+  }
+
+  Widget _buildMapPage() {
+    return Stack(
+      children: [
+        // ── 1. Google Maps (tela cheia) ─────────────────────────────────
+        _buildMap(),
+
+        // ── 2. Gradient overlay no topo (legibilidade dos cards) ────────
+        _buildTopGradient(),
+
+        // ── 3. Gradient overlay na base ─────────────────────────────────
+        _buildBottomGradient(),
+
+        // ── 4. Overlay do topo: avatar + stats ──────────────────────────
+        SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildUserAvatar(),
+                const Spacer(),
+                ListenableBuilder(
+                  listenable: _controller,
+                  builder: (context, _) {
+                    final stats = _controller.stats;
+                    if (stats == null) return const SizedBox();
+                    return _buildStatsColumn(stats);
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        // ── 5. Mascote centralizado ──────────────────────────────────────
+        _buildMascotOverlay(),
+
+        // ── 6. Anel de progresso ─────────────────────────────────────────
+        _buildProgressOverlay(),
+
+        // ── 7. Run Controls ──────────────────────────────────────────────
+        _buildRunControls(),
+      ],
     );
   }
 
@@ -241,18 +258,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         return;
       }
     }
-    
+
     if (permission == LocationPermission.deniedForever) {
       debugPrint('Permissões de localização permanentemente negadas.');
       return;
-    } 
+    }
 
     // Permissão concedida, pega a posição
     try {
       final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
       );
-      
+
       _mapController?.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
@@ -281,10 +300,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0x88000000),
-              Colors.transparent,
-            ],
+            colors: [Color(0x88000000), Colors.transparent],
           ),
         ),
       ),
@@ -302,10 +318,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           gradient: LinearGradient(
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
-            colors: [
-              Color(0xCC000000),
-              Colors.transparent,
-            ],
+            colors: [Color(0xCC000000), Colors.transparent],
           ),
         ),
       ),
@@ -360,22 +373,31 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         _buildStatCard(
-          iconWidget: Icon(Icons.wb_sunny_rounded,
-              color: const Color(0xFFFFC107), size: 22),
+          iconWidget: Icon(
+            Icons.wb_sunny_rounded,
+            color: const Color(0xFFFFC107),
+            size: 22,
+          ),
           topLine: '${stats.weatherTemp}°',
           bottomLine: null,
         ),
         const SizedBox(height: 8),
         _buildStatCard(
-          iconWidget: FaIcon(FontAwesomeIcons.tree,
-              color: AppColors.primaryLight, size: 20),
+          iconWidget: FaIcon(
+            FontAwesomeIcons.tree,
+            color: AppColors.primaryLight,
+            size: 20,
+          ),
           topLine: '${stats.treesPlanted}',
           bottomLine: null,
         ),
         const SizedBox(height: 8),
         _buildStatCard(
-          iconWidget: Icon(Icons.directions_run_rounded,
-              color: AppColors.skyBlue, size: 22),
+          iconWidget: Icon(
+            Icons.directions_run_rounded,
+            color: AppColors.skyBlue,
+            size: 22,
+          ),
           topLine: stats.distanceKm.toStringAsFixed(2),
           bottomLine: 'km',
         ),
@@ -444,10 +466,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         builder: (context, child) {
           return Transform.translate(
             offset: Offset(0, _floatAnim.value),
-            child: Transform.scale(
-              scale: _pulseAnim.value,
-              child: child,
-            ),
+            child: Transform.scale(scale: _pulseAnim.value, child: child),
           );
         },
         child: Center(child: _buildMascot()),
@@ -609,7 +628,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.accentOrange,
               padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
               elevation: 8,
             ),
             child: const Text(
@@ -660,16 +681,30 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             children: [
               FloatingActionButton(
                 heroTag: 'pause_resume',
-                onPressed: _runState == RunState.running ? _pauseTimer : _resumeTimer,
-                backgroundColor: _runState == RunState.running ? Colors.amber : AppColors.progressGreen,
-                child: Icon(_runState == RunState.running ? Icons.pause_rounded : Icons.play_arrow_rounded, color: Colors.white, size: 32),
+                onPressed: _runState == RunState.running
+                    ? _pauseTimer
+                    : _resumeTimer,
+                backgroundColor: _runState == RunState.running
+                    ? Colors.amber
+                    : AppColors.progressGreen,
+                child: Icon(
+                  _runState == RunState.running
+                      ? Icons.pause_rounded
+                      : Icons.play_arrow_rounded,
+                  color: Colors.white,
+                  size: 32,
+                ),
               ),
               const SizedBox(width: 24),
               FloatingActionButton(
                 heroTag: 'stop',
                 onPressed: _stopTimer,
                 backgroundColor: Colors.redAccent,
-                child: const Icon(Icons.stop_rounded, color: Colors.white, size: 32),
+                child: const Icon(
+                  Icons.stop_rounded,
+                  color: Colors.white,
+                  size: 32,
+                ),
               ),
             ],
           ),
@@ -700,10 +735,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavItem(0, Icons.map_rounded, 'Map'),
-              _buildNavItem(1, Icons.assignment_rounded, 'Quests'),
-              _buildNavItem(2, Icons.local_florist_rounded, 'Garden'),
-              _buildNavItem(3, Icons.person_rounded, 'Profile'),
+              _buildNavItem(0, Icons.map_rounded, 'Mapa'),
+              _buildNavItem(1, Icons.fitness_center_rounded, 'Exercícios'),
+              _buildNavItem(2, Icons.local_florist_rounded, 'Jardim'),
+              _buildNavItem(3, Icons.person_rounded, 'Perfil'),
             ],
           ),
         ),
@@ -734,7 +769,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               duration: const Duration(milliseconds: 250),
               child: Icon(
                 icon,
-                color: isSelected ? AppColors.navSelected : Colors.grey.shade400,
+                color: isSelected
+                    ? AppColors.navSelected
+                    : Colors.grey.shade400,
                 size: 24,
               ),
             ),
@@ -744,7 +781,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                color: isSelected ? AppColors.navSelected : Colors.grey.shade400,
+                color: isSelected
+                    ? AppColors.navSelected
+                    : Colors.grey.shade400,
               ),
               child: Text(label),
             ),
@@ -793,8 +832,8 @@ class _ProgressRingPainter extends CustomPainter {
 
     canvas.drawArc(
       rect,
-      -math.pi / 2,           // começa do topo
-      2 * math.pi * progress,  // varre o arco proporcional
+      -math.pi / 2, // começa do topo
+      2 * math.pi * progress, // varre o arco proporcional
       false,
       progressPaint,
     );
