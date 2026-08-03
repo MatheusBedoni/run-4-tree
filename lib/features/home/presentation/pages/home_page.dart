@@ -52,11 +52,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   String? _userAvatarUrl;
   String? _mascotImageUrl;
 
-  // Posição inicial padrão (São Paulo)
-  final CameraPosition _initialPosition = CameraPosition(
-    target: LatLng(-23.550520, -46.633308),
-    zoom: 16.5,
-  );
+  // Future que resolve para a posição inicial real do usuário (fallback: São Paulo)
+  late final Future<CameraPosition> _initialCameraFuture;
 
   // ─── Nav ───────────────────────────────────────────────────────────────────
   int _selectedNavIndex = 0;
@@ -84,6 +81,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
     _controller.addListener(_onStatsLoaded);
     _controller.loadStats();
+
+    // Resolve a posição real do usuário antes de montar o mapa
+    _initialCameraFuture = _getInitialCameraPosition();
 
     // Progresso circular: anima de 0 → valor real quando dados chegam
     _progressAnimCtrl = AnimationController(
@@ -305,69 +305,91 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // ─── Map ───────────────────────────────────────────────────────────────────
 
   Widget _buildMap() {
-    return GoogleMap(
-      initialCameraPosition: _initialPosition,
-      style: MapStyles.cartoonStyle, // API moderna (não-deprecated)
-      onMapCreated: (controller) {
-        _mapController = controller;
-        _determinePositionAndMoveMap();
+    return FutureBuilder<CameraPosition>(
+      future: _initialCameraFuture,
+      builder: (context, snapshot) {
+        // Aguardando a posição — exibe um indicador discreto sobre fundo escuro
+        if (!snapshot.hasData) {
+          return Container(
+            color: const Color(0xFF1A2332),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(
+                    color: AppColors.accentOrange,
+                    strokeWidth: 3,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Obtendo sua localização...',
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.7),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+        return GoogleMap(
+          initialCameraPosition: snapshot.data!,
+          style: MapStyles.cartoonStyle,
+          onMapCreated: (controller) => _mapController = controller,
+          mapType: MapType.normal,
+          myLocationEnabled: true,
+          myLocationButtonEnabled: false,
+          zoomControlsEnabled: false,
+          compassEnabled: false,
+          rotateGesturesEnabled: true,
+          scrollGesturesEnabled: true,
+          polylines: _polylines,
+        );
       },
-      mapType: MapType.normal,
-      myLocationEnabled: true,
-      myLocationButtonEnabled: false,
-      zoomControlsEnabled: false,
-      compassEnabled: false,
-      rotateGesturesEnabled: true,
-      scrollGesturesEnabled: true,
-      polylines: _polylines,
     );
   }
 
-  Future<void> _determinePositionAndMoveMap() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    // Testa se os serviços de localização estão habilitados
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      debugPrint('Serviços de localização desabilitados.');
-      return;
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        debugPrint('Permissões de localização negadas.');
-        return;
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      debugPrint('Permissões de localização permanentemente negadas.');
-      return;
-    }
-
-    // Permissão concedida, pega a posição
+  /// Obtém a posição GPS do usuário para a câmera inicial.
+  /// Fallback para São Paulo se serviços ou permissão falharem.
+  Future<CameraPosition> _getInitialCameraPosition() async {
+    const fallback = CameraPosition(
+      target: LatLng(-23.550520, -46.633308),
+      zoom: 16.5,
+    );
     try {
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        debugPrint('Serviços de localização desabilitados.');
+        return fallback;
+      }
+
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          debugPrint('Permissões de localização negadas.');
+          return fallback;
+        }
+      }
+      if (permission == LocationPermission.deniedForever) {
+        debugPrint('Permissões permanentemente negadas.');
+        return fallback;
+      }
+
       final position = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.high,
         ),
       );
-
-      _mapController?.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(
-            target: LatLng(position.latitude, position.longitude),
-            zoom: 16.5,
-          ),
-        ),
+      return CameraPosition(
+        target: LatLng(position.latitude, position.longitude),
+        zoom: 16.5,
       );
-      // Força a atualização do estado para garantir que o myLocationEnabled desenhe o ponto se não tinha antes (embora o GoogleMap cuide disso se as permissões mudarem).
-      if (mounted) setState(() {});
     } catch (e) {
-      debugPrint('Erro ao obter localização: $e');
+      debugPrint('Erro ao obter posição inicial: $e');
+      return fallback;
     }
   }
 
