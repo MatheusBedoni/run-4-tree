@@ -202,36 +202,37 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       distanceFilter: 5, // atualiza a cada 5 metros
     );
     _locationSub =
-        Geolocator.getPositionStream(locationSettings: locationSettings)
-            .listen((pos) {
-      final newPoint = LatLng(pos.latitude, pos.longitude);
-      setState(() {
-        if (_lastTrackingPosition != null) {
-          final meters = Geolocator.distanceBetween(
-            _lastTrackingPosition!.latitude,
-            _lastTrackingPosition!.longitude,
-            newPoint.latitude,
-            newPoint.longitude,
-          );
-          _runDistanceKm += meters / 1000.0;
-        }
-        _routePoints.add(newPoint);
-        _lastTrackingPosition = newPoint;
-        _polylines = {
-          Polyline(
-            polylineId: const PolylineId('run_route'),
-            points: List.from(_routePoints),
-            color: AppColors.accentOrange,
-            width: 5,
-            startCap: Cap.roundCap,
-            endCap: Cap.roundCap,
-            jointType: JointType.round,
-          ),
-        };
-      });
-      // Centraliza o mapa na posição atual durante a corrida
-      _mapController?.animateCamera(CameraUpdate.newLatLng(newPoint));
-    });
+        Geolocator.getPositionStream(locationSettings: locationSettings).listen(
+          (pos) {
+            final newPoint = LatLng(pos.latitude, pos.longitude);
+            setState(() {
+              if (_lastTrackingPosition != null) {
+                final meters = Geolocator.distanceBetween(
+                  _lastTrackingPosition!.latitude,
+                  _lastTrackingPosition!.longitude,
+                  newPoint.latitude,
+                  newPoint.longitude,
+                );
+                _runDistanceKm += meters / 1000.0;
+              }
+              _routePoints.add(newPoint);
+              _lastTrackingPosition = newPoint;
+              _polylines = {
+                Polyline(
+                  polylineId: const PolylineId('run_route'),
+                  points: List.from(_routePoints),
+                  color: AppColors.accentOrange,
+                  width: 5,
+                  startCap: Cap.roundCap,
+                  endCap: Cap.roundCap,
+                  jointType: JointType.round,
+                ),
+              };
+            });
+            // Centraliza o mapa na posição atual durante a corrida
+            _mapController?.animateCamera(CameraUpdate.newLatLng(newPoint));
+          },
+        );
   }
 
   // ─── Build ─────────────────────────────────────────────────────────────────
@@ -290,14 +291,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         // ── 5. HUD de corrida (tempo + km) ───────────────────────────────
         if (_runState != RunState.idle) _buildRunHUD(),
 
-        // ── 6. Mascote centralizado ──────────────────────────────────────
-        if (_runState == RunState.idle) _buildMascotOverlay(),
-
         // ── 7. Anel de progresso ─────────────────────────────────────────
         if (_runState == RunState.idle) _buildProgressOverlay(),
 
         // ── 8. Run Controls ──────────────────────────────────────────────
-        _buildRunControls(),
+        // _buildRunControls(),
       ],
     );
   }
@@ -560,80 +558,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  // ─── Mascote ───────────────────────────────────────────────────────────────
-
-  Widget _buildMascotOverlay() {
-    return Positioned(
-      left: 0,
-      right: 0,
-      top: MediaQuery.of(context).size.height * 0.38,
-      child: AnimatedBuilder(
-        animation: Listenable.merge([_pulseAnim, _floatAnim]),
-        builder: (context, child) {
-          return Transform.translate(
-            offset: Offset(0, _floatAnim.value),
-            child: Transform.scale(scale: _pulseAnim.value, child: child),
-          );
-        },
-        child: Center(child: _buildMascot()),
-      ),
-    );
-  }
-
-  Widget _buildMascot() {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        // Halo externo pulsante
-        Container(
-          width: 82,
-          height: 82,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: AppColors.accentOrange.withValues(alpha: 0.25),
-          ),
-        ),
-        // Corpo do mascote
-        Container(
-          width: 64,
-          height: 64,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: const LinearGradient(
-              colors: [Color(0xFFFFC107), AppColors.accentOrange],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            border: Border.all(color: Colors.white, width: 4),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.accentOrange.withValues(alpha: 0.6),
-                blurRadius: 20,
-                spreadRadius: 2,
-                offset: const Offset(0, 4),
-              ),
-            ],
-            image: _mascotImageUrl != null
-                ? DecorationImage(
-                    image: NetworkImage(_mascotImageUrl!),
-                    fit: BoxFit.cover,
-                  )
-                : null,
-          ),
-          child: _mascotImageUrl == null
-              ? const Center(
-                  child: FaIcon(
-                    FontAwesomeIcons.leaf,
-                    color: Colors.white,
-                    size: 28,
-                  ),
-                )
-              : null,
-        ),
-      ],
-    );
-  }
-
   // ─── Progress ring ─────────────────────────────────────────────────────────
 
   Widget _buildProgressOverlay() {
@@ -749,10 +673,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           ),
           boxShadow: [
             BoxShadow(
-              color: (_runState == RunState.paused
-                      ? Colors.amber
-                      : AppColors.accentOrange)
-                  .withValues(alpha: 0.25),
+              color:
+                  (_runState == RunState.paused
+                          ? Colors.amber
+                          : AppColors.accentOrange)
+                      .withValues(alpha: 0.25),
               blurRadius: 20,
               spreadRadius: 2,
             ),
@@ -837,30 +762,47 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget _buildRunControls() {
     if (_runState == RunState.idle) {
       return Positioned(
-        bottom: kBottomNavigationBarHeight + 140,
+        bottom: kBottomNavigationBarHeight + 145,
         left: 0,
         right: 0,
         child: Center(
-          child: ElevatedButton.icon(
-            onPressed: _startTimer,
-            icon: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 28),
-            label: const Text(
-              'INICIAR CORRIDA',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                letterSpacing: 1,
+          child: GestureDetector(
+            onTap: _startTimer,
+            child: Container(
+              width: 86,
+              height: 86,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [AppColors.accentOrange, Color(0xFFFF9800)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.accentOrange.withValues(alpha: 0.4),
+                    blurRadius: 20,
+                    spreadRadius: 2,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  width: 3,
+                ),
               ),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.accentOrange,
-              padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
+              child: const Center(
+                child: Text(
+                  'GO',
+                  style: TextStyle(
+                    fontSize: 34,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                    letterSpacing: 2,
+                    height: 1.0,
+                  ),
+                ),
               ),
-              elevation: 10,
-              shadowColor: AppColors.accentOrange.withValues(alpha: 0.5),
             ),
           ),
         ),
@@ -878,12 +820,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           // Botão Pause / Resume
           _buildControlButton(
             heroTag: 'pause_resume',
-            onPressed: _runState == RunState.running ? _pauseTimer : _resumeTimer,
+            onPressed: _runState == RunState.running
+                ? _pauseTimer
+                : _resumeTimer,
             icon: _runState == RunState.running
                 ? Icons.pause_rounded
                 : Icons.play_arrow_rounded,
-            backgroundColor:
-                _runState == RunState.running ? Colors.amber : AppColors.progressGreen,
+            backgroundColor: _runState == RunState.running
+                ? Colors.amber
+                : AppColors.progressGreen,
             size: 64,
           ),
           const SizedBox(width: 28),
