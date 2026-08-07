@@ -15,6 +15,8 @@ import '../controllers/home_controller.dart';
 
 enum RunState { idle, running, paused }
 
+enum ExerciseType { bike, walk, run }
+
 /// HomePage — Tela principal do Run4Tree.
 ///
 /// Layout baseado no protótipo:
@@ -60,6 +62,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // ─── Run State ─────────────────────────────────────────────────────────────
   RunState _runState = RunState.idle;
+  ExerciseType _selectedExerciseType = ExerciseType.run;
   int _runSeconds = 0;
   Timer? _runTimer;
 
@@ -292,7 +295,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         if (_runState != RunState.idle) _buildRunHUD(),
 
         // ── 7. Run Controls ──────────────────────────────────────────────
-        // _buildRunControls(),
+        _buildRunControls(),
       ],
     );
   }
@@ -749,52 +752,182 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // ─── Run Controls ──────────────────────────────────────────────────────────
 
+  String _getExerciseName() {
+    switch (_selectedExerciseType) {
+      case ExerciseType.bike:
+        return 'BICICLETA';
+      case ExerciseType.walk:
+        return 'CAMINHADA';
+      case ExerciseType.run:
+        return 'CORRIDA';
+    }
+  }
+
+  Widget _buildExerciseTypeButton(ExerciseType? type, IconData icon) {
+    final isSelected = type != null && _selectedExerciseType == type;
+    return GestureDetector(
+      onTap: () {
+        if (type != null) {
+          setState(() => _selectedExerciseType = type);
+        }
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        width: 64,
+        height: 52,
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.progressGreen : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            if (!isSelected)
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 8,
+                offset: const Offset(0, 3),
+              ),
+            if (isSelected)
+              BoxShadow(
+                color: AppColors.progressGreen.withValues(alpha: 0.3),
+                blurRadius: 8,
+                offset: const Offset(0, 3),
+              ),
+          ],
+        ),
+        child: Center(
+          child: Icon(
+            icon,
+            color: isSelected ? Colors.white : AppColors.primaryDark,
+            size: 26,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSquareButton(IconData icon, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 56,
+        height: 56,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Center(
+          child: Icon(icon, color: AppColors.primaryDark, size: 26),
+        ),
+      ),
+    );
+  }
+
   Widget _buildRunControls() {
     if (_runState == RunState.idle) {
       return Positioned(
-        bottom: kBottomNavigationBarHeight + 145,
+        bottom: kBottomNavigationBarHeight + 110,
         left: 0,
         right: 0,
-        child: Center(
-          child: GestureDetector(
-            onTap: _startTimer,
-            child: Container(
-              width: 86,
-              height: 86,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                  colors: [AppColors.accentOrange, Color(0xFFFF9800)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildExerciseTypeButton(
+                  ExerciseType.bike,
+                  Icons.directions_bike_rounded,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.accentOrange.withValues(alpha: 0.4),
-                    blurRadius: 20,
-                    spreadRadius: 2,
-                    offset: const Offset(0, 8),
+                const SizedBox(width: 8),
+                _buildExerciseTypeButton(
+                  ExerciseType.walk,
+                  Icons.directions_walk_rounded,
+                ),
+                const SizedBox(width: 8),
+                _buildExerciseTypeButton(
+                  ExerciseType.run,
+                  Icons.directions_run_rounded,
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: _startTimer,
+                      child: Container(
+                        height: 56,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [
+                              AppColors.progressGreen,
+                              AppColors.primaryDark,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.progressGreen.withValues(
+                                alpha: 0.3,
+                              ),
+                              blurRadius: 16,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'INICIAR',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 2.0,
+                                  ),
+                                ),
+                                Text(
+                                  _getExerciseName(),
+                                  style: TextStyle(
+                                    color: Colors.white.withValues(alpha: 0.8),
+                                    fontSize: 13,
+                                    letterSpacing: 1.5,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const Icon(
+                              Icons.arrow_forward_rounded,
+                              color: Colors.white,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
+                  const SizedBox(width: 12),
                 ],
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  width: 3,
-                ),
-              ),
-              child: const Center(
-                child: Text(
-                  'GO',
-                  style: TextStyle(
-                    fontSize: 34,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                    letterSpacing: 2,
-                    height: 1.0,
-                  ),
-                ),
               ),
             ),
-          ),
+          ],
         ),
       );
     }
@@ -896,7 +1029,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         _buildNavItem(0, Icons.map_rounded, 'Mapa'),
-                        _buildNavItem(1, Icons.fitness_center_rounded, 'Treino'),
+                        _buildNavItem(
+                          1,
+                          Icons.fitness_center_rounded,
+                          'Treino',
+                        ),
                       ],
                     ),
                   ),
@@ -916,10 +1053,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           ),
         ),
         if (_runState == RunState.idle)
-          Positioned(
-            top: -48,
-            child: _buildProgressOverlay(),
-          ),
+          Positioned(top: -48, child: _buildProgressOverlay()),
       ],
     );
   }
@@ -963,11 +1097,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     ? AppColors.navSelected
                     : Colors.grey.shade400,
               ),
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
+              child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
             ),
           ],
         ),
