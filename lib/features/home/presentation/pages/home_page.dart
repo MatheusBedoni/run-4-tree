@@ -291,10 +291,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         // ── 5. HUD de corrida (tempo + km) ───────────────────────────────
         if (_runState != RunState.idle) _buildRunHUD(),
 
-        // ── 7. Anel de progresso ─────────────────────────────────────────
-        if (_runState == RunState.idle) _buildProgressOverlay(),
-
-        // ── 8. Run Controls ──────────────────────────────────────────────
+        // ── 7. Run Controls ──────────────────────────────────────────────
         // _buildRunControls(),
       ],
     );
@@ -561,25 +558,18 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // ─── Progress ring ─────────────────────────────────────────────────────────
 
   Widget _buildProgressOverlay() {
-    return Positioned(
-      left: 0,
-      right: 0,
-      bottom: kBottomNavigationBarHeight + 24,
-      child: Center(
-        child: ListenableBuilder(
-          listenable: _controller,
+    return ListenableBuilder(
+      listenable: _controller,
+      builder: (context, _) {
+        final targetProgress = _controller.stats?.progressPercent ?? 0.0;
+        return AnimatedBuilder(
+          animation: _progressAnim,
           builder: (context, _) {
-            final targetProgress = _controller.stats?.progressPercent ?? 0.0;
-            return AnimatedBuilder(
-              animation: _progressAnim,
-              builder: (context, _) {
-                final animatedProgress = targetProgress * _progressAnim.value;
-                return _buildProgressRing(animatedProgress, targetProgress);
-              },
-            );
+            final animatedProgress = targetProgress * _progressAnim.value;
+            return _buildProgressRing(animatedProgress, targetProgress);
           },
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -879,33 +869,58 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // ─── Bottom navigation ─────────────────────────────────────────────────────
 
   Widget _buildBottomNavBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.12),
-            blurRadius: 20,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(0, Icons.map_rounded, 'Mapa'),
-              _buildNavItem(1, Icons.fitness_center_rounded, 'Exercícios'),
-              _buildNavItem(2, Icons.local_florist_rounded, 'Jardim'),
-              _buildNavItem(3, Icons.person_rounded, 'Perfil'),
+    return Stack(
+      clipBehavior: Clip.none,
+      alignment: Alignment.bottomCenter,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.12),
+                blurRadius: 20,
+                offset: const Offset(0, -4),
+              ),
             ],
           ),
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildNavItem(0, Icons.map_rounded, 'Mapa'),
+                        _buildNavItem(1, Icons.fitness_center_rounded, 'Treino'),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 88), // Espaço para o anel central
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildNavItem(2, Icons.local_florist_rounded, 'Jardim'),
+                        _buildNavItem(3, Icons.person_rounded, 'Perfil'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
-      ),
+        if (_runState == RunState.idle)
+          Positioned(
+            top: -48,
+            child: _buildProgressOverlay(),
+          ),
+      ],
     );
   }
 
@@ -917,7 +932,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeInOut,
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected
               ? AppColors.primaryLight.withValues(alpha: 0.15)
@@ -948,7 +963,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     ? AppColors.navSelected
                     : Colors.grey.shade400,
               ),
-              child: Text(label),
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),
