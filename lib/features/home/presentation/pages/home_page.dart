@@ -831,7 +831,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget _buildRunControls() {
     if (_runState == RunState.idle) {
       return Positioned(
-        bottom: kBottomNavigationBarHeight + 110,
+        bottom: kBottomNavigationBarHeight + 75,
         left: 0,
         right: 0,
         child: Column(
