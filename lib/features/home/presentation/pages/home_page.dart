@@ -253,7 +253,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           const Center(child: Text('Perfil (Em breve)')),
         ],
       ),
-      bottomNavigationBar: _buildBottomNavBar(),
+      bottomNavigationBar: _runState == RunState.idle
+          ? _buildBottomNavBar()
+          : null,
     );
   }
 
@@ -269,27 +271,31 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         // ── 3. Gradient overlay na base ─────────────────────────────────
         _buildBottomGradient(),
 
-        // ── 4. Overlay do topo: avatar + stats ──────────────────────────
-        SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildUserAvatar(),
-                const Spacer(),
-                ListenableBuilder(
-                  listenable: _controller,
-                  builder: (context, _) {
-                    final stats = _controller.stats;
-                    if (stats == null) return const SizedBox();
-                    return _buildStatsColumn(stats);
-                  },
-                ),
-              ],
+        // ── 4. Overlay do topo: avatar + stats (oculto durante o exercício) ──
+        if (_runState == RunState.idle)
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 10,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildUserAvatar(),
+                  const Spacer(),
+                  ListenableBuilder(
+                    listenable: _controller,
+                    builder: (context, _) {
+                      final stats = _controller.stats;
+                      if (stats == null) return const SizedBox();
+                      return _buildStatsColumn(stats);
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
 
         // ── 5. HUD de corrida (tempo + km) ───────────────────────────────
         if (_runState != RunState.idle) _buildRunHUD(),
@@ -933,8 +939,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
 
     // Controles durante corrida (HUD exibe o tempo/km no topo)
+    // Barra de navegação fica oculta durante o exercício, então o
+    // espaçamento inferior precisa respeitar a área segura manualmente.
     return Positioned(
-      bottom: kBottomNavigationBarHeight + 32,
+      bottom: MediaQuery.of(context).padding.bottom + 32,
       left: 0,
       right: 0,
       child: Row(
@@ -1052,8 +1060,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ),
           ),
         ),
-        if (_runState == RunState.idle)
-          Positioned(top: -48, child: _buildProgressOverlay()),
+        Positioned(top: -48, child: _buildProgressOverlay()),
       ],
     );
   }
