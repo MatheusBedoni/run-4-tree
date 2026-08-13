@@ -477,17 +477,55 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // ─── Stats cards ───────────────────────────────────────────────────────────
 
+  Widget _buildWeatherIcon(String condition) {
+    switch (condition) {
+      case 'cloudy':
+        return const Icon(
+          Icons.cloud_rounded,
+          color: Color(0xFF90A4AE),
+          size: 22,
+        );
+      case 'rainy':
+        return const Icon(
+          Icons.water_drop_rounded,
+          color: Color(0xFF4FC3F7),
+          size: 22,
+        );
+      case 'stormy':
+        return const Icon(
+          Icons.thunderstorm_rounded,
+          color: Color(0xFF7E57C2),
+          size: 22,
+        );
+      case 'snowy':
+        return const Icon(
+          Icons.ac_unit_rounded,
+          color: Color(0xFF80DEEA),
+          size: 22,
+        );
+      case 'foggy':
+        return const Icon(
+          Icons.foggy,
+          color: Color(0xFFB0BEC5),
+          size: 22,
+        );
+      case 'sunny':
+      default:
+        return const Icon(
+          Icons.wb_sunny_rounded,
+          color: Color(0xFFFFC107),
+          size: 22,
+        );
+    }
+  }
+
   Widget _buildStatsColumn(RunStatsEntity stats) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         _buildStatCard(
-          iconWidget: Icon(
-            Icons.wb_sunny_rounded,
-            color: const Color(0xFFFFC107),
-            size: 22,
-          ),
+          iconWidget: _buildWeatherIcon(stats.weatherCondition),
           topLine: '${stats.weatherTemp}°',
           bottomLine: null,
         ),
