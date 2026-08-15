@@ -275,10 +275,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         if (_runState == RunState.idle)
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 10,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -504,11 +501,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           size: 22,
         );
       case 'foggy':
-        return const Icon(
-          Icons.foggy,
-          color: Color(0xFFB0BEC5),
-          size: 22,
-        );
+        return const Icon(Icons.foggy, color: Color(0xFFB0BEC5), size: 22);
       case 'sunny':
       default:
         return const Icon(
@@ -843,30 +836,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             color: isSelected ? Colors.white : AppColors.primaryDark,
             size: 26,
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSquareButton(IconData icon, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 56,
-        height: 56,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Center(
-          child: Icon(icon, color: AppColors.primaryDark, size: 26),
         ),
       ),
     );
