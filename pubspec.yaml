@@ -45,6 +45,8 @@ dependencies:
   flutter_dotenv: ^6.0.1
   dio: ^5.11.0
   weather: ^3.2.1
+  drift:
+
 
 dev_dependencies:
   flutter_test:
