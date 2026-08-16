@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -7,7 +8,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:run_4_tree/features/exercises/presentation/pages/exercises_page.dart';
 
 import '../../../../../core/constants/map_styles.dart';
+import '../../../../../core/database/app_database.dart';
 import '../../../../../core/theme/app_colors.dart';
+import '../../../runs/data/datasources/run_session_local_datasource_impl.dart';
+import '../../../runs/data/repositories/run_session_repository_impl.dart';
+import '../../../runs/domain/entities/run_session_entity.dart';
+import '../../../runs/domain/usecases/save_run_usecase.dart';
 import '../../data/repositories/home_repository_impl.dart';
 import '../../domain/entities/run_stats_entity.dart';
 import '../../domain/usecases/get_run_stats_usecase.dart';
@@ -36,6 +42,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // ─── Controller ────────────────────────────────────────────────────────────
   late final HomeController _controller;
+
+  // ─── Runs (Drift) ──────────────────────────────────────────────────────────
+  late final SaveRunUseCase _saveRunUseCase;
 
   // ─── Animações ─────────────────────────────────────────────────────────────
   late final AnimationController _progressAnimCtrl;
@@ -84,6 +93,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
     _controller.addListener(_onStatsLoaded);
     _controller.loadStats();
+
+    // Drift: instancia a cadeia datasource → repository → usecase
+    final db = AppDatabase.instance;
+    final runDataSource = RunSessionLocalDataSourceImpl(db);
+    final runRepository = RunSessionRepositoryImpl(runDataSource);
+    _saveRunUseCase = SaveRunUseCase(runRepository);
 
     // Resolve a posição real do usuário antes de montar o mapa
     _initialCameraFuture = _getInitialCameraPosition();
@@ -162,11 +177,97 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   void _stopTimer() {
     _runTimer?.cancel();
+
+    // Salva a corrida no banco Drift antes de limpar o estado
+    _saveCurrentRun();
+
     _stopTracking();
     setState(() {
       _runState = RunState.idle;
       _runSeconds = 0;
     });
+  }
+
+  /// Persiste a sessão de corrida atual no SQLite via Drift.
+  Future<void> _saveCurrentRun() async {
+    // Não salva se não houve movimentação
+    if (_runSeconds <= 0 && _runDistanceKm <= 0) return;
+
+    try {
+      // Serializa a polyline como JSON
+      final polylineJson = jsonEncode(
+        _routePoints.map((p) => [p.latitude, p.longitude]).toList(),
+      );
+
+      // Calcula métricas
+      final durationHours = _runSeconds / 3600.0;
+      final avgSpeed = durationHours > 0 ? _runDistanceKm / durationHours : 0.0;
+      final pace = _runDistanceKm > 0 ? (_runSeconds / 60.0) / _runDistanceKm : 0.0;
+
+      // Estimativa simples de calorias (MET * peso_medio * horas)
+      final met = _selectedExerciseType == ExerciseType.run
+          ? 9.8
+          : _selectedExerciseType == ExerciseType.bike
+              ? 7.5
+              : 3.8;
+      final calories = met * 70.0 * durationHours; // 70kg como peso padrão
+
+      final entity = RunSessionEntity(
+        durationSeconds: _runSeconds,
+        distanceKm: _runDistanceKm,
+        calories: calories,
+        averageSpeed: avgSpeed,
+        maxSpeed: avgSpeed, // TODO: rastrear velocidade máxima real
+        pace: pace,
+        polyline: polylineJson,
+        temperature: _controller.stats?.weatherTemp.toString(),
+        isNight: false, // TODO: determinar via hora do dia
+        treesEarned: 0,
+        exerciseType: _selectedExerciseType.name,
+        createdAt: DateTime.now(),
+      );
+
+      await _saveRunUseCase(entity);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.check_circle, color: Colors.white, size: 20),
+                const SizedBox(width: 10),
+                Text(
+                  'Corrida salva! ${_runDistanceKm.toStringAsFixed(2)} km',
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+            backgroundColor: AppColors.progressGreen,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            margin: const EdgeInsets.all(16),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Erro ao salvar corrida: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Erro ao salvar a corrida.'),
+            backgroundColor: Colors.redAccent,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            margin: const EdgeInsets.all(16),
+          ),
+        );
+      }
+    }
   }
 
   // ─── GPS Tracking ──────────────────────────────────────────────────────────
