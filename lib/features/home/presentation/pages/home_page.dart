@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:run_4_tree/features/exercises/presentation/pages/exercises_page.dart';
+import 'package:run_4_tree/features/profile/presentation/pages/profile_page.dart';
 
 import '../../../../../core/constants/map_styles.dart';
 import '../../../../../core/database/app_database.dart';
@@ -202,14 +203,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       // Calcula métricas
       final durationHours = _runSeconds / 3600.0;
       final avgSpeed = durationHours > 0 ? _runDistanceKm / durationHours : 0.0;
-      final pace = _runDistanceKm > 0 ? (_runSeconds / 60.0) / _runDistanceKm : 0.0;
+      final pace = _runDistanceKm > 0
+          ? (_runSeconds / 60.0) / _runDistanceKm
+          : 0.0;
 
       // Estimativa simples de calorias (MET * peso_medio * horas)
       final met = _selectedExerciseType == ExerciseType.run
           ? 9.8
           : _selectedExerciseType == ExerciseType.bike
-              ? 7.5
-              : 3.8;
+          ? 7.5
+          : 3.8;
       final calories = met * 70.0 * durationHours; // 70kg como peso padrão
 
       final entity = RunSessionEntity(
@@ -351,7 +354,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           _buildMapPage(),
           const ExercisesPage(),
           const Center(child: Text('Jardim (Em breve)')),
-          const Center(child: Text('Perfil (Em breve)')),
+          const ProfilePage(),
         ],
       ),
       bottomNavigationBar: _runState == RunState.idle
