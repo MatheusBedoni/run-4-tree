@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:run_4_tree/features/exercises/presentation/pages/exercises_page.dart';
+import 'package:run_4_tree/features/garden/presentation/pages/garden_page.dart';
 import 'package:run_4_tree/features/profile/presentation/pages/profile_page.dart';
 
 import '../../../../../core/constants/map_styles.dart';
@@ -353,7 +354,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         children: [
           _buildMapPage(),
           const ExercisesPage(),
-          const Center(child: Text('Jardim (Em breve)')),
+          const GardenPage(),
           const ProfilePage(),
         ],
       ),
