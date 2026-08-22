@@ -13,20 +13,50 @@ class AppTheme {
         background: AppColors.background,
       ),
       scaffoldBackgroundColor: AppColors.background,
-      textTheme: GoogleFonts.poppinsTextTheme().copyWith(
-        displayLarge: GoogleFonts.poppins(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
-        displayMedium: GoogleFonts.poppins(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
-        displaySmall: GoogleFonts.poppins(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
-        headlineLarge: GoogleFonts.poppins(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
-        headlineMedium: GoogleFonts.poppins(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
-        headlineSmall: GoogleFonts.poppins(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
-        titleLarge: GoogleFonts.poppins(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
-        titleMedium: GoogleFonts.poppins(color: AppColors.textPrimary, fontWeight: FontWeight.w500),
-        titleSmall: GoogleFonts.poppins(color: AppColors.textPrimary, fontWeight: FontWeight.w500),
-        bodyLarge: GoogleFonts.poppins(color: AppColors.textPrimary),
-        bodyMedium: GoogleFonts.poppins(color: AppColors.textSecondary),
-        bodySmall: GoogleFonts.poppins(color: AppColors.textSecondary),
-        labelLarge: GoogleFonts.poppins(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+      textTheme: GoogleFonts.montserratTextTheme().copyWith(
+        displayLarge: GoogleFonts.bebasNeue(
+          color: AppColors.textPrimary,
+          letterSpacing: 1.2,
+        ),
+        displayMedium: GoogleFonts.bebasNeue(
+          color: AppColors.textPrimary,
+          letterSpacing: 1.2,
+        ),
+        displaySmall: GoogleFonts.bebasNeue(
+          color: AppColors.textPrimary,
+          letterSpacing: 1.2,
+        ),
+        headlineLarge: GoogleFonts.bebasNeue(
+          color: AppColors.textPrimary,
+          letterSpacing: 1.2,
+        ),
+        headlineMedium: GoogleFonts.bebasNeue(
+          color: AppColors.textPrimary,
+          letterSpacing: 1.0,
+        ),
+        headlineSmall: GoogleFonts.bebasNeue(
+          color: AppColors.textPrimary,
+          letterSpacing: 1.0,
+        ),
+        titleLarge: GoogleFonts.bebasNeue(
+          color: AppColors.textPrimary,
+          letterSpacing: 0.8,
+        ),
+        titleMedium: GoogleFonts.bebasNeue(
+          color: AppColors.textPrimary,
+          letterSpacing: 0.5,
+        ),
+        titleSmall: GoogleFonts.bebasNeue(
+          color: AppColors.textPrimary,
+          letterSpacing: 0.5,
+        ),
+        bodyLarge: GoogleFonts.montserrat(color: AppColors.textPrimary),
+        bodyMedium: GoogleFonts.montserrat(color: AppColors.textSecondary),
+        bodySmall: GoogleFonts.montserrat(color: AppColors.textSecondary),
+        labelLarge: GoogleFonts.montserrat(
+          color: AppColors.textPrimary,
+          fontWeight: FontWeight.w600,
+        ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -36,7 +66,7 @@ class AppTheme {
             borderRadius: BorderRadius.circular(12),
           ),
           padding: const EdgeInsets.symmetric(vertical: 16),
-          textStyle: GoogleFonts.poppins(
+          textStyle: GoogleFonts.montserrat(
             fontWeight: FontWeight.w600,
             fontSize: 16,
           ),
@@ -50,7 +80,7 @@ class AppTheme {
             borderRadius: BorderRadius.circular(12),
           ),
           padding: const EdgeInsets.symmetric(vertical: 16),
-          textStyle: GoogleFonts.poppins(
+          textStyle: GoogleFonts.montserrat(
             fontWeight: FontWeight.w600,
             fontSize: 16,
           ),
