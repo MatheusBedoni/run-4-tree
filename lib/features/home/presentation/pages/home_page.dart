@@ -1206,7 +1206,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             AnimatedDefaultTextStyle(
               duration: const Duration(milliseconds: 250),
               style: TextStyle(
-                fontSize: 11,
+                fontSize: 10,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 color: isSelected
                     ? AppColors.navSelected
