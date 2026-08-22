@@ -1148,12 +1148,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        _buildNavItem(0, Icons.map_rounded, 'Mapa'),
-                        _buildNavItem(
-                          1,
-                          Icons.fitness_center_rounded,
-                          'Treino',
-                        ),
+                        _buildNavItem(0, Icons.house, 'Atividade'),
+                        _buildNavItem(1, Icons.bar_chart_rounded, 'Progresso'),
                       ],
                     ),
                   ),
