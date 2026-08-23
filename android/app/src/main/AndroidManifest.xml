@@ -37,6 +37,11 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${GOOGLE_MAPS_API_KEY}" />
+        <!-- ⚠️ ADMOB: ID de app de TESTE do Google. Troque pelo seu App ID real
+             (AdMob > Configurações do app) antes de publicar. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

@@ -15,7 +15,7 @@ if (localPropertiesFile.exists()) {
 val mapsApiKey = localProperties.getProperty("GOOGLE_MAPS_API_KEY") ?: ""
 
 android {
-    namespace = "com.example.run_4_tree"
+    namespace = "com.run4tree.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -28,7 +28,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.run_4_tree"
+        applicationId = "com.run4tree.app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion

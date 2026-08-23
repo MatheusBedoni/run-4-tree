@@ -1,4 +1,4 @@
-package com.example.run_4_tree
+package com.run4tree.app
 
 import io.flutter.embedding.android.FlutterActivity
 

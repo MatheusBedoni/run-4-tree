@@ -47,5 +47,11 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<!-- ⚠️ ADMOB: ID de app de TESTE do Google. Troque pelo seu App ID real
+		     (AdMob > Configurações do app) antes de publicar. -->
+		<key>GADApplicationIdentifier</key>
+		<string>ca-app-pub-3940256099942544~1458002511</string>
+		<key>NSUserTrackingUsageDescription</key>
+		<string>Seus dados serão usados para exibir anúncios recompensados mais relevantes e financiar o plantio de árvores.</string>
 	</dict>
 </plist>
