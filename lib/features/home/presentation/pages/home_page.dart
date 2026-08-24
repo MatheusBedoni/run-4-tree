@@ -91,7 +91,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     super.initState();
 
     _controller = HomeController(
-      GetRunStatsUseCase(const HomeRepositoryImpl()),
+      GetRunStatsUseCase(HomeRepositoryImpl()),
     );
     _controller.addListener(_onStatsLoaded);
     _controller.loadStats();

@@ -1224,16 +1224,340 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
   }
 }
 
+class $TreeProgressTable extends TreeProgress
+    with TableInfo<$TreeProgressTable, TreeProgressData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TreeProgressTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _revenueAccumulatedUsdMeta =
+      const VerificationMeta('revenueAccumulatedUsd');
+  @override
+  late final GeneratedColumn<double> revenueAccumulatedUsd =
+      GeneratedColumn<double>(
+        'revenue_accumulated_usd',
+        aliasedName,
+        false,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(0.0),
+      );
+  static const VerificationMeta _treesPlantedMeta = const VerificationMeta(
+    'treesPlanted',
+  );
+  @override
+  late final GeneratedColumn<int> treesPlanted = GeneratedColumn<int>(
+    'trees_planted',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    revenueAccumulatedUsd,
+    treesPlanted,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'tree_progress';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TreeProgressData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('revenue_accumulated_usd')) {
+      context.handle(
+        _revenueAccumulatedUsdMeta,
+        revenueAccumulatedUsd.isAcceptableOrUnknown(
+          data['revenue_accumulated_usd']!,
+          _revenueAccumulatedUsdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('trees_planted')) {
+      context.handle(
+        _treesPlantedMeta,
+        treesPlanted.isAcceptableOrUnknown(
+          data['trees_planted']!,
+          _treesPlantedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TreeProgressData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TreeProgressData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      revenueAccumulatedUsd: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}revenue_accumulated_usd'],
+      )!,
+      treesPlanted: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}trees_planted'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $TreeProgressTable createAlias(String alias) {
+    return $TreeProgressTable(attachedDatabase, alias);
+  }
+}
+
+class TreeProgressData extends DataClass
+    implements Insertable<TreeProgressData> {
+  final int id;
+
+  /// Receita de anúncios (USD) acumulada, ainda não convertida em árvore.
+  final double revenueAccumulatedUsd;
+
+  /// Total de árvores plantadas via Tree-Nation a partir de anúncios.
+  final int treesPlanted;
+  final DateTime updatedAt;
+  const TreeProgressData({
+    required this.id,
+    required this.revenueAccumulatedUsd,
+    required this.treesPlanted,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['revenue_accumulated_usd'] = Variable<double>(revenueAccumulatedUsd);
+    map['trees_planted'] = Variable<int>(treesPlanted);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  TreeProgressCompanion toCompanion(bool nullToAbsent) {
+    return TreeProgressCompanion(
+      id: Value(id),
+      revenueAccumulatedUsd: Value(revenueAccumulatedUsd),
+      treesPlanted: Value(treesPlanted),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory TreeProgressData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TreeProgressData(
+      id: serializer.fromJson<int>(json['id']),
+      revenueAccumulatedUsd: serializer.fromJson<double>(
+        json['revenueAccumulatedUsd'],
+      ),
+      treesPlanted: serializer.fromJson<int>(json['treesPlanted']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'revenueAccumulatedUsd': serializer.toJson<double>(revenueAccumulatedUsd),
+      'treesPlanted': serializer.toJson<int>(treesPlanted),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  TreeProgressData copyWith({
+    int? id,
+    double? revenueAccumulatedUsd,
+    int? treesPlanted,
+    DateTime? updatedAt,
+  }) => TreeProgressData(
+    id: id ?? this.id,
+    revenueAccumulatedUsd: revenueAccumulatedUsd ?? this.revenueAccumulatedUsd,
+    treesPlanted: treesPlanted ?? this.treesPlanted,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  TreeProgressData copyWithCompanion(TreeProgressCompanion data) {
+    return TreeProgressData(
+      id: data.id.present ? data.id.value : this.id,
+      revenueAccumulatedUsd: data.revenueAccumulatedUsd.present
+          ? data.revenueAccumulatedUsd.value
+          : this.revenueAccumulatedUsd,
+      treesPlanted: data.treesPlanted.present
+          ? data.treesPlanted.value
+          : this.treesPlanted,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TreeProgressData(')
+          ..write('id: $id, ')
+          ..write('revenueAccumulatedUsd: $revenueAccumulatedUsd, ')
+          ..write('treesPlanted: $treesPlanted, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, revenueAccumulatedUsd, treesPlanted, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TreeProgressData &&
+          other.id == this.id &&
+          other.revenueAccumulatedUsd == this.revenueAccumulatedUsd &&
+          other.treesPlanted == this.treesPlanted &&
+          other.updatedAt == this.updatedAt);
+}
+
+class TreeProgressCompanion extends UpdateCompanion<TreeProgressData> {
+  final Value<int> id;
+  final Value<double> revenueAccumulatedUsd;
+  final Value<int> treesPlanted;
+  final Value<DateTime> updatedAt;
+  const TreeProgressCompanion({
+    this.id = const Value.absent(),
+    this.revenueAccumulatedUsd = const Value.absent(),
+    this.treesPlanted = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  TreeProgressCompanion.insert({
+    this.id = const Value.absent(),
+    this.revenueAccumulatedUsd = const Value.absent(),
+    this.treesPlanted = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  static Insertable<TreeProgressData> custom({
+    Expression<int>? id,
+    Expression<double>? revenueAccumulatedUsd,
+    Expression<int>? treesPlanted,
+    Expression<DateTime>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (revenueAccumulatedUsd != null)
+        'revenue_accumulated_usd': revenueAccumulatedUsd,
+      if (treesPlanted != null) 'trees_planted': treesPlanted,
+      if (updatedAt != null) 'updated_at': updatedAt,
+    });
+  }
+
+  TreeProgressCompanion copyWith({
+    Value<int>? id,
+    Value<double>? revenueAccumulatedUsd,
+    Value<int>? treesPlanted,
+    Value<DateTime>? updatedAt,
+  }) {
+    return TreeProgressCompanion(
+      id: id ?? this.id,
+      revenueAccumulatedUsd:
+          revenueAccumulatedUsd ?? this.revenueAccumulatedUsd,
+      treesPlanted: treesPlanted ?? this.treesPlanted,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (revenueAccumulatedUsd.present) {
+      map['revenue_accumulated_usd'] = Variable<double>(
+        revenueAccumulatedUsd.value,
+      );
+    }
+    if (treesPlanted.present) {
+      map['trees_planted'] = Variable<int>(treesPlanted.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TreeProgressCompanion(')
+          ..write('id: $id, ')
+          ..write('revenueAccumulatedUsd: $revenueAccumulatedUsd, ')
+          ..write('treesPlanted: $treesPlanted, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $RunSessionsTable runSessions = $RunSessionsTable(this);
   late final $ExercisesTable exercises = $ExercisesTable(this);
+  late final $TreeProgressTable treeProgress = $TreeProgressTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [runSessions, exercises];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    runSessions,
+    exercises,
+    treeProgress,
+  ];
 }
 
 typedef $$RunSessionsTableCreateCompanionBuilder =
@@ -1813,6 +2137,185 @@ typedef $$ExercisesTableProcessedTableManager =
       Exercise,
       PrefetchHooks Function()
     >;
+typedef $$TreeProgressTableCreateCompanionBuilder =
+    TreeProgressCompanion Function({
+      Value<int> id,
+      Value<double> revenueAccumulatedUsd,
+      Value<int> treesPlanted,
+      Value<DateTime> updatedAt,
+    });
+typedef $$TreeProgressTableUpdateCompanionBuilder =
+    TreeProgressCompanion Function({
+      Value<int> id,
+      Value<double> revenueAccumulatedUsd,
+      Value<int> treesPlanted,
+      Value<DateTime> updatedAt,
+    });
+
+class $$TreeProgressTableFilterComposer
+    extends Composer<_$AppDatabase, $TreeProgressTable> {
+  $$TreeProgressTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get revenueAccumulatedUsd => $composableBuilder(
+    column: $table.revenueAccumulatedUsd,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get treesPlanted => $composableBuilder(
+    column: $table.treesPlanted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$TreeProgressTableOrderingComposer
+    extends Composer<_$AppDatabase, $TreeProgressTable> {
+  $$TreeProgressTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get revenueAccumulatedUsd => $composableBuilder(
+    column: $table.revenueAccumulatedUsd,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get treesPlanted => $composableBuilder(
+    column: $table.treesPlanted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$TreeProgressTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TreeProgressTable> {
+  $$TreeProgressTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<double> get revenueAccumulatedUsd => $composableBuilder(
+    column: $table.revenueAccumulatedUsd,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get treesPlanted => $composableBuilder(
+    column: $table.treesPlanted,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$TreeProgressTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TreeProgressTable,
+          TreeProgressData,
+          $$TreeProgressTableFilterComposer,
+          $$TreeProgressTableOrderingComposer,
+          $$TreeProgressTableAnnotationComposer,
+          $$TreeProgressTableCreateCompanionBuilder,
+          $$TreeProgressTableUpdateCompanionBuilder,
+          (
+            TreeProgressData,
+            BaseReferences<_$AppDatabase, $TreeProgressTable, TreeProgressData>,
+          ),
+          TreeProgressData,
+          PrefetchHooks Function()
+        > {
+  $$TreeProgressTableTableManager(_$AppDatabase db, $TreeProgressTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TreeProgressTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TreeProgressTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TreeProgressTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<double> revenueAccumulatedUsd = const Value.absent(),
+                Value<int> treesPlanted = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+              }) => TreeProgressCompanion(
+                id: id,
+                revenueAccumulatedUsd: revenueAccumulatedUsd,
+                treesPlanted: treesPlanted,
+                updatedAt: updatedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<double> revenueAccumulatedUsd = const Value.absent(),
+                Value<int> treesPlanted = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+              }) => TreeProgressCompanion.insert(
+                id: id,
+                revenueAccumulatedUsd: revenueAccumulatedUsd,
+                treesPlanted: treesPlanted,
+                updatedAt: updatedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$TreeProgressTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TreeProgressTable,
+      TreeProgressData,
+      $$TreeProgressTableFilterComposer,
+      $$TreeProgressTableOrderingComposer,
+      $$TreeProgressTableAnnotationComposer,
+      $$TreeProgressTableCreateCompanionBuilder,
+      $$TreeProgressTableUpdateCompanionBuilder,
+      (
+        TreeProgressData,
+        BaseReferences<_$AppDatabase, $TreeProgressTable, TreeProgressData>,
+      ),
+      TreeProgressData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -1821,4 +2324,6 @@ class $AppDatabaseManager {
       $$RunSessionsTableTableManager(_db, _db.runSessions);
   $$ExercisesTableTableManager get exercises =>
       $$ExercisesTableTableManager(_db, _db.exercises);
+  $$TreeProgressTableTableManager get treeProgress =>
+      $$TreeProgressTableTableManager(_db, _db.treeProgress);
 }

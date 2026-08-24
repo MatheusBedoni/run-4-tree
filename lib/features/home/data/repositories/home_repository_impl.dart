@@ -3,6 +3,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:weather/weather.dart';
 
 import '../../../../core/services/weather_service.dart';
+import '../../../garden/data/repositories/tree_garden_repository_impl.dart';
+import '../../../garden/domain/repositories/tree_garden_repository.dart';
 import '../../domain/entities/run_stats_entity.dart';
 import '../../domain/repositories/home_repository.dart';
 import '../models/run_stats_model.dart';
@@ -10,23 +12,29 @@ import '../models/run_stats_model.dart';
 /// Implementação concreta do [HomeRepository].
 ///
 /// O clima é obtido em tempo real via [WeatherService] (OpenWeatherMap),
-/// usando a localização atual do dispositivo. Árvores plantadas, distância
-/// e progresso continuam mockados até a API correspondente estar pronta.
+/// usando a localização atual do dispositivo. Árvores plantadas e o
+/// progresso vêm do [TreeGardenRepository] (sementes ganhas assistindo
+/// anúncios). Distância continua mockada até a sessão de corrida atual
+/// ser exposta aqui.
 class HomeRepositoryImpl implements HomeRepository {
   final WeatherService _weatherService;
+  final TreeGardenRepository _treeGardenRepository;
 
-  const HomeRepositoryImpl({
+  HomeRepositoryImpl({
     WeatherService weatherService = const WeatherService(),
-  }) : _weatherService = weatherService;
+    TreeGardenRepository? treeGardenRepository,
+  })  : _weatherService = weatherService,
+        _treeGardenRepository = treeGardenRepository ?? TreeGardenRepositoryImpl();
 
   @override
   Future<RunStatsEntity> getRunStats() async {
     final weather = await _fetchWeather();
+    final treeProgress = await _treeGardenRepository.getProgress();
 
     return RunStatsModel(
-      treesPlanted: 0,
+      treesPlanted: treeProgress.treesPlanted,
       distanceKm: 0,
-      progressPercent: 0,
+      progressPercent: treeProgress.progressPercent,
       weatherTemp: weather?.temperature?.celsius?.round() ?? 0,
       weatherCondition: _weatherService.mapCondition(weather?.weatherMain),
     );
