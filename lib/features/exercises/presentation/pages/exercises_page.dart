@@ -42,46 +42,22 @@ class _ExercisesPageState extends State<ExercisesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Progresso',
-            style: TextStyle(
-              color: AppColors.textPrimary,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          backgroundColor: Colors.white,
-          elevation: 0,
-          centerTitle: true,
-          bottom: const TabBar(
-            labelColor: AppColors.primaryDark,
-            unselectedLabelColor: AppColors.textSecondary,
-            indicatorColor: AppColors.primaryDark,
-            tabs: [
-              Tab(text: 'Corridas'),
-              Tab(text: 'Exercícios'),
-            ],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Progresso',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.bold,
           ),
         ),
-        body: TabBarView(
-          children: [
-            _buildRunHistoryTab(),
-            const Center(
-              child: Text(
-                'Lista de Exercícios em breve...',
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
-              ),
-            ),
-          ],
-        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
       ),
+      body: _buildRunHistoryTab(),
     );
   }
-
-  // ─── Aba: Histórico de Corridas ────────────────────────────────────────────
 
   Widget _buildRunHistoryTab() {
     return ListenableBuilder(

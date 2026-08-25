@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:run_4_tree/features/exercises/presentation/pages/exercises_page.dart';
 import 'package:run_4_tree/features/garden/presentation/pages/garden_page.dart';
@@ -84,15 +85,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   double _runDistanceKm = 0.0;
   LatLng? _lastTrackingPosition;
 
+  bool _isMapReady = false;
+
   // ─── Lifecycle ─────────────────────────────────────────────────────────────
 
   @override
   void initState() {
     super.initState();
 
-    _controller = HomeController(
-      GetRunStatsUseCase(HomeRepositoryImpl()),
-    );
+    _controller = HomeController(GetRunStatsUseCase(HomeRepositoryImpl()));
     _controller.addListener(_onStatsLoaded);
     _controller.loadStats();
 
@@ -370,40 +371,45 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         // ── 1. Google Maps (tela cheia) ─────────────────────────────────
         _buildMap(),
 
-        // ── 2. Gradient overlay no topo (legibilidade dos cards) ────────
-        _buildTopGradient(),
+        if (_isMapReady) ...[
+          // ── 2. Gradient overlay no topo (legibilidade dos cards) ────────
+          _buildTopGradient(),
 
-        // ── 3. Gradient overlay na base ─────────────────────────────────
-        _buildBottomGradient(),
+          // ── 3. Gradient overlay na base ─────────────────────────────────
+          _buildBottomGradient(),
 
-        // ── 4. Overlay do topo: avatar + stats (oculto durante o exercício) ──
-        if (_runState == RunState.idle)
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildUserAvatar(),
-                  const Spacer(),
-                  ListenableBuilder(
-                    listenable: _controller,
-                    builder: (context, _) {
-                      final stats = _controller.stats;
-                      if (stats == null) return const SizedBox();
-                      return _buildStatsColumn(stats);
-                    },
-                  ),
-                ],
+          // ── 4. Overlay do topo: avatar + stats (oculto durante o exercício) ──
+          if (_runState == RunState.idle)
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildUserAvatar(),
+                    const Spacer(),
+                    ListenableBuilder(
+                      listenable: _controller,
+                      builder: (context, _) {
+                        final stats = _controller.stats;
+                        if (stats == null) return const SizedBox();
+                        return _buildStatsColumn(stats);
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
 
-        // ── 5. HUD de corrida (tempo + km) ───────────────────────────────
-        if (_runState != RunState.idle) _buildRunHUD(),
+          // ── 5. HUD de corrida (tempo + km) ───────────────────────────────
+          if (_runState != RunState.idle) _buildRunHUD(),
 
-        // ── 7. Run Controls ──────────────────────────────────────────────
-        _buildRunControls(),
+          // ── 7. Run Controls ──────────────────────────────────────────────
+          _buildRunControls(),
+        ],
       ],
     );
   }
@@ -417,22 +423,62 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         // Aguardando a posição — exibe um indicador discreto sobre fundo escuro
         if (!snapshot.hasData) {
           return Container(
-            color: const Color(0xFF1A2332),
+            color: AppColors.primaryDark,
             child: Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  CircularProgressIndicator(
-                    color: AppColors.accentOrange,
-                    strokeWidth: 3,
+                  AnimatedBuilder(
+                    animation: _pulseAnim,
+                    builder: (context, child) {
+                      return Transform.scale(
+                        scale: _pulseAnim.value * 1.1,
+                        child: Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.progressGreen.withValues(
+                                  alpha: 0.4,
+                                ),
+                                blurRadius: 20 * _pulseAnim.value,
+                                spreadRadius: 5 * _pulseAnim.value,
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: ClipOval(
+                              child: Image.asset(
+                                'assets/images/forest.png',
+                                width: 56,
+                                height: 56,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Vamos plantar uma floresta...',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   Text(
-                    'Obtendo sua localização...',
+                    'Obtendo localização do GPS',
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.7),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 13,
                     ),
                   ),
                 ],
@@ -468,6 +514,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         debugPrint('Serviços de localização desabilitados.');
+        if (mounted) setState(() => _isMapReady = true);
         return fallback;
       }
 
@@ -476,11 +523,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
           debugPrint('Permissões de localização negadas.');
+          if (mounted) setState(() => _isMapReady = true);
           return fallback;
         }
       }
       if (permission == LocationPermission.deniedForever) {
         debugPrint('Permissões permanentemente negadas.');
+        if (mounted) setState(() => _isMapReady = true);
         return fallback;
       }
 
@@ -489,12 +538,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           accuracy: LocationAccuracy.high,
         ),
       );
+      if (mounted) setState(() => _isMapReady = true);
       return CameraPosition(
         target: LatLng(position.latitude, position.longitude),
         zoom: 16.5,
       );
     } catch (e) {
       debugPrint('Erro ao obter posição inicial: $e');
+      if (mounted) setState(() => _isMapReady = true);
       return fallback;
     }
   }
@@ -790,31 +841,28 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         : '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
 
     return Positioned(
-      top: MediaQuery.of(context).padding.top + 72,
+      top: MediaQuery.of(context).padding.top + 22,
       left: 16,
       right: 16,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.75),
-          borderRadius: BorderRadius.circular(22),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: _runState == RunState.paused
-                ? Colors.amber.withValues(alpha: 0.6)
-                : AppColors.accentOrange.withValues(alpha: 0.5),
-            width: 1.5,
+                ? Colors.amber.withValues(alpha: 0.5)
+                : AppColors.progressGreen.withValues(alpha: 0.3),
+            width: 2,
           ),
           boxShadow: [
             BoxShadow(
-              color:
-                  (_runState == RunState.paused
-                          ? Colors.amber
-                          : AppColors.accentOrange)
-                      .withValues(alpha: 0.25),
-              blurRadius: 20,
-              spreadRadius: 2,
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 24,
+              spreadRadius: 4,
+              offset: const Offset(0, 8),
             ),
           ],
         ),
@@ -822,18 +870,18 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             _buildHUDStat(
-              icon: Icons.timer_rounded,
+              icon: Icons.timer_outlined,
               value: timeStr,
               label: 'TEMPO',
               color: AppColors.accentOrange,
             ),
             Container(
               width: 1,
-              height: 44,
-              color: Colors.white.withValues(alpha: 0.2),
+              height: 48,
+              color: Colors.grey.withValues(alpha: 0.2),
             ),
             _buildHUDStat(
-              icon: Icons.route_rounded,
+              icon: Icons.route_outlined,
               value: _runDistanceKm.toStringAsFixed(2),
               label: 'KM',
               color: AppColors.progressGreen,
@@ -841,11 +889,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             if (_runState == RunState.paused) ...[
               Container(
                 width: 1,
-                height: 44,
-                color: Colors.white.withValues(alpha: 0.2),
+                height: 48,
+                color: Colors.grey.withValues(alpha: 0.2),
               ),
               _buildHUDStat(
-                icon: Icons.pause_circle_rounded,
+                icon: Icons.pause_circle_outline,
                 value: 'PAUSA',
                 label: '',
                 color: Colors.amber,
@@ -866,25 +914,26 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, color: color, size: 16),
-        const SizedBox(height: 3),
+        Icon(icon, color: color, size: 20),
+        const SizedBox(height: 4),
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 22,
+          style: TextStyle(
+            fontSize: 26,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
-            letterSpacing: 0.5,
+            fontFamily: GoogleFonts.bebasNeue().fontFamily,
+            color: AppColors.textPrimary,
+            letterSpacing: 1.0,
             height: 1.1,
           ),
         ),
         if (label.isNotEmpty)
           Text(
             label,
-            style: TextStyle(
-              fontSize: 9,
-              color: Colors.white.withValues(alpha: 0.55),
-              letterSpacing: 1.8,
+            style: const TextStyle(
+              fontSize: 10,
+              color: AppColors.textSecondary,
+              letterSpacing: 1.5,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -1061,59 +1110,59 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // Botão Pause / Resume
-          _buildControlButton(
-            heroTag: 'pause_resume',
+          _buildTextButton(
+            text: _runState == RunState.running ? 'PAUSAR' : 'RETOMAR',
             onPressed: _runState == RunState.running
                 ? _pauseTimer
                 : _resumeTimer,
-            icon: _runState == RunState.running
-                ? Icons.pause_rounded
-                : Icons.play_arrow_rounded,
-            backgroundColor: _runState == RunState.running
+            color: _runState == RunState.running
                 ? Colors.amber
                 : AppColors.progressGreen,
-            size: 64,
           ),
-          const SizedBox(width: 28),
+          const SizedBox(width: 16),
           // Botão Stop
-          _buildControlButton(
-            heroTag: 'stop',
+          _buildTextButton(
+            text: 'CONCLUIR',
             onPressed: _stopTimer,
-            icon: Icons.stop_rounded,
-            backgroundColor: Colors.redAccent,
-            size: 56,
+            color: Colors.redAccent,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildControlButton({
-    required String heroTag,
+  Widget _buildTextButton({
+    required String text,
     required VoidCallback onPressed,
-    required IconData icon,
-    required Color backgroundColor,
-    double size = 60,
+    required Color color,
   }) {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        width: size,
-        height: size,
+        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
         decoration: BoxDecoration(
-          color: backgroundColor,
-          shape: BoxShape.circle,
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: color.withValues(alpha: 0.5), width: 2),
           boxShadow: [
             BoxShadow(
-              color: backgroundColor.withValues(alpha: 0.5),
-              blurRadius: 16,
-              spreadRadius: 2,
-              offset: const Offset(0, 4),
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 24,
+              spreadRadius: 4,
+              offset: const Offset(0, 8),
             ),
           ],
         ),
         child: Center(
-          child: Icon(icon, color: Colors.white, size: size * 0.5),
+          child: Text(
+            text,
+            style: TextStyle(
+              color: color,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+            ),
+          ),
         ),
       ),
     );
@@ -1158,7 +1207,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        _buildNavItem(2, Icons.local_florist_rounded, 'Jardim'),
+                        _buildNavItem(2, Icons.forest_rounded, 'Floresta'),
                         _buildNavItem(3, Icons.person_rounded, 'Perfil'),
                       ],
                     ),
@@ -1208,6 +1257,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                fontFamily: GoogleFonts.bebasNeue().fontFamily,
                 color: isSelected
                     ? AppColors.navSelected
                     : Colors.grey.shade400,

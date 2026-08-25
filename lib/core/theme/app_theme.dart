@@ -50,10 +50,10 @@ class AppTheme {
           color: AppColors.textPrimary,
           letterSpacing: 0.5,
         ),
-        bodyLarge: GoogleFonts.montserrat(color: AppColors.textPrimary),
-        bodyMedium: GoogleFonts.montserrat(color: AppColors.textSecondary),
-        bodySmall: GoogleFonts.montserrat(color: AppColors.textSecondary),
-        labelLarge: GoogleFonts.montserrat(
+        bodyLarge: GoogleFonts.bebasNeue(color: AppColors.textPrimary),
+        bodyMedium: GoogleFonts.bebasNeue(color: AppColors.textSecondary),
+        bodySmall: GoogleFonts.bebasNeue(color: AppColors.textSecondary),
+        labelLarge: GoogleFonts.bebasNeue(
           color: AppColors.textPrimary,
           fontWeight: FontWeight.w600,
         ),
