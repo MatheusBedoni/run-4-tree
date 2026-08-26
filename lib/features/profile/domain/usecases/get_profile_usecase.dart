@@ -5,5 +5,5 @@ class GetProfileUseCase {
   final ProfileRepository _repository;
 
   const GetProfileUseCase(this._repository);
-  Future<ProfileEntity> call() => _repository.getProfile();
+  Future<ProfileEntity?> call() => _repository.getProfile();
 }
