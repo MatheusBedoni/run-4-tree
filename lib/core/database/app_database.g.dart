@@ -1543,12 +1543,458 @@ class TreeProgressCompanion extends UpdateCompanion<TreeProgressData> {
   }
 }
 
+class $UserProfileTable extends UserProfile
+    with TableInfo<$UserProfileTable, UserProfileData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UserProfileTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _ageMeta = const VerificationMeta('age');
+  @override
+  late final GeneratedColumn<int> age = GeneratedColumn<int>(
+    'age',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _weeklyGoalKmMeta = const VerificationMeta(
+    'weeklyGoalKm',
+  );
+  @override
+  late final GeneratedColumn<double> weeklyGoalKm = GeneratedColumn<double>(
+    'weekly_goal_km',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _weightKgMeta = const VerificationMeta(
+    'weightKg',
+  );
+  @override
+  late final GeneratedColumn<double> weightKg = GeneratedColumn<double>(
+    'weight_kg',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _heightCmMeta = const VerificationMeta(
+    'heightCm',
+  );
+  @override
+  late final GeneratedColumn<double> heightCm = GeneratedColumn<double>(
+    'height_cm',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    age,
+    weeklyGoalKm,
+    weightKg,
+    heightCm,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'user_profile';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<UserProfileData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('age')) {
+      context.handle(
+        _ageMeta,
+        age.isAcceptableOrUnknown(data['age']!, _ageMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_ageMeta);
+    }
+    if (data.containsKey('weekly_goal_km')) {
+      context.handle(
+        _weeklyGoalKmMeta,
+        weeklyGoalKm.isAcceptableOrUnknown(
+          data['weekly_goal_km']!,
+          _weeklyGoalKmMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_weeklyGoalKmMeta);
+    }
+    if (data.containsKey('weight_kg')) {
+      context.handle(
+        _weightKgMeta,
+        weightKg.isAcceptableOrUnknown(data['weight_kg']!, _weightKgMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_weightKgMeta);
+    }
+    if (data.containsKey('height_cm')) {
+      context.handle(
+        _heightCmMeta,
+        heightCm.isAcceptableOrUnknown(data['height_cm']!, _heightCmMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_heightCmMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  UserProfileData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return UserProfileData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      age: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}age'],
+      )!,
+      weeklyGoalKm: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}weekly_goal_km'],
+      )!,
+      weightKg: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}weight_kg'],
+      )!,
+      heightCm: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}height_cm'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $UserProfileTable createAlias(String alias) {
+    return $UserProfileTable(attachedDatabase, alias);
+  }
+}
+
+class UserProfileData extends DataClass implements Insertable<UserProfileData> {
+  final int id;
+  final String name;
+  final int age;
+
+  /// Meta de quilômetros por semana definida pelo usuário.
+  final double weeklyGoalKm;
+  final double weightKg;
+  final double heightCm;
+  final DateTime createdAt;
+  const UserProfileData({
+    required this.id,
+    required this.name,
+    required this.age,
+    required this.weeklyGoalKm,
+    required this.weightKg,
+    required this.heightCm,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['age'] = Variable<int>(age);
+    map['weekly_goal_km'] = Variable<double>(weeklyGoalKm);
+    map['weight_kg'] = Variable<double>(weightKg);
+    map['height_cm'] = Variable<double>(heightCm);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  UserProfileCompanion toCompanion(bool nullToAbsent) {
+    return UserProfileCompanion(
+      id: Value(id),
+      name: Value(name),
+      age: Value(age),
+      weeklyGoalKm: Value(weeklyGoalKm),
+      weightKg: Value(weightKg),
+      heightCm: Value(heightCm),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory UserProfileData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return UserProfileData(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      age: serializer.fromJson<int>(json['age']),
+      weeklyGoalKm: serializer.fromJson<double>(json['weeklyGoalKm']),
+      weightKg: serializer.fromJson<double>(json['weightKg']),
+      heightCm: serializer.fromJson<double>(json['heightCm']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'age': serializer.toJson<int>(age),
+      'weeklyGoalKm': serializer.toJson<double>(weeklyGoalKm),
+      'weightKg': serializer.toJson<double>(weightKg),
+      'heightCm': serializer.toJson<double>(heightCm),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  UserProfileData copyWith({
+    int? id,
+    String? name,
+    int? age,
+    double? weeklyGoalKm,
+    double? weightKg,
+    double? heightCm,
+    DateTime? createdAt,
+  }) => UserProfileData(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    age: age ?? this.age,
+    weeklyGoalKm: weeklyGoalKm ?? this.weeklyGoalKm,
+    weightKg: weightKg ?? this.weightKg,
+    heightCm: heightCm ?? this.heightCm,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  UserProfileData copyWithCompanion(UserProfileCompanion data) {
+    return UserProfileData(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      age: data.age.present ? data.age.value : this.age,
+      weeklyGoalKm: data.weeklyGoalKm.present
+          ? data.weeklyGoalKm.value
+          : this.weeklyGoalKm,
+      weightKg: data.weightKg.present ? data.weightKg.value : this.weightKg,
+      heightCm: data.heightCm.present ? data.heightCm.value : this.heightCm,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserProfileData(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('age: $age, ')
+          ..write('weeklyGoalKm: $weeklyGoalKm, ')
+          ..write('weightKg: $weightKg, ')
+          ..write('heightCm: $heightCm, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, name, age, weeklyGoalKm, weightKg, heightCm, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is UserProfileData &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.age == this.age &&
+          other.weeklyGoalKm == this.weeklyGoalKm &&
+          other.weightKg == this.weightKg &&
+          other.heightCm == this.heightCm &&
+          other.createdAt == this.createdAt);
+}
+
+class UserProfileCompanion extends UpdateCompanion<UserProfileData> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<int> age;
+  final Value<double> weeklyGoalKm;
+  final Value<double> weightKg;
+  final Value<double> heightCm;
+  final Value<DateTime> createdAt;
+  const UserProfileCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.age = const Value.absent(),
+    this.weeklyGoalKm = const Value.absent(),
+    this.weightKg = const Value.absent(),
+    this.heightCm = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  UserProfileCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    required int age,
+    required double weeklyGoalKm,
+    required double weightKg,
+    required double heightCm,
+    this.createdAt = const Value.absent(),
+  }) : name = Value(name),
+       age = Value(age),
+       weeklyGoalKm = Value(weeklyGoalKm),
+       weightKg = Value(weightKg),
+       heightCm = Value(heightCm);
+  static Insertable<UserProfileData> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<int>? age,
+    Expression<double>? weeklyGoalKm,
+    Expression<double>? weightKg,
+    Expression<double>? heightCm,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (age != null) 'age': age,
+      if (weeklyGoalKm != null) 'weekly_goal_km': weeklyGoalKm,
+      if (weightKg != null) 'weight_kg': weightKg,
+      if (heightCm != null) 'height_cm': heightCm,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  UserProfileCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<int>? age,
+    Value<double>? weeklyGoalKm,
+    Value<double>? weightKg,
+    Value<double>? heightCm,
+    Value<DateTime>? createdAt,
+  }) {
+    return UserProfileCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      age: age ?? this.age,
+      weeklyGoalKm: weeklyGoalKm ?? this.weeklyGoalKm,
+      weightKg: weightKg ?? this.weightKg,
+      heightCm: heightCm ?? this.heightCm,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (age.present) {
+      map['age'] = Variable<int>(age.value);
+    }
+    if (weeklyGoalKm.present) {
+      map['weekly_goal_km'] = Variable<double>(weeklyGoalKm.value);
+    }
+    if (weightKg.present) {
+      map['weight_kg'] = Variable<double>(weightKg.value);
+    }
+    if (heightCm.present) {
+      map['height_cm'] = Variable<double>(heightCm.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserProfileCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('age: $age, ')
+          ..write('weeklyGoalKm: $weeklyGoalKm, ')
+          ..write('weightKg: $weightKg, ')
+          ..write('heightCm: $heightCm, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $RunSessionsTable runSessions = $RunSessionsTable(this);
   late final $ExercisesTable exercises = $ExercisesTable(this);
   late final $TreeProgressTable treeProgress = $TreeProgressTable(this);
+  late final $UserProfileTable userProfile = $UserProfileTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1557,6 +2003,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     runSessions,
     exercises,
     treeProgress,
+    userProfile,
   ];
 }
 
@@ -2316,6 +2763,240 @@ typedef $$TreeProgressTableProcessedTableManager =
       TreeProgressData,
       PrefetchHooks Function()
     >;
+typedef $$UserProfileTableCreateCompanionBuilder =
+    UserProfileCompanion Function({
+      Value<int> id,
+      required String name,
+      required int age,
+      required double weeklyGoalKm,
+      required double weightKg,
+      required double heightCm,
+      Value<DateTime> createdAt,
+    });
+typedef $$UserProfileTableUpdateCompanionBuilder =
+    UserProfileCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<int> age,
+      Value<double> weeklyGoalKm,
+      Value<double> weightKg,
+      Value<double> heightCm,
+      Value<DateTime> createdAt,
+    });
+
+class $$UserProfileTableFilterComposer
+    extends Composer<_$AppDatabase, $UserProfileTable> {
+  $$UserProfileTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get age => $composableBuilder(
+    column: $table.age,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get weeklyGoalKm => $composableBuilder(
+    column: $table.weeklyGoalKm,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get weightKg => $composableBuilder(
+    column: $table.weightKg,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get heightCm => $composableBuilder(
+    column: $table.heightCm,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$UserProfileTableOrderingComposer
+    extends Composer<_$AppDatabase, $UserProfileTable> {
+  $$UserProfileTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get age => $composableBuilder(
+    column: $table.age,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get weeklyGoalKm => $composableBuilder(
+    column: $table.weeklyGoalKm,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get weightKg => $composableBuilder(
+    column: $table.weightKg,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get heightCm => $composableBuilder(
+    column: $table.heightCm,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$UserProfileTableAnnotationComposer
+    extends Composer<_$AppDatabase, $UserProfileTable> {
+  $$UserProfileTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get age =>
+      $composableBuilder(column: $table.age, builder: (column) => column);
+
+  GeneratedColumn<double> get weeklyGoalKm => $composableBuilder(
+    column: $table.weeklyGoalKm,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get weightKg =>
+      $composableBuilder(column: $table.weightKg, builder: (column) => column);
+
+  GeneratedColumn<double> get heightCm =>
+      $composableBuilder(column: $table.heightCm, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$UserProfileTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $UserProfileTable,
+          UserProfileData,
+          $$UserProfileTableFilterComposer,
+          $$UserProfileTableOrderingComposer,
+          $$UserProfileTableAnnotationComposer,
+          $$UserProfileTableCreateCompanionBuilder,
+          $$UserProfileTableUpdateCompanionBuilder,
+          (
+            UserProfileData,
+            BaseReferences<_$AppDatabase, $UserProfileTable, UserProfileData>,
+          ),
+          UserProfileData,
+          PrefetchHooks Function()
+        > {
+  $$UserProfileTableTableManager(_$AppDatabase db, $UserProfileTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$UserProfileTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UserProfileTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$UserProfileTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<int> age = const Value.absent(),
+                Value<double> weeklyGoalKm = const Value.absent(),
+                Value<double> weightKg = const Value.absent(),
+                Value<double> heightCm = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => UserProfileCompanion(
+                id: id,
+                name: name,
+                age: age,
+                weeklyGoalKm: weeklyGoalKm,
+                weightKg: weightKg,
+                heightCm: heightCm,
+                createdAt: createdAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                required int age,
+                required double weeklyGoalKm,
+                required double weightKg,
+                required double heightCm,
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => UserProfileCompanion.insert(
+                id: id,
+                name: name,
+                age: age,
+                weeklyGoalKm: weeklyGoalKm,
+                weightKg: weightKg,
+                heightCm: heightCm,
+                createdAt: createdAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$UserProfileTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $UserProfileTable,
+      UserProfileData,
+      $$UserProfileTableFilterComposer,
+      $$UserProfileTableOrderingComposer,
+      $$UserProfileTableAnnotationComposer,
+      $$UserProfileTableCreateCompanionBuilder,
+      $$UserProfileTableUpdateCompanionBuilder,
+      (
+        UserProfileData,
+        BaseReferences<_$AppDatabase, $UserProfileTable, UserProfileData>,
+      ),
+      UserProfileData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2326,4 +3007,6 @@ class $AppDatabaseManager {
       $$ExercisesTableTableManager(_db, _db.exercises);
   $$TreeProgressTableTableManager get treeProgress =>
       $$TreeProgressTableTableManager(_db, _db.treeProgress);
+  $$UserProfileTableTableManager get userProfile =>
+      $$UserProfileTableTableManager(_db, _db.userProfile);
 }

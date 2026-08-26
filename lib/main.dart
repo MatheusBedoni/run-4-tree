@@ -8,6 +8,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/pages/login_page.dart';
 import 'features/home/presentation/pages/home_page.dart';
+import 'features/onboarding/presentation/pages/onboarding_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,6 +58,7 @@ class Run4TreeApp extends StatelessWidget {
       initialRoute: '/login',
       routes: {
         '/login': (_) => const LoginPage(),
+        '/onboarding': (_) => const OnboardingPage(),
         '/home': (_) => const HomePage(),
       },
     );

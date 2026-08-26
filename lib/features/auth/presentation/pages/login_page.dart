@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../onboarding/data/repositories/user_profile_repository_impl.dart';
+import '../../../onboarding/domain/usecases/has_completed_onboarding_usecase.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,10 +16,15 @@ class _LoginPageState extends State<LoginPage>
   late final AnimationController _animController;
   late final Animation<double> _fadeAnim;
   late final Animation<Offset> _slideAnim;
+  late final HasCompletedOnboardingUseCase _hasCompletedOnboardingUseCase;
+
+  bool _isCheckingOnboarding = false;
 
   @override
   void initState() {
     super.initState();
+    _hasCompletedOnboardingUseCase =
+        HasCompletedOnboardingUseCase(UserProfileRepositoryImpl());
     _animController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 900),
@@ -34,6 +41,19 @@ class _LoginPageState extends State<LoginPage>
   void dispose() {
     _animController.dispose();
     super.dispose();
+  }
+
+  Future<void> _handleStart() async {
+    if (_isCheckingOnboarding) return;
+    setState(() => _isCheckingOnboarding = true);
+
+    final hasCompletedOnboarding = await _hasCompletedOnboardingUseCase();
+    if (!mounted) return;
+
+    Navigator.pushReplacementNamed(
+      context,
+      hasCompletedOnboarding ? '/home' : '/onboarding',
+    );
   }
 
   @override
@@ -218,16 +238,22 @@ class _LoginPageState extends State<LoginPage>
                                 SizedBox(
                                   width: double.infinity,
                                   child: ElevatedButton.icon(
-                                    onPressed: () {
-                                      Navigator.pushReplacementNamed(
-                                        context,
-                                        '/home',
-                                      );
-                                    },
-                                    icon: const Icon(
-                                      Icons.directions_run_rounded,
-                                      size: 22,
-                                    ),
+                                    onPressed: _isCheckingOnboarding
+                                        ? null
+                                        : _handleStart,
+                                    icon: _isCheckingOnboarding
+                                        ? const SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: CircularProgressIndicator(
+                                              color: Colors.white,
+                                              strokeWidth: 2.5,
+                                            ),
+                                          )
+                                        : const Icon(
+                                            Icons.directions_run_rounded,
+                                            size: 22,
+                                          ),
                                     label: const Text(
                                       'Começar agora',
                                       style: TextStyle(
