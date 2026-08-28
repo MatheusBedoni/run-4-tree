@@ -22,7 +22,7 @@ class OnboardingController extends ChangeNotifier {
   double? weeklyGoalKm;
 
   bool _isSaving = false;
-  String? errorMessage;
+  bool hasError = false;
 
   int get currentStep => _currentStep;
   bool get isSaving => _isSaving;
@@ -87,7 +87,7 @@ class OnboardingController extends ChangeNotifier {
     if (!canAdvance || _isSaving) return false;
 
     _isSaving = true;
-    errorMessage = null;
+    hasError = false;
     notifyListeners();
 
     try {
@@ -102,7 +102,7 @@ class OnboardingController extends ChangeNotifier {
       );
       return true;
     } catch (e) {
-      errorMessage = 'Não foi possível salvar seus dados. Tente novamente.';
+      hasError = true;
       debugPrint('OnboardingController.submit error: $e');
       return false;
     } finally {

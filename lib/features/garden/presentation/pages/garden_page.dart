@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 import '../../data/repositories/tree_garden_repository_impl.dart';
 import '../../domain/entities/tree_progress_entity.dart';
 import '../../domain/usecases/get_tree_progress_usecase.dart';
@@ -61,18 +62,18 @@ class _GardenPageState extends State<GardenPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Seu Jardim',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.gardenTitle,
+                    style: const TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
-                    'Assista anúncios para plantar árvores de verdade.',
-                    style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+                  Text(
+                    AppLocalizations.of(context)!.gardenSubtitle,
+                    style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: 28),
                   _buildTreesCard(treesPlanted),
@@ -83,8 +84,8 @@ class _GardenPageState extends State<GardenPage> {
                     progressPercent: progressPercent,
                   ),
                   const SizedBox(height: 20),
-                  if (_controller.errorMessage != null) ...[
-                    _buildErrorBanner(_controller.errorMessage!),
+                  if (_controller.error != null) ...[
+                    _buildErrorBanner(_messageFor(context, _controller.error!)),
                     const SizedBox(height: 16),
                   ],
                   _buildWatchAdButton(),
@@ -95,6 +96,22 @@ class _GardenPageState extends State<GardenPage> {
         ),
       ),
     );
+  }
+
+  String _messageFor(BuildContext context, GardenError error) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (error) {
+      case GardenError.loadFailed:
+        return l10n.gardenLoadErrorMessage;
+      case GardenError.adPlaybackFailed:
+        return l10n.gardenWatchAdErrorMessage;
+      case GardenError.adDismissed:
+        return l10n.gardenAdDismissedMessage;
+      case GardenError.adUnavailable:
+        return l10n.gardenAdUnavailableMessage;
+      case GardenError.rewardFailed:
+        return l10n.gardenAdRewardErrorMessage;
+    }
   }
 
   Widget _buildTreesCard(int treesPlanted) {
@@ -148,7 +165,7 @@ class _GardenPageState extends State<GardenPage> {
           ),
           const SizedBox(height: 4),
           Text(
-            treesPlanted == 1 ? 'árvore plantada' : 'árvores plantadas',
+            AppLocalizations.of(context)!.gardenTreesPlanted(treesPlanted),
             style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
           ),
         ],
@@ -181,9 +198,9 @@ class _GardenPageState extends State<GardenPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Próxima árvore',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.gardenNextTreeLabel,
+                style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
@@ -198,7 +215,10 @@ class _GardenPageState extends State<GardenPage> {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    '$seedsAccumulated/$seedsPerTree sementes',
+                    AppLocalizations.of(context)!.gardenSeedsProgress(
+                      seedsAccumulated,
+                      seedsPerTree,
+                    ),
                     style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -280,14 +300,14 @@ class _GardenPageState extends State<GardenPage> {
                     strokeWidth: 2.5,
                   ),
                 )
-              : const Row(
+              : Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.play_circle_fill_rounded, color: Colors.white),
-                    SizedBox(width: 10),
+                    const Icon(Icons.play_circle_fill_rounded, color: Colors.white),
+                    const SizedBox(width: 10),
                     Text(
-                      'Assistir anúncio e ganhar semente',
-                      style: TextStyle(
+                      AppLocalizations.of(context)!.gardenWatchAdButton,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 15,
                         fontWeight: FontWeight.w600,

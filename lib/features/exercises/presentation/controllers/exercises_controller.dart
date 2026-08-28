@@ -18,11 +18,11 @@ class ExercisesController extends ChangeNotifier {
 
   List<RunSessionEntity> _runs = [];
   bool _isLoading = false;
-  String? _errorMessage;
+  bool _hasLoadError = false;
 
   List<RunSessionEntity> get runs => _runs;
   bool get isLoading => _isLoading;
-  String? get errorMessage => _errorMessage;
+  bool get hasLoadError => _hasLoadError;
 
   // ─── Ações ─────────────────────────────────────────────────────────────────
 
@@ -31,9 +31,9 @@ class ExercisesController extends ChangeNotifier {
     _setLoading(true);
     try {
       _runs = await _getAllRunsUseCase();
-      _errorMessage = null;
+      _hasLoadError = false;
     } catch (e) {
-      _errorMessage = 'Não foi possível carregar suas corridas. Tente novamente.';
+      _hasLoadError = true;
       debugPrint('ExercisesController.loadRuns error: $e');
     } finally {
       _setLoading(false);
@@ -52,7 +52,6 @@ class ExercisesController extends ChangeNotifier {
       await _deleteRunUseCase(id);
     } catch (e) {
       _runs = previous;
-      _errorMessage = 'Não foi possível remover a corrida.';
       debugPrint('ExercisesController.deleteRun error: $e');
       notifyListeners();
     }

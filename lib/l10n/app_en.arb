@@ -1,0 +1,124 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "Run4Tree",
+
+  "loginTaglineRunPrefix": "Your run plants ",
+  "loginTaglineTreesHighlight": "real trees.\n",
+  "loginTaglineOffline": "Works 100% offline.",
+  "loginFeatureOfflineTitle": "No internet needed",
+  "loginFeatureOfflineSubtitle": "Track runs anywhere",
+  "loginFeatureNoSignupTitle": "No sign-up or password",
+  "loginFeatureNoSignupSubtitle": "Start running in seconds",
+  "loginFeaturePlantTreesTitle": "Plant real trees",
+  "loginFeaturePlantTreesSubtitle": "Track your real impact",
+  "loginStartButton": "Start now",
+  "loginChipSustainable": "SUSTAINABLE",
+  "loginChipGamified": "GAMIFIED",
+
+  "homeRunSavedMessage": "Run saved! {distance} km",
+  "@homeRunSavedMessage": {
+    "placeholders": {
+      "distance": { "type": "String" }
+    }
+  },
+  "homeRunSaveErrorMessage": "Error saving the run.",
+  "homeMapLoadingTitle": "Let's plant a forest...",
+  "homeMapLoadingSubtitle": "Getting GPS location",
+  "homeUnitKm": "km",
+  "homeHudTimeLabel": "TIME",
+  "homeHudKmLabel": "KM",
+  "homeHudPausedValue": "PAUSED",
+  "homeExerciseBike": "BIKE",
+  "homeExerciseWalk": "WALK",
+  "homeExerciseRun": "RUN",
+  "homeStartLabel": "START",
+  "homePauseButton": "PAUSE",
+  "homeResumeButton": "RESUME",
+  "homeFinishButton": "FINISH",
+  "homeNavActivity": "Activity",
+  "homeNavProgress": "Progress",
+  "homeNavForest": "Forest",
+  "homeNavProfile": "Profile",
+
+  "onboardingNameTitle": "What should we call you?",
+  "onboardingNameSubtitle": "We'll use your name to personalize your journey on Run4Tree.",
+  "onboardingNameFieldLabel": "Your name",
+  "onboardingAgeTitle": "What's your age?",
+  "onboardingAgeSubtitle": "This helps us calibrate goals and metrics that fit you better.",
+  "onboardingBodyTitle": "Weight and height",
+  "onboardingBodySubtitle": "We use this data to estimate calories and track your progress.",
+  "onboardingGoalTitle": "What's your weekly goal?",
+  "onboardingGoalSubtitle": "How many kilometers do you want to run per week? You can adjust this later.",
+  "onboardingContinueButton": "Continue",
+  "onboardingFinishButton": "Finish",
+  "onboardingSaveErrorMessage": "We couldn't save your data. Please try again.",
+
+  "fieldLabelAge": "Age",
+  "fieldLabelWeight": "Weight",
+  "fieldLabelHeight": "Height",
+  "fieldLabelWeeklyGoal": "Weekly goal",
+  "suffixYears": "years",
+  "suffixKg": "kg",
+  "suffixCm": "cm",
+  "suffixKm": "km",
+  "commonRetryButton": "Try again",
+
+  "profileAgeMemberSince": "{age} years old · member since {date}",
+  "@profileAgeMemberSince": {
+    "placeholders": {
+      "age": { "type": "int" },
+      "date": { "type": "String" }
+    }
+  },
+  "profileEditButton": "Edit profile",
+  "profileGoalCompletedMessage": "This week's goal is complete! 🎉",
+  "profileTreesLabel": "Trees",
+  "profileTotalKmLabel": "total km",
+  "profileRunsLabel": "Runs",
+  "profileBodyDataTitle": "Body data",
+  "profileBmiLabel": "BMI",
+  "profileLoadErrorMessage": "We couldn't load your profile. Please try again.",
+  "profileSaveErrorMessage": "We couldn't save your changes. Please try again.",
+  "weeklyGoalProgressLabel": "{current} / {goal} km",
+  "@weeklyGoalProgressLabel": {
+    "placeholders": {
+      "current": { "type": "String" },
+      "goal": { "type": "String" }
+    }
+  },
+
+  "editProfileNameFieldLabel": "Name",
+  "editProfileSaveButton": "Save changes",
+
+  "exercisesEmptyTitle": "No runs recorded yet",
+  "exercisesEmptySubtitle": "Start a run on the main screen to see your history here.",
+  "exercisesLabelBike": "Bike",
+  "exercisesLabelWalk": "Walk",
+  "exercisesLabelRun": "Run",
+  "exercisesLoadErrorMessage": "We couldn't load your runs. Please try again.",
+  "exercisesKcalUnit": "kcal",
+
+  "gardenTitle": "Your Garden",
+  "gardenSubtitle": "Watch ads to plant real trees.",
+  "gardenTreesPlanted": "{count, plural, one{tree planted} other{trees planted}}",
+  "@gardenTreesPlanted": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "gardenNextTreeLabel": "Next tree",
+  "gardenSeedsProgress": "{accumulated}/{total} seeds",
+  "@gardenSeedsProgress": {
+    "placeholders": {
+      "accumulated": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "gardenLoadErrorMessage": "We couldn't load your progress.",
+  "gardenWatchAdErrorMessage": "We couldn't play the ad right now.",
+  "gardenAdDismissedMessage": "Ad closed before finishing — watch it to the end to earn the seed.",
+  "gardenAdUnavailableMessage": "No ad available right now. Please try again shortly.",
+  "gardenAdRewardErrorMessage": "We couldn't confirm the reward. Please try again.",
+  "gardenWatchAdButton": "Watch ad and earn a seed"
+}

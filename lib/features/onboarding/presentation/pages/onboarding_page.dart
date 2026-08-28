@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 import '../../data/repositories/user_profile_repository_impl.dart';
 import '../../domain/usecases/save_user_profile_usecase.dart';
 import '../controllers/onboarding_controller.dart';
@@ -231,13 +232,15 @@ class _OnboardingPageState extends State<OnboardingPage> {
         color: AppColors.primaryDark,
         size: 28,
       ),
-      title: 'Como podemos te chamar?',
-      subtitle: 'Vamos usar seu nome para personalizar sua jornada no Run4Tree.',
+      title: AppLocalizations.of(context)!.onboardingNameTitle,
+      subtitle: AppLocalizations.of(context)!.onboardingNameSubtitle,
       child: TextField(
         controller: _nameController,
         textCapitalization: TextCapitalization.words,
         autofocus: true,
-        decoration: _inputDecoration('Seu nome'),
+        decoration: _inputDecoration(
+          AppLocalizations.of(context)!.onboardingNameFieldLabel,
+        ),
         onChanged: _controller.updateName,
         onSubmitted: (_) => _handlePrimaryButton(),
       ),
@@ -251,13 +254,16 @@ class _OnboardingPageState extends State<OnboardingPage> {
         color: AppColors.primaryDark,
         size: 28,
       ),
-      title: 'Qual sua idade?',
-      subtitle: 'Isso nos ajuda a calibrar metas e métricas mais adequadas para você.',
+      title: AppLocalizations.of(context)!.onboardingAgeTitle,
+      subtitle: AppLocalizations.of(context)!.onboardingAgeSubtitle,
       child: TextField(
         controller: _ageController,
         keyboardType: TextInputType.number,
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-        decoration: _inputDecoration('Idade', suffixText: 'anos'),
+        decoration: _inputDecoration(
+          AppLocalizations.of(context)!.fieldLabelAge,
+          suffixText: AppLocalizations.of(context)!.suffixYears,
+        ),
         onChanged: _controller.updateAge,
         onSubmitted: (_) => _handlePrimaryButton(),
       ),
@@ -271,21 +277,27 @@ class _OnboardingPageState extends State<OnboardingPage> {
         color: AppColors.primaryDark,
         size: 28,
       ),
-      title: 'Peso e altura',
-      subtitle: 'Usamos esses dados para estimar calorias e acompanhar sua evolução.',
+      title: AppLocalizations.of(context)!.onboardingBodyTitle,
+      subtitle: AppLocalizations.of(context)!.onboardingBodySubtitle,
       child: Column(
         children: [
           TextField(
             controller: _weightController,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: _inputDecoration('Peso', suffixText: 'kg'),
+            decoration: _inputDecoration(
+              AppLocalizations.of(context)!.fieldLabelWeight,
+              suffixText: AppLocalizations.of(context)!.suffixKg,
+            ),
             onChanged: _controller.updateWeight,
           ),
           const SizedBox(height: 16),
           TextField(
             controller: _heightController,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: _inputDecoration('Altura', suffixText: 'cm'),
+            decoration: _inputDecoration(
+              AppLocalizations.of(context)!.fieldLabelHeight,
+              suffixText: AppLocalizations.of(context)!.suffixCm,
+            ),
             onChanged: _controller.updateHeight,
             onSubmitted: (_) => _handlePrimaryButton(),
           ),
@@ -301,12 +313,15 @@ class _OnboardingPageState extends State<OnboardingPage> {
         color: AppColors.primaryDark,
         size: 28,
       ),
-      title: 'Qual sua meta semanal?',
-      subtitle: 'Quantos quilômetros você quer correr por semana? Você pode ajustar isso depois.',
+      title: AppLocalizations.of(context)!.onboardingGoalTitle,
+      subtitle: AppLocalizations.of(context)!.onboardingGoalSubtitle,
       child: TextField(
         controller: _weeklyGoalController,
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        decoration: _inputDecoration('Meta semanal', suffixText: 'km'),
+        decoration: _inputDecoration(
+          AppLocalizations.of(context)!.fieldLabelWeeklyGoal,
+          suffixText: AppLocalizations.of(context)!.suffixKm,
+        ),
         onChanged: _controller.updateWeeklyGoal,
         onSubmitted: (_) => _handlePrimaryButton(),
       ),
@@ -319,9 +334,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (_controller.errorMessage != null) ...[
+          if (_controller.hasError) ...[
             Text(
-              _controller.errorMessage!,
+              AppLocalizations.of(context)!.onboardingSaveErrorMessage,
               style: const TextStyle(color: Colors.redAccent, fontSize: 13),
               textAlign: TextAlign.center,
             ),
@@ -342,7 +357,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         strokeWidth: 2.5,
                       ),
                     )
-                  : Text(_controller.isLastStep ? 'Concluir' : 'Continuar'),
+                  : Text(
+                      _controller.isLastStep
+                          ? AppLocalizations.of(context)!.onboardingFinishButton
+                          : AppLocalizations.of(context)!.onboardingContinueButton,
+                    ),
             ),
           ),
         ],

@@ -12,20 +12,22 @@ class ProfileController extends ChangeNotifier {
   ProfileEntity? _profile;
   bool _isLoading = false;
   bool _isSaving = false;
-  String? _errorMessage;
+  bool _hasLoadError = false;
+  bool _hasSaveError = false;
 
   ProfileEntity? get profile => _profile;
   bool get isLoading => _isLoading;
   bool get isSaving => _isSaving;
-  String? get errorMessage => _errorMessage;
+  bool get hasLoadError => _hasLoadError;
+  bool get hasSaveError => _hasSaveError;
 
   Future<void> loadProfile() async {
     _setLoading(true);
     try {
       _profile = await _getProfileUseCase();
-      _errorMessage = null;
+      _hasLoadError = false;
     } catch (e) {
-      _errorMessage = 'Não foi possível carregar o perfil. Tente novamente.';
+      _hasLoadError = true;
       debugPrint('ProfileController.loadProfile error: $e');
     } finally {
       _setLoading(false);
@@ -40,7 +42,7 @@ class ProfileController extends ChangeNotifier {
     required double weeklyGoalKm,
   }) async {
     _isSaving = true;
-    _errorMessage = null;
+    _hasSaveError = false;
     notifyListeners();
 
     try {
@@ -54,7 +56,7 @@ class ProfileController extends ChangeNotifier {
       _profile = await _getProfileUseCase();
       return true;
     } catch (e) {
-      _errorMessage = 'Não foi possível salvar suas alterações. Tente novamente.';
+      _hasSaveError = true;
       debugPrint('ProfileController.updateProfile error: $e');
       return false;
     } finally {

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 import '../../../onboarding/data/repositories/user_profile_repository_impl.dart';
 import '../../../onboarding/domain/usecases/has_completed_onboarding_usecase.dart';
 
@@ -23,8 +25,9 @@ class _LoginPageState extends State<LoginPage>
   @override
   void initState() {
     super.initState();
-    _hasCompletedOnboardingUseCase =
-        HasCompletedOnboardingUseCase(UserProfileRepositoryImpl());
+    _hasCompletedOnboardingUseCase = HasCompletedOnboardingUseCase(
+      UserProfileRepositoryImpl(),
+    );
     _animController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 900),
@@ -58,6 +61,7 @@ class _LoginPageState extends State<LoginPage>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -104,29 +108,12 @@ class _LoginPageState extends State<LoginPage>
                                   width: 88,
                                   height: 88,
                                   decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      colors: [
-                                        Color(0xFFE8F5E9),
-                                        Color(0xFFA5D6A7),
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    ),
-                                    shape: BoxShape.circle,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: AppColors.primaryLight
-                                            .withOpacity(0.25),
-                                        blurRadius: 16,
-                                        offset: const Offset(0, 4),
+                                    color: Colors.green,
+                                    borderRadius: BorderRadius.circular(10),
+                                    image: DecorationImage(
+                                      image: AssetImage(
+                                        'assets/images/icon.png',
                                       ),
-                                    ],
-                                  ),
-                                  child: const Center(
-                                    child: FaIcon(
-                                      FontAwesomeIcons.tree,
-                                      color: AppColors.primaryDark,
-                                      size: 42,
                                     ),
                                   ),
                                 ),
@@ -155,18 +142,18 @@ class _LoginPageState extends State<LoginPage>
                                         .bodyMedium
                                         ?.copyWith(height: 1.5),
                                     children: [
-                                      const TextSpan(
-                                        text: 'Sua corrida planta ',
+                                      TextSpan(
+                                        text: l10n.loginTaglineRunPrefix,
                                       ),
                                       TextSpan(
-                                        text: 'árvores reais.\n',
+                                        text: l10n.loginTaglineTreesHighlight,
                                         style: const TextStyle(
                                           color: AppColors.primaryLight,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      const TextSpan(
-                                        text: 'Funciona 100% offline.',
+                                      TextSpan(
+                                        text: l10n.loginTaglineOffline,
                                       ),
                                     ],
                                   ),
@@ -209,8 +196,8 @@ class _LoginPageState extends State<LoginPage>
                                     size: 22,
                                     color: AppColors.primaryDark,
                                   ),
-                                  'Sem internet necessária',
-                                  'Registre corridas em qualquer lugar',
+                                  l10n.loginFeatureOfflineTitle,
+                                  l10n.loginFeatureOfflineSubtitle,
                                 ),
                                 const SizedBox(height: 14),
                                 _buildFeatureRow(
@@ -219,8 +206,8 @@ class _LoginPageState extends State<LoginPage>
                                     size: 22,
                                     color: AppColors.primaryDark,
                                   ),
-                                  'Sem cadastro ou senha',
-                                  'Comece a correr em segundos',
+                                  l10n.loginFeatureNoSignupTitle,
+                                  l10n.loginFeatureNoSignupSubtitle,
                                 ),
                                 const SizedBox(height: 14),
                                 _buildFeatureRow(
@@ -229,8 +216,8 @@ class _LoginPageState extends State<LoginPage>
                                     size: 18,
                                     color: AppColors.primaryDark,
                                   ),
-                                  'Cada km vira uma árvore',
-                                  'Acompanhe seu impacto real',
+                                  l10n.loginFeaturePlantTreesTitle,
+                                  l10n.loginFeaturePlantTreesSubtitle,
                                 ),
                                 const SizedBox(height: 36),
 
@@ -254,11 +241,13 @@ class _LoginPageState extends State<LoginPage>
                                             Icons.directions_run_rounded,
                                             size: 22,
                                           ),
-                                    label: const Text(
-                                      'Começar agora',
+                                    label: Text(
+                                      l10n.loginStartButton,
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
+                                        fontFamily:
+                                            GoogleFonts.bebasNeue().fontFamily,
                                         letterSpacing: 0.5,
                                       ),
                                     ),
@@ -285,13 +274,13 @@ class _LoginPageState extends State<LoginPage>
                               _buildChip(
                                 context,
                                 Icons.check_circle_outline_rounded,
-                                'SUSTENTÁVEL',
+                                l10n.loginChipSustainable,
                               ),
                               const SizedBox(width: 12),
                               _buildChip(
                                 context,
                                 Icons.bolt_rounded,
-                                'GAMIFICADO',
+                                l10n.loginChipGamified,
                               ),
                             ],
                           ),

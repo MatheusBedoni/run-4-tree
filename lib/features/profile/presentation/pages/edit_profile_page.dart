@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 import '../../domain/entities/profile_entity.dart';
 import '../controllers/profile_controller.dart';
 
@@ -112,9 +113,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text(
-          'Editar perfil',
-          style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
+        title: Text(
+          AppLocalizations.of(context)!.profileEditButton,
+          style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
@@ -135,7 +136,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         TextField(
                           controller: _nameController,
                           textCapitalization: TextCapitalization.words,
-                          decoration: _inputDecoration('Nome'),
+                          decoration: _inputDecoration(
+                            AppLocalizations.of(context)!.editProfileNameFieldLabel,
+                          ),
                           onChanged: (_) => setState(() {}),
                         ),
                         const SizedBox(height: 16),
@@ -143,7 +146,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           controller: _ageController,
                           keyboardType: TextInputType.number,
                           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                          decoration: _inputDecoration('Idade', suffixText: 'anos'),
+                          decoration: _inputDecoration(
+                            AppLocalizations.of(context)!.fieldLabelAge,
+                            suffixText: AppLocalizations.of(context)!.suffixYears,
+                          ),
                           onChanged: (_) => setState(() {}),
                         ),
                         const SizedBox(height: 16),
@@ -154,7 +160,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 controller: _weightController,
                                 keyboardType:
                                     const TextInputType.numberWithOptions(decimal: true),
-                                decoration: _inputDecoration('Peso', suffixText: 'kg'),
+                                decoration: _inputDecoration(
+                                  AppLocalizations.of(context)!.fieldLabelWeight,
+                                  suffixText: AppLocalizations.of(context)!.suffixKg,
+                                ),
                                 onChanged: (_) => setState(() {}),
                               ),
                             ),
@@ -164,7 +173,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 controller: _heightController,
                                 keyboardType:
                                     const TextInputType.numberWithOptions(decimal: true),
-                                decoration: _inputDecoration('Altura', suffixText: 'cm'),
+                                decoration: _inputDecoration(
+                                  AppLocalizations.of(context)!.fieldLabelHeight,
+                                  suffixText: AppLocalizations.of(context)!.suffixCm,
+                                ),
                                 onChanged: (_) => setState(() {}),
                               ),
                             ),
@@ -175,13 +187,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           controller: _weeklyGoalController,
                           keyboardType:
                               const TextInputType.numberWithOptions(decimal: true),
-                          decoration: _inputDecoration('Meta semanal', suffixText: 'km'),
+                          decoration: _inputDecoration(
+                            AppLocalizations.of(context)!.fieldLabelWeeklyGoal,
+                            suffixText: AppLocalizations.of(context)!.suffixKm,
+                          ),
                           onChanged: (_) => setState(() {}),
                         ),
-                        if (widget.controller.errorMessage != null) ...[
+                        if (widget.controller.hasSaveError) ...[
                           const SizedBox(height: 16),
                           Text(
-                            widget.controller.errorMessage!,
+                            AppLocalizations.of(context)!.profileSaveErrorMessage,
                             style: const TextStyle(color: Colors.redAccent, fontSize: 13),
                           ),
                         ],
@@ -206,7 +221,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 strokeWidth: 2.5,
                               ),
                             )
-                          : const Text('Salvar alterações'),
+                          : Text(AppLocalizations.of(context)!.editProfileSaveButton),
                     ),
                   ),
                 ),

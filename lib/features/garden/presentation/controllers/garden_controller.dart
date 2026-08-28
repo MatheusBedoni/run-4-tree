@@ -5,6 +5,8 @@ import '../../domain/repositories/tree_garden_repository.dart';
 import '../../domain/usecases/get_tree_progress_usecase.dart';
 import '../../domain/usecases/watch_ad_for_tree_usecase.dart';
 
+enum GardenError { loadFailed, adPlaybackFailed, adDismissed, adUnavailable, rewardFailed }
+
 /// Controller da GardenPage seguindo o padrão ChangeNotifier usado no resto do app.
 class GardenController extends ChangeNotifier {
   final GetTreeProgressUseCase _getTreeProgressUseCase;
@@ -15,20 +17,20 @@ class GardenController extends ChangeNotifier {
   TreeProgressEntity? _progress;
   bool _isLoading = false;
   bool _isWatchingAd = false;
-  String? _errorMessage;
+  GardenError? _error;
 
   TreeProgressEntity? get progress => _progress;
   bool get isLoading => _isLoading;
   bool get isWatchingAd => _isWatchingAd;
-  String? get errorMessage => _errorMessage;
+  GardenError? get error => _error;
 
   Future<void> loadProgress() async {
     _setLoading(true);
     try {
       _progress = await _getTreeProgressUseCase();
-      _errorMessage = null;
+      _error = null;
     } catch (e) {
-      _errorMessage = 'Não foi possível carregar seu progresso.';
+      _error = GardenError.loadFailed;
       debugPrint('GardenController.loadProgress error: $e');
     } finally {
       _setLoading(false);
@@ -39,15 +41,15 @@ class GardenController extends ChangeNotifier {
     if (_isWatchingAd) return;
 
     _isWatchingAd = true;
-    _errorMessage = null;
+    _error = null;
     notifyListeners();
 
     try {
       _progress = await _watchAdForTreeUseCase();
     } on AdRewardException catch (e) {
-      _errorMessage = _messageFor(e.reason);
+      _error = _errorFor(e.reason);
     } catch (e) {
-      _errorMessage = 'Não foi possível assistir ao anúncio agora.';
+      _error = GardenError.adPlaybackFailed;
       debugPrint('GardenController.watchAdForSeed error: $e');
     } finally {
       _isWatchingAd = false;
@@ -55,15 +57,15 @@ class GardenController extends ChangeNotifier {
     }
   }
 
-  String _messageFor(String reason) {
+  GardenError _errorFor(String reason) {
     switch (reason) {
       case 'dismissed_without_reward':
-        return 'Anúncio fechado antes do fim — assista até o final para ganhar a semente.';
+        return GardenError.adDismissed;
       case 'ad_unit_not_configured':
       case 'load_failed':
-        return 'Nenhum anúncio disponível no momento. Tente novamente em instantes.';
+        return GardenError.adUnavailable;
       default:
-        return 'Não foi possível confirmar a recompensa. Tente novamente.';
+        return GardenError.rewardFailed;
     }
   }
 

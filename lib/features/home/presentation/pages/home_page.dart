@@ -13,6 +13,7 @@ import 'package:run_4_tree/features/profile/presentation/pages/profile_page.dart
 import '../../../../../core/constants/map_styles.dart';
 import '../../../../../core/database/app_database.dart';
 import '../../../../../core/theme/app_colors.dart';
+import '../../../../../l10n/generated/app_localizations.dart';
 import '../../../runs/data/datasources/run_session_local_datasource_impl.dart';
 import '../../../runs/data/repositories/run_session_repository_impl.dart';
 import '../../../runs/domain/entities/run_session_entity.dart';
@@ -242,7 +243,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 const Icon(Icons.check_circle, color: Colors.white, size: 20),
                 const SizedBox(width: 10),
                 Text(
-                  'Corrida salva! ${_runDistanceKm.toStringAsFixed(2)} km',
+                  AppLocalizations.of(context)!.homeRunSavedMessage(
+                    _runDistanceKm.toStringAsFixed(2),
+                  ),
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
               ],
@@ -262,7 +265,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Erro ao salvar a corrida.'),
+            content: Text(AppLocalizations.of(context)!.homeRunSaveErrorMessage),
             backgroundColor: Colors.redAccent,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
@@ -464,9 +467,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     },
                   ),
                   const SizedBox(height: 24),
-                  const Text(
-                    'Vamos plantar uma floresta...',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.homeMapLoadingTitle,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -475,7 +478,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Obtendo localização do GPS',
+                    AppLocalizations.of(context)!.homeMapLoadingSubtitle,
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.7),
                       fontSize: 13,
@@ -696,7 +699,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             size: 22,
           ),
           topLine: stats.distanceKm.toStringAsFixed(2),
-          bottomLine: 'km',
+          bottomLine: AppLocalizations.of(context)!.homeUnitKm,
         ),
       ],
     );
@@ -872,7 +875,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             _buildHUDStat(
               icon: Icons.timer_outlined,
               value: timeStr,
-              label: 'TEMPO',
+              label: AppLocalizations.of(context)!.homeHudTimeLabel,
               color: AppColors.accentOrange,
             ),
             Container(
@@ -883,7 +886,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             _buildHUDStat(
               icon: Icons.route_outlined,
               value: _runDistanceKm.toStringAsFixed(2),
-              label: 'KM',
+              label: AppLocalizations.of(context)!.homeHudKmLabel,
               color: AppColors.progressGreen,
             ),
             if (_runState == RunState.paused) ...[
@@ -894,7 +897,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               ),
               _buildHUDStat(
                 icon: Icons.pause_circle_outline,
-                value: 'PAUSA',
+                value: AppLocalizations.of(context)!.homeHudPausedValue,
                 label: '',
                 color: Colors.amber,
               ),
@@ -944,13 +947,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // ─── Run Controls ──────────────────────────────────────────────────────────
 
   String _getExerciseName() {
+    final l10n = AppLocalizations.of(context)!;
     switch (_selectedExerciseType) {
       case ExerciseType.bike:
-        return 'BICICLETA';
+        return l10n.homeExerciseBike;
       case ExerciseType.walk:
-        return 'CAMINHADA';
+        return l10n.homeExerciseWalk;
       case ExerciseType.run:
-        return 'CORRIDA';
+        return l10n.homeExerciseRun;
     }
   }
 
@@ -1035,24 +1039,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       child: Container(
                         height: 56,
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [
-                              AppColors.progressGreen,
-                              AppColors.primaryDark,
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
+                          color: AppColors.progressGreen,
+
                           borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.progressGreen.withValues(
-                                alpha: 0.3,
-                              ),
-                              blurRadius: 16,
-                              offset: const Offset(0, 6),
-                            ),
-                          ],
+                          border: Border.all(color: AppColors.white, width: 2),
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Row(
@@ -1062,9 +1052,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
-                                  'INICIAR',
-                                  style: TextStyle(
+                                Text(
+                                  AppLocalizations.of(context)!.homeStartLabel,
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
@@ -1111,7 +1101,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         children: [
           // Botão Pause / Resume
           _buildTextButton(
-            text: _runState == RunState.running ? 'PAUSAR' : 'RETOMAR',
+            text: _runState == RunState.running
+                ? AppLocalizations.of(context)!.homePauseButton
+                : AppLocalizations.of(context)!.homeResumeButton,
             onPressed: _runState == RunState.running
                 ? _pauseTimer
                 : _resumeTimer,
@@ -1122,7 +1114,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           const SizedBox(width: 16),
           // Botão Stop
           _buildTextButton(
-            text: 'CONCLUIR',
+            text: AppLocalizations.of(context)!.homeFinishButton,
             onPressed: _stopTimer,
             color: Colors.redAccent,
           ),
@@ -1197,8 +1189,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        _buildNavItem(0, Icons.house, 'Atividade'),
-                        _buildNavItem(1, Icons.bar_chart_rounded, 'Progresso'),
+                        _buildNavItem(
+                          0,
+                          Icons.house,
+                          AppLocalizations.of(context)!.homeNavActivity,
+                        ),
+                        _buildNavItem(
+                          1,
+                          Icons.bar_chart_rounded,
+                          AppLocalizations.of(context)!.homeNavProgress,
+                        ),
                       ],
                     ),
                   ),
@@ -1207,8 +1207,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        _buildNavItem(2, Icons.forest_rounded, 'Floresta'),
-                        _buildNavItem(3, Icons.person_rounded, 'Perfil'),
+                        _buildNavItem(
+                          2,
+                          Icons.forest_rounded,
+                          AppLocalizations.of(context)!.homeNavForest,
+                        ),
+                        _buildNavItem(
+                          3,
+                          Icons.person_rounded,
+                          AppLocalizations.of(context)!.homeNavProfile,
+                        ),
                       ],
                     ),
                   ),

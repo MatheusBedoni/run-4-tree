@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../core/database/app_database.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 import '../../../runs/data/datasources/run_session_local_datasource_impl.dart';
 import '../../../runs/data/repositories/run_session_repository_impl.dart';
 import '../../../runs/domain/entities/run_session_entity.dart';
@@ -44,8 +46,8 @@ class _ExercisesPageState extends State<ExercisesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Progresso',
+        title: Text(
+          AppLocalizations.of(context)!.homeNavProgress,
           style: TextStyle(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.bold,
@@ -69,8 +71,10 @@ class _ExercisesPageState extends State<ExercisesPage> {
           );
         }
 
-        if (_controller.errorMessage != null && _controller.runs.isEmpty) {
-          return _buildErrorState(_controller.errorMessage!);
+        if (_controller.hasLoadError && _controller.runs.isEmpty) {
+          return _buildErrorState(
+            AppLocalizations.of(context)!.exercisesLoadErrorMessage,
+          );
         }
 
         if (_controller.runs.isEmpty) {
@@ -101,32 +105,32 @@ class _ExercisesPageState extends State<ExercisesPage> {
           physics: const AlwaysScrollableScrollPhysics(),
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: const Center(
+            child: Center(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 32),
+                padding: const EdgeInsets.symmetric(horizontal: 32),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.directions_run_rounded,
                       size: 56,
                       color: AppColors.textSecondary,
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     Text(
-                      'Nenhuma corrida registrada ainda',
+                      AppLocalizations.of(context)!.exercisesEmptyTitle,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
-                      'Inicie uma corrida na tela principal para ver seu histórico aqui.',
+                      AppLocalizations.of(context)!.exercisesEmptySubtitle,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 14,
                       ),
@@ -172,7 +176,7 @@ class _ExercisesPageState extends State<ExercisesPage> {
                         backgroundColor: AppColors.primaryDark,
                         foregroundColor: Colors.white,
                       ),
-                      child: const Text('Tentar novamente'),
+                      child: Text(AppLocalizations.of(context)!.commonRetryButton),
                     ),
                   ],
                 ),
@@ -263,7 +267,7 @@ class _ExercisesPageState extends State<ExercisesPage> {
                       const SizedBox(width: 16),
                       _buildRunMetric(
                         Icons.local_fire_department_rounded,
-                        '${run.calories.toStringAsFixed(0)} kcal',
+                        '${run.calories.toStringAsFixed(0)} ${AppLocalizations.of(context)!.exercisesKcalUnit}',
                       ),
                     ],
                   ),
@@ -307,14 +311,15 @@ class _ExercisesPageState extends State<ExercisesPage> {
   }
 
   String _labelForExerciseType(String exerciseType) {
+    final l10n = AppLocalizations.of(context)!;
     switch (exerciseType) {
       case 'bike':
-        return 'Bicicleta';
+        return l10n.exercisesLabelBike;
       case 'walk':
-        return 'Caminhada';
+        return l10n.exercisesLabelWalk;
       case 'run':
       default:
-        return 'Corrida';
+        return l10n.exercisesLabelRun;
     }
   }
 
@@ -329,22 +334,9 @@ class _ExercisesPageState extends State<ExercisesPage> {
   }
 
   String _formatDate(DateTime date) {
-    const months = [
-      'jan',
-      'fev',
-      'mar',
-      'abr',
-      'mai',
-      'jun',
-      'jul',
-      'ago',
-      'set',
-      'out',
-      'nov',
-      'dez',
-    ];
-    final hour = date.hour.toString().padLeft(2, '0');
-    final minute = date.minute.toString().padLeft(2, '0');
-    return '${date.day} ${months[date.month - 1]} • $hour:$minute';
+    final locale = Localizations.localeOf(context).toString();
+    final datePart = DateFormat('d MMM', locale).format(date);
+    final timePart = DateFormat.Hm(locale).format(date);
+    return '$datePart • $timePart';
   }
 }

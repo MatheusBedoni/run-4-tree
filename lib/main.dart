@@ -9,6 +9,7 @@ import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/pages/login_page.dart';
 import 'features/home/presentation/pages/home_page.dart';
 import 'features/onboarding/presentation/pages/onboarding_page.dart';
+import 'l10n/generated/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,6 +56,20 @@ class Run4TreeApp extends StatelessWidget {
       title: 'Run4Tree',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      // English is the app's default/fallback locale — the device locale is
+      // used only when it matches one of the locales we actually ship.
+      localeResolutionCallback: (deviceLocale, supportedLocales) {
+        if (deviceLocale != null) {
+          for (final locale in supportedLocales) {
+            if (locale.languageCode == deviceLocale.languageCode) {
+              return locale;
+            }
+          }
+        }
+        return const Locale('en');
+      },
       initialRoute: '/login',
       routes: {
         '/login': (_) => const LoginPage(),

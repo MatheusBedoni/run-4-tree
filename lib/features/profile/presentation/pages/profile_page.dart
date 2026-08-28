@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:run_4_tree/core/theme/app_colors.dart';
+import 'package:run_4_tree/l10n/generated/app_localizations.dart';
 import 'package:run_4_tree/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:run_4_tree/features/profile/domain/entities/profile_entity.dart';
 import 'package:run_4_tree/features/profile/domain/usecases/get_profile_usecase.dart';
@@ -57,7 +59,7 @@ class _ProfilePageState extends State<ProfilePage> {
             );
           }
 
-          if (_controller.errorMessage != null && _controller.profile == null) {
+          if (_controller.hasLoadError && _controller.profile == null) {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(32),
@@ -67,7 +69,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     Icon(Icons.error_outline, size: 48, color: AppColors.textSecondary),
                     const SizedBox(height: 16),
                     Text(
-                      _controller.errorMessage!,
+                      AppLocalizations.of(context)!.profileLoadErrorMessage,
                       textAlign: TextAlign.center,
                       style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
                     ),
@@ -79,7 +81,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: const Text('Tentar novamente'),
+                      child: Text(AppLocalizations.of(context)!.commonRetryButton),
                     ),
                   ],
                 ),
@@ -107,7 +109,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${profile.age} anos · membro desde ${_formatMonthYear(profile.memberSince)}',
+                    AppLocalizations.of(context)!.profileAgeMemberSince(
+                      profile.age,
+                      _formatMonthYear(profile.memberSince),
+                    ),
                     style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: 16),
@@ -117,7 +122,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       onPressed: () => _openEditProfile(profile),
                       icon: Icon(Icons.edit_rounded, size: 18, color: AppColors.primaryDark),
                       label: Text(
-                        'Editar perfil',
+                        AppLocalizations.of(context)!.profileEditButton,
                         style: TextStyle(color: AppColors.primaryDark, fontWeight: FontWeight.w600),
                       ),
                       style: OutlinedButton.styleFrom(
@@ -194,13 +199,16 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               Icon(Icons.flag_rounded, color: AppColors.primaryDark, size: 20),
               const SizedBox(width: 8),
-              const Text(
-                'Meta semanal',
-                style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+              Text(
+                AppLocalizations.of(context)!.fieldLabelWeeklyGoal,
+                style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary),
               ),
               const Spacer(),
               Text(
-                '${profile.weeklyDistanceKm.toStringAsFixed(1)} / ${profile.weeklyGoalKm.toStringAsFixed(1)} km',
+                AppLocalizations.of(context)!.weeklyGoalProgressLabel(
+                  profile.weeklyDistanceKm.toStringAsFixed(1),
+                  profile.weeklyGoalKm.toStringAsFixed(1),
+                ),
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   color: reachedGoal ? AppColors.primaryDark : AppColors.textSecondary,
@@ -224,7 +232,7 @@ class _ProfilePageState extends State<ProfilePage> {
           if (reachedGoal) ...[
             const SizedBox(height: 10),
             Text(
-              'Meta da semana concluída! 🎉',
+              AppLocalizations.of(context)!.profileGoalCompletedMessage,
               style: TextStyle(fontSize: 12, color: AppColors.primaryDark, fontWeight: FontWeight.w600),
             ),
           ],
@@ -240,7 +248,7 @@ class _ProfilePageState extends State<ProfilePage> {
           child: _buildStatCard(
             icon: FaIcon(FontAwesomeIcons.tree, color: AppColors.primaryLight, size: 22),
             value: '${profile.treesPlanted}',
-            label: 'Árvores',
+            label: AppLocalizations.of(context)!.profileTreesLabel,
           ),
         ),
         const SizedBox(width: 12),
@@ -248,7 +256,7 @@ class _ProfilePageState extends State<ProfilePage> {
           child: _buildStatCard(
             icon: Icon(Icons.route_rounded, color: AppColors.skyBlue, size: 24),
             value: profile.totalDistanceKm.toStringAsFixed(1),
-            label: 'km totais',
+            label: AppLocalizations.of(context)!.profileTotalKmLabel,
           ),
         ),
         const SizedBox(width: 12),
@@ -256,7 +264,7 @@ class _ProfilePageState extends State<ProfilePage> {
           child: _buildStatCard(
             icon: Icon(Icons.directions_run_rounded, color: AppColors.accentOrange, size: 24),
             value: '${profile.totalRuns}',
-            label: 'Corridas',
+            label: AppLocalizations.of(context)!.profileRunsLabel,
           ),
         ),
       ],
@@ -326,20 +334,26 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               Icon(Icons.monitor_weight_outlined, color: AppColors.primaryDark, size: 20),
               const SizedBox(width: 8),
-              const Text(
-                'Dados corporais',
-                style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+              Text(
+                AppLocalizations.of(context)!.profileBodyDataTitle,
+                style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary),
               ),
             ],
           ),
           const SizedBox(height: 16),
           Row(
             children: [
-              _buildBodyInfoItem('Peso', '${profile.weightKg.toStringAsFixed(1)} kg'),
+              _buildBodyInfoItem(
+                AppLocalizations.of(context)!.fieldLabelWeight,
+                '${profile.weightKg.toStringAsFixed(1)} ${AppLocalizations.of(context)!.suffixKg}',
+              ),
               _buildBodyInfoDivider(),
-              _buildBodyInfoItem('Altura', '${profile.heightCm.toStringAsFixed(0)} cm'),
+              _buildBodyInfoItem(
+                AppLocalizations.of(context)!.fieldLabelHeight,
+                '${profile.heightCm.toStringAsFixed(0)} ${AppLocalizations.of(context)!.suffixCm}',
+              ),
               _buildBodyInfoDivider(),
-              _buildBodyInfoItem('IMC', profile.bmi.toStringAsFixed(1)),
+              _buildBodyInfoItem(AppLocalizations.of(context)!.profileBmiLabel, profile.bmi.toStringAsFixed(1)),
             ],
           ),
         ],
@@ -375,10 +389,9 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   String _formatMonthYear(DateTime date) {
-    const months = [
-      '', 'jan', 'fev', 'mar', 'abr', 'mai', 'jun',
-      'jul', 'ago', 'set', 'out', 'nov', 'dez',
-    ];
-    return '${months[date.month]}/${date.year}';
+    return DateFormat(
+      'MMM/y',
+      Localizations.localeOf(context).toString(),
+    ).format(date);
   }
 }
