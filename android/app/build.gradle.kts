@@ -13,6 +13,7 @@ if (localPropertiesFile.exists()) {
     localPropertiesFile.inputStream().use { localProperties.load(it) }
 }
 val mapsApiKey = localProperties.getProperty("GOOGLE_MAPS_API_KEY") ?: ""
+val admobApiKey = localProperties.getProperty("ADMOB_API_KEY") ?: ""
 
 val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
@@ -42,6 +43,7 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         manifestPlaceholders["GOOGLE_MAPS_API_KEY"] = mapsApiKey
+        manifestPlaceholders["ADMOB_API_KEY"] = admobApiKey
     }
 
     signingConfigs {
