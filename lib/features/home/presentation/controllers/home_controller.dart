@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import '../../../garden/domain/entities/tree_progress_entity.dart';
 import '../../domain/entities/run_stats_entity.dart';
 import '../../domain/usecases/get_run_stats_usecase.dart';
 
@@ -40,6 +41,18 @@ class HomeController extends ChangeNotifier {
 
   /// Força um reload dos stats (ex: pull-to-refresh).
   Future<void> refreshStats() => loadStats();
+
+  /// Aplica um progresso de árvore atualizado (após um anúncio creditar
+  /// receita) sem precisar refazer o fetch completo de stats.
+  void applyTreeProgress(TreeProgressEntity progress) {
+    final current = _stats;
+    if (current == null) return;
+    _stats = current.copyWith(
+      treesPlanted: progress.treesPlanted,
+      progressPercent: progress.progressPercent,
+    );
+    notifyListeners();
+  }
 
   // ─── Helpers privados ──────────────────────────────────────────────────────
 

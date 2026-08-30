@@ -6,7 +6,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
-/// Resultado de uma sessão de anúncio recompensado.
+import '../utils/purchases_safe_call.dart';
+
+/// Resultado de uma sessão de anúncio.
 class AdWatchResult {
   final bool success;
 
@@ -22,28 +24,30 @@ class AdWatchResult {
   final String? errorMessage;
 
   const AdWatchResult.success(this.revenueUsd, {required this.isEstimatedRevenue})
-      : success = true,
-        errorMessage = null;
+    : success = true,
+      errorMessage = null;
 
   const AdWatchResult.failure(this.errorMessage)
-      : success = false,
-        revenueUsd = 0,
-        isEstimatedRevenue = false;
+    : success = false,
+      revenueUsd = 0,
+      isEstimatedRevenue = false;
 }
 
-/// Carrega e exibe um anúncio recompensado, reporta cada evento do ciclo de
-/// vida do anúncio para a RevenueCat (`Purchases.adTracker`) e só confirma a
-/// recompensa depois da verificação server-side (AdMob SSV) via
-/// [Purchases.generateRewardVerificationToken]/[Purchases.pollRewardVerification].
+/// Carrega e exibe um anúncio "rewarded interstitial" — aparece
+/// automaticamente (sem exigir um botão do usuário), mas concede uma
+/// recompensa como um anúncio recompensado normal. Usado nos momentos de
+/// início e fim de uma corrida.
 ///
-/// A recompensa nunca é concedida apenas pelo callback client-side do AdMob —
-/// isso evitaria que um cliente adulterado forjasse árvores plantadas.
-class RewardedAdService {
-  const RewardedAdService();
+/// Reporta cada evento do ciclo de vida do anúncio para a RevenueCat
+/// (`Purchases.adTracker`) e só confirma a recompensa depois da verificação
+/// server-side (AdMob SSV) via [Purchases.generateRewardVerificationToken]/
+/// [Purchases.pollRewardVerification] — a recompensa nunca é concedida
+/// apenas pelo callback client-side do AdMob.
+class RewardedInterstitialAdService {
+  const RewardedInterstitialAdService();
 
-  static const _placement = 'garden_watch_ad';
   static const _mediatorName = AdMediatorName.adMob;
-  static const _adFormat = AdFormat.rewarded;
+  static const _adFormat = AdFormat.rewardedInterstitial;
 
   /// Usado só quando a conta AdMob ainda não reporta receita por impressão
   /// (`onPaidEvent` nunca dispara nesse caso — comum com unidades de teste ou
@@ -56,12 +60,14 @@ class RewardedAdService {
 
   String get _adUnitId {
     final key = Platform.isIOS
-        ? 'ADMOB_REWARDED_AD_UNIT_IOS'
-        : 'ADMOB_REWARDED_AD_UNIT_ANDROID';
+        ? 'ADMOB_REWARDED_INTERSTITIAL_AD_UNIT_IOS'
+        : 'ADMOB_REWARDED_INTERSTITIAL_AD_UNIT_ANDROID';
     return dotenv.env[key] ?? '';
   }
 
-  Future<AdWatchResult> watchAd() async {
+  /// [placement] identifica o momento da corrida em que o anúncio é exibido
+  /// (ex: `run_start`, `run_end`) — repassado ao tracking da RevenueCat.
+  Future<AdWatchResult> watchAd({required String placement}) async {
     final adUnitId = _adUnitId;
     if (adUnitId.isEmpty) {
       return const AdWatchResult.failure('ad_unit_not_configured');
@@ -69,19 +75,22 @@ class RewardedAdService {
 
     final completer = Completer<AdWatchResult>();
 
-    await RewardedAd.load(
+    await RewardedInterstitialAd.load(
       adUnitId: adUnitId,
       request: const AdRequest(),
-      rewardedAdLoadCallback: RewardedAdLoadCallback(
-        onAdLoaded: (ad) => _onAdLoaded(ad, completer),
+      rewardedInterstitialAdLoadCallback: RewardedInterstitialAdLoadCallback(
+        onAdLoaded: (ad) => _onAdLoaded(ad, placement, completer),
         onAdFailedToLoad: (error) {
-          Purchases.adTracker.trackAdFailedToLoad(
-            AdFailedToLoadData(
-              mediatorName: _mediatorName,
-              adFormat: _adFormat,
-              placement: _placement,
-              adUnitId: adUnitId,
-              mediatorErrorCode: error.code,
+          fireAndForgetPurchasesCall(
+            'trackAdFailedToLoad',
+            () => Purchases.adTracker.trackAdFailedToLoad(
+              AdFailedToLoadData(
+                mediatorName: _mediatorName,
+                adFormat: _adFormat,
+                placement: placement,
+                adUnitId: adUnitId,
+                mediatorErrorCode: error.code,
+              ),
             ),
           );
           if (!completer.isCompleted) {
@@ -97,7 +106,8 @@ class RewardedAdService {
   }
 
   Future<void> _onAdLoaded(
-    RewardedAd ad,
+    RewardedInterstitialAd ad,
+    String placement,
     Completer<AdWatchResult> completer,
   ) async {
     var rewardEarned = false;
@@ -111,13 +121,16 @@ class RewardedAdService {
         return;
       }
 
-      Purchases.adTracker.trackAdLoaded(
-        AdLoadedData(
-          mediatorName: _mediatorName,
-          adFormat: _adFormat,
-          placement: _placement,
-          adUnitId: ad.adUnitId,
-          impressionId: impressionId,
+      fireAndForgetPurchasesCall(
+        'trackAdLoaded',
+        () => Purchases.adTracker.trackAdLoaded(
+          AdLoadedData(
+            mediatorName: _mediatorName,
+            adFormat: _adFormat,
+            placement: placement,
+            adUnitId: ad.adUnitId,
+            impressionId: impressionId,
+          ),
         ),
       );
 
@@ -135,40 +148,49 @@ class RewardedAdService {
       // e ficamos com o valor estimado como fallback (ver `success` abaixo).
       ad.onPaidEvent = (ad, valueMicros, precision, currencyCode) {
         capturedRevenueUsd = valueMicros / 1e6;
-        Purchases.adTracker.trackAdRevenue(
-          AdRevenueData(
-            mediatorName: _mediatorName,
-            adFormat: _adFormat,
-            placement: _placement,
-            adUnitId: ad.adUnitId,
-            impressionId: impressionId,
-            revenueMicros: valueMicros.round(),
-            currency: currencyCode,
-            precision: _mapPrecision(precision),
+        fireAndForgetPurchasesCall(
+          'trackAdRevenue',
+          () => Purchases.adTracker.trackAdRevenue(
+            AdRevenueData(
+              mediatorName: _mediatorName,
+              adFormat: _adFormat,
+              placement: placement,
+              adUnitId: ad.adUnitId,
+              impressionId: impressionId,
+              revenueMicros: valueMicros.round(),
+              currency: currencyCode,
+              precision: _mapPrecision(precision),
+            ),
           ),
         );
       };
 
       ad.fullScreenContentCallback = FullScreenContentCallback(
         onAdShowedFullScreenContent: (ad) {
-          Purchases.adTracker.trackAdDisplayed(
-            AdDisplayedData(
-              mediatorName: _mediatorName,
-              adFormat: _adFormat,
-              placement: _placement,
-              adUnitId: ad.adUnitId,
-              impressionId: impressionId,
+          fireAndForgetPurchasesCall(
+            'trackAdDisplayed',
+            () => Purchases.adTracker.trackAdDisplayed(
+              AdDisplayedData(
+                mediatorName: _mediatorName,
+                adFormat: _adFormat,
+                placement: placement,
+                adUnitId: ad.adUnitId,
+                impressionId: impressionId,
+              ),
             ),
           );
         },
         onAdClicked: (ad) {
-          Purchases.adTracker.trackAdOpened(
-            AdOpenedData(
-              mediatorName: _mediatorName,
-              adFormat: _adFormat,
-              placement: _placement,
-              adUnitId: ad.adUnitId,
-              impressionId: impressionId,
+          fireAndForgetPurchasesCall(
+            'trackAdOpened',
+            () => Purchases.adTracker.trackAdOpened(
+              AdOpenedData(
+                mediatorName: _mediatorName,
+                adFormat: _adFormat,
+                placement: placement,
+                adUnitId: ad.adUnitId,
+                impressionId: impressionId,
+              ),
             ),
           );
         },
@@ -193,13 +215,14 @@ class RewardedAdService {
           // assistido até o fim (anti-fraude) — o valor em USD creditado vem
           // de `onPaidEvent`, não do tipo de recompensa configurado no
           // dashboard da RevenueCat.
-          final result = await Purchases.pollRewardVerification(
-            token.clientTransactionId,
+          final result = await safePurchasesCall(
+            'pollRewardVerification',
+            () => Purchases.pollRewardVerification(token.clientTransactionId),
           );
 
           if (completer.isCompleted) return;
 
-          if (!result.failed) {
+          if (result != null && !result.failed) {
             final revenue = capturedRevenueUsd;
             completer.complete(
               AdWatchResult.success(
@@ -214,7 +237,7 @@ class RewardedAdService {
       );
     } catch (e) {
       ad.dispose();
-      debugPrint('RewardedAdService error: $e');
+      debugPrint('RewardedInterstitialAdService error: $e');
       if (!completer.isCompleted) {
         completer.complete(AdWatchResult.failure(e.toString()));
       }

@@ -23,4 +23,12 @@ class RunStatsEntity {
     required this.weatherTemp,
     required this.weatherCondition,
   });
+
+  RunStatsEntity copyWith({int? treesPlanted, double? progressPercent}) => RunStatsEntity(
+    treesPlanted: treesPlanted ?? this.treesPlanted,
+    distanceKm: distanceKm,
+    progressPercent: progressPercent ?? this.progressPercent,
+    weatherTemp: weatherTemp,
+    weatherCondition: weatherCondition,
+  );
 }

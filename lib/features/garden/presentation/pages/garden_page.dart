@@ -6,32 +6,33 @@ import '../../../../l10n/generated/app_localizations.dart';
 import '../../data/repositories/tree_garden_repository_impl.dart';
 import '../../domain/entities/tree_progress_entity.dart';
 import '../../domain/usecases/get_tree_progress_usecase.dart';
-import '../../domain/usecases/watch_ad_for_tree_usecase.dart';
 import '../controllers/garden_controller.dart';
 
-/// GardenPage — mostra quantas árvores o usuário já plantou e permite
-/// assistir a um anúncio recompensado para ganhar sementes rumo à próxima
-/// árvore (modelo inspirado no Ecosia).
+/// GardenPage — mostra quantas árvores o usuário já plantou e o progresso
+/// rumo à próxima, alimentado pelos anúncios exibidos durante o ciclo de
+/// uma corrida (início, fim e banner).
 class GardenPage extends StatefulWidget {
   const GardenPage({super.key});
 
   @override
-  State<GardenPage> createState() => _GardenPageState();
+  State<GardenPage> createState() => GardenPageState();
 }
 
-class _GardenPageState extends State<GardenPage> {
+class GardenPageState extends State<GardenPage> {
   late final GardenController _controller;
 
   @override
   void initState() {
     super.initState();
     final repository = TreeGardenRepositoryImpl();
-    _controller = GardenController(
-      GetTreeProgressUseCase(repository),
-      WatchAdForTreeUseCase(repository),
-    );
+    _controller = GardenController(GetTreeProgressUseCase(repository));
     _controller.loadProgress();
   }
+
+  /// Recarrega o progresso — chamado pela Home quando o usuário navega até
+  /// essa aba, já que ela vive dentro de um `IndexedStack` e não seria
+  /// reconstruída sozinha depois de uma corrida.
+  Future<void> refresh() => _controller.loadProgress();
 
   @override
   void dispose() {
@@ -84,11 +85,8 @@ class _GardenPageState extends State<GardenPage> {
                     progressPercent: progressPercent,
                   ),
                   const SizedBox(height: 20),
-                  if (_controller.error != null) ...[
-                    _buildErrorBanner(_messageFor(context, _controller.error!)),
-                    const SizedBox(height: 16),
-                  ],
-                  _buildWatchAdButton(),
+                  if (_controller.error != null)
+                    _buildErrorBanner(_messageFor(context)),
                 ],
               ),
             );
@@ -98,20 +96,8 @@ class _GardenPageState extends State<GardenPage> {
     );
   }
 
-  String _messageFor(BuildContext context, GardenError error) {
-    final l10n = AppLocalizations.of(context)!;
-    switch (error) {
-      case GardenError.loadFailed:
-        return l10n.gardenLoadErrorMessage;
-      case GardenError.adPlaybackFailed:
-        return l10n.gardenWatchAdErrorMessage;
-      case GardenError.adDismissed:
-        return l10n.gardenAdDismissedMessage;
-      case GardenError.adUnavailable:
-        return l10n.gardenAdUnavailableMessage;
-      case GardenError.rewardFailed:
-        return l10n.gardenAdRewardErrorMessage;
-    }
+  String _messageFor(BuildContext context) {
+    return AppLocalizations.of(context)!.gardenLoadErrorMessage;
   }
 
   Widget _buildTreesCard(int treesPlanted) {
@@ -264,58 +250,6 @@ class _GardenPageState extends State<GardenPage> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildWatchAdButton() {
-    final isWatching = _controller.isWatchingAd;
-    return GestureDetector(
-      onTap: isWatching ? null : _controller.watchAdForSeed,
-      child: Container(
-        width: double.infinity,
-        height: 58,
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [AppColors.progressGreen, AppColors.primaryDark],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.progressGreen.withValues(alpha: 0.3),
-              blurRadius: 14,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Center(
-          child: isWatching
-              ? const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                    strokeWidth: 2.5,
-                  ),
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.play_circle_fill_rounded, color: Colors.white),
-                    const SizedBox(width: 10),
-                    Text(
-                      AppLocalizations.of(context)!.gardenWatchAdButton,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-        ),
       ),
     );
   }

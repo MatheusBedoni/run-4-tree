@@ -12,8 +12,11 @@ import 'package:run_4_tree/features/profile/presentation/pages/profile_page.dart
 
 import '../../../../../core/constants/map_styles.dart';
 import '../../../../../core/database/app_database.dart';
+import '../../../../../core/services/rewarded_interstitial_ad_service.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../l10n/generated/app_localizations.dart';
+import '../../../garden/data/repositories/tree_garden_repository_impl.dart';
+import '../../../garden/domain/usecases/credit_ad_revenue_usecase.dart';
 import '../../../runs/data/datasources/run_session_local_datasource_impl.dart';
 import '../../../runs/data/repositories/run_session_repository_impl.dart';
 import '../../../runs/domain/entities/run_session_entity.dart';
@@ -22,6 +25,7 @@ import '../../data/repositories/home_repository_impl.dart';
 import '../../domain/entities/run_stats_entity.dart';
 import '../../domain/usecases/get_run_stats_usecase.dart';
 import '../controllers/home_controller.dart';
+import '../widgets/run_banner_ad.dart';
 
 enum RunState { idle, running, paused }
 
@@ -49,6 +53,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // ─── Runs (Drift) ──────────────────────────────────────────────────────────
   late final SaveRunUseCase _saveRunUseCase;
+
+  // ─── Anúncios do ciclo da corrida (início/fim/banner → progresso da árvore) ─
+  final _runAdService = const RewardedInterstitialAdService();
+  late final CreditAdRevenueUseCase _creditAdRevenueUseCase;
+  bool _isShowingRunAd = false;
+
+  // ─── Garden tab (refresh ao navegar após uma corrida) ───────────────────────
+  final _gardenPageKey = GlobalKey<GardenPageState>();
 
   // ─── Animações ─────────────────────────────────────────────────────────────
   late final AnimationController _progressAnimCtrl;
@@ -104,6 +116,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     final runRepository = RunSessionRepositoryImpl(runDataSource);
     _saveRunUseCase = SaveRunUseCase(runRepository);
 
+    _creditAdRevenueUseCase = CreditAdRevenueUseCase(TreeGardenRepositoryImpl());
+
     // Resolve a posição real do usuário antes de montar o mapa
     _initialCameraFuture = _getInitialCameraPosition();
 
@@ -157,7 +171,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void _startTimer() {
+  Future<void> _startTimer() async {
+    await _showBlockingRunAd(placement: 'run_start');
+    if (!mounted) return;
+
     setState(() => _runState = RunState.running);
     _runTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       setState(() => _runSeconds++);
@@ -179,17 +196,64 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _resumeTracking();
   }
 
-  void _stopTimer() {
+  Future<void> _stopTimer() async {
     _runTimer?.cancel();
 
     // Salva a corrida no banco Drift antes de limpar o estado
     _saveCurrentRun();
 
     _stopTracking();
+
+    await _showBlockingRunAd(placement: 'run_end');
+    if (!mounted) return;
+
     setState(() {
       _runState = RunState.idle;
       _runSeconds = 0;
     });
+    _gardenPageKey.currentState?.refresh();
+  }
+
+  /// Exibe um anúncio de vídeo (rewarded interstitial) bloqueante — usado nos
+  /// momentos de início e fim de uma corrida. Se falhar ao carregar ou for
+  /// fechado sem recompensa, o fluxo segue normalmente sem crédito de
+  /// progresso. Reentrância é bloqueada por [_isShowingRunAd].
+  Future<void> _showBlockingRunAd({required String placement}) async {
+    if (_isShowingRunAd) return;
+    _isShowingRunAd = true;
+
+    if (mounted) {
+      showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => const Center(
+          child: CircularProgressIndicator(color: Colors.white),
+        ),
+      );
+    }
+
+    try {
+      final result = await _runAdService.watchAd(placement: placement);
+      if (result.success) {
+        final progress = await _creditAdRevenueUseCase(result.revenueUsd);
+        _controller.applyTreeProgress(progress);
+      }
+    } catch (e) {
+      debugPrint('Erro no anúncio de $placement: $e');
+    } finally {
+      _isShowingRunAd = false;
+      if (mounted) Navigator.of(context, rootNavigator: true).pop();
+    }
+  }
+
+  /// Chamado pelo [RunBannerAd] a cada crédito de receita durante a corrida.
+  Future<void> _onBannerAdRevenue(double revenueUsd) async {
+    try {
+      final progress = await _creditAdRevenueUseCase(revenueUsd);
+      if (mounted) _controller.applyTreeProgress(progress);
+    } catch (e) {
+      debugPrint('Erro ao creditar receita do banner: $e');
+    }
   }
 
   /// Persiste a sessão de corrida atual no SQLite via Drift.
@@ -358,7 +422,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         children: [
           _buildMapPage(),
           const ExercisesPage(),
-          const GardenPage(),
+          GardenPage(key: _gardenPageKey),
           const ProfilePage(),
         ],
       ),
@@ -409,6 +473,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
           // ── 5. HUD de corrida (tempo + km) ───────────────────────────────
           if (_runState != RunState.idle) _buildRunHUD(),
+
+          // ── 6. Banner de anúncio durante a corrida ───────────────────────
+          if (_runState != RunState.idle) _buildRunBannerAd(),
 
           // ── 7. Run Controls ──────────────────────────────────────────────
           _buildRunControls(),
@@ -908,6 +975,32 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
+  // ─── Banner de anúncio durante a corrida ──────────────────────────────────
+
+  Widget _buildRunBannerAd() {
+    return Positioned(
+      bottom: MediaQuery.of(context).padding.bottom + 32 + 70,
+      left: 0,
+      right: 0,
+      child: Center(
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.15),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: RunBannerAd(onAdRevenue: _onBannerAdRevenue),
+        ),
+      ),
+    );
+  }
+
   Widget _buildHUDStat({
     required IconData icon,
     required String value,
@@ -1233,7 +1326,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget _buildNavItem(int index, IconData icon, String label) {
     final isSelected = _selectedNavIndex == index;
     return GestureDetector(
-      onTap: () => setState(() => _selectedNavIndex = index),
+      onTap: () {
+        setState(() => _selectedNavIndex = index);
+        if (index == 2) _gardenPageKey.currentState?.refresh();
+      },
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
