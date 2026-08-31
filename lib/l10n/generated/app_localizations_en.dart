@@ -287,4 +287,42 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gardenWatchAdButton => 'Watch ad and earn a seed';
+
+  @override
+  String get exercisesDetailsPace => 'Avg. Pace';
+
+  @override
+  String get exercisesDetailsAvgSpeed => 'Avg. Speed';
+
+  @override
+  String get exercisesDetailsMaxSpeed => 'Max Speed';
+
+  @override
+  String get exercisesDetailsElevationGain => 'Elevation Gain';
+
+  @override
+  String get exercisesDetailsElevationLoss => 'Elevation Loss';
+
+  @override
+  String get exercisesDetailsMaxElevation => 'Max Elevation';
+
+  @override
+  String get exercisesDetailsDehydration => 'Dehydration';
+
+  @override
+  String get exercisesDetailsSeedsEarned => 'Seeds Earned';
+
+  @override
+  String get exercisesDetailsStartTime => 'Start Time';
+
+  @override
+  String exercisesDetailsDistance(String unit) {
+    return 'Distance ($unit)';
+  }
+
+  @override
+  String get exercisesDetailsDuration => 'Duration';
+
+  @override
+  String get exercisesDetailsCalories => 'Calories';
 }

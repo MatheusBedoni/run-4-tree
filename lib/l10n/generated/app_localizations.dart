@@ -597,6 +597,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Watch ad and earn a seed'**
   String get gardenWatchAdButton;
+
+  /// No description provided for @exercisesDetailsPace.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg. Pace'**
+  String get exercisesDetailsPace;
+
+  /// No description provided for @exercisesDetailsAvgSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg. Speed'**
+  String get exercisesDetailsAvgSpeed;
+
+  /// No description provided for @exercisesDetailsMaxSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Max Speed'**
+  String get exercisesDetailsMaxSpeed;
+
+  /// No description provided for @exercisesDetailsElevationGain.
+  ///
+  /// In en, this message translates to:
+  /// **'Elevation Gain'**
+  String get exercisesDetailsElevationGain;
+
+  /// No description provided for @exercisesDetailsElevationLoss.
+  ///
+  /// In en, this message translates to:
+  /// **'Elevation Loss'**
+  String get exercisesDetailsElevationLoss;
+
+  /// No description provided for @exercisesDetailsMaxElevation.
+  ///
+  /// In en, this message translates to:
+  /// **'Max Elevation'**
+  String get exercisesDetailsMaxElevation;
+
+  /// No description provided for @exercisesDetailsDehydration.
+  ///
+  /// In en, this message translates to:
+  /// **'Dehydration'**
+  String get exercisesDetailsDehydration;
+
+  /// No description provided for @exercisesDetailsSeedsEarned.
+  ///
+  /// In en, this message translates to:
+  /// **'Seeds Earned'**
+  String get exercisesDetailsSeedsEarned;
+
+  /// No description provided for @exercisesDetailsStartTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Time'**
+  String get exercisesDetailsStartTime;
+
+  /// No description provided for @exercisesDetailsDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance ({unit})'**
+  String exercisesDetailsDistance(String unit);
+
+  /// No description provided for @exercisesDetailsDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get exercisesDetailsDuration;
+
+  /// No description provided for @exercisesDetailsCalories.
+  ///
+  /// In en, this message translates to:
+  /// **'Calories'**
+  String get exercisesDetailsCalories;
 }
 
 class _AppLocalizationsDelegate

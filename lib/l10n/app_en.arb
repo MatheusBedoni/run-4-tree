@@ -120,5 +120,23 @@
   "gardenAdDismissedMessage": "Ad closed before finishing — watch it to the end to earn the seed.",
   "gardenAdUnavailableMessage": "No ad available right now. Please try again shortly.",
   "gardenAdRewardErrorMessage": "We couldn't confirm the reward. Please try again.",
-  "gardenWatchAdButton": "Watch ad and earn a seed"
+  "gardenWatchAdButton": "Watch ad and earn a seed",
+
+  "exercisesDetailsPace": "Avg. Pace",
+  "exercisesDetailsAvgSpeed": "Avg. Speed",
+  "exercisesDetailsMaxSpeed": "Max Speed",
+  "exercisesDetailsElevationGain": "Elevation Gain",
+  "exercisesDetailsElevationLoss": "Elevation Loss",
+  "exercisesDetailsMaxElevation": "Max Elevation",
+  "exercisesDetailsDehydration": "Dehydration",
+  "exercisesDetailsSeedsEarned": "Seeds Earned",
+  "exercisesDetailsStartTime": "Start Time",
+  "exercisesDetailsDistance": "Distance ({unit})",
+  "@exercisesDetailsDistance": {
+    "placeholders": {
+      "unit": { "type": "String" }
+    }
+  },
+  "exercisesDetailsDuration": "Duration",
+  "exercisesDetailsCalories": "Calories"
 }

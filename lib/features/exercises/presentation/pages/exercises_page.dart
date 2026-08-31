@@ -10,6 +10,7 @@ import '../../../runs/domain/entities/run_session_entity.dart';
 import '../../../runs/domain/usecases/delete_run_usecase.dart';
 import '../../../runs/domain/usecases/get_all_runs_usecase.dart';
 import '../controllers/exercises_controller.dart';
+import 'exercise_details_page.dart';
 
 class ExercisesPage extends StatefulWidget {
   const ExercisesPage({super.key});
@@ -176,7 +177,9 @@ class _ExercisesPageState extends State<ExercisesPage> {
                         backgroundColor: AppColors.primaryDark,
                         foregroundColor: Colors.white,
                       ),
-                      child: Text(AppLocalizations.of(context)!.commonRetryButton),
+                      child: Text(
+                        AppLocalizations.of(context)!.commonRetryButton,
+                      ),
                     ),
                   ],
                 ),
@@ -204,77 +207,87 @@ class _ExercisesPageState extends State<ExercisesPage> {
       onDismissed: (_) {
         if (run.id != null) _controller.deleteRun(run.id!);
       },
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppColors.cardWhite,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 3),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ExerciseDetailsPage(runSession: run),
             ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: AppColors.progressTrack,
-                shape: BoxShape.circle,
+          );
+        },
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.cardWhite,
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
               ),
-              child: Icon(
-                _iconForExerciseType(run.exerciseType),
-                color: AppColors.primaryDark,
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: AppColors.progressTrack,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  _iconForExerciseType(run.exerciseType),
+                  color: AppColors.primaryDark,
+                ),
               ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _labelForExerciseType(run.exerciseType),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                      fontSize: 15,
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _labelForExerciseType(run.exerciseType),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                        fontSize: 15,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    _formatDate(run.createdAt),
-                    style: const TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 12,
+                    const SizedBox(height: 2),
+                    Text(
+                      _formatDate(run.createdAt),
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 12,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      _buildRunMetric(
-                        Icons.route_rounded,
-                        '${run.distanceKm.toStringAsFixed(2)} km',
-                      ),
-                      const SizedBox(width: 16),
-                      _buildRunMetric(
-                        Icons.timer_rounded,
-                        _formatDuration(run.durationSeconds),
-                      ),
-                      const SizedBox(width: 16),
-                      _buildRunMetric(
-                        Icons.local_fire_department_rounded,
-                        '${run.calories.toStringAsFixed(0)} ${AppLocalizations.of(context)!.exercisesKcalUnit}',
-                      ),
-                    ],
-                  ),
-                ],
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        _buildRunMetric(
+                          Icons.route_rounded,
+                          '${run.distanceKm.toStringAsFixed(2)} km',
+                        ),
+                        const SizedBox(width: 16),
+                        _buildRunMetric(
+                          Icons.timer_rounded,
+                          _formatDuration(run.durationSeconds),
+                        ),
+                        const SizedBox(width: 16),
+                        _buildRunMetric(
+                          Icons.local_fire_department_rounded,
+                          '${run.calories.toStringAsFixed(0)} ${AppLocalizations.of(context)!.exercisesKcalUnit}',
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
