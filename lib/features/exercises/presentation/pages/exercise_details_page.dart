@@ -1,99 +1,61 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../profile/data/repositories/profile_repository_impl.dart';
+import '../../../profile/domain/usecases/get_profile_usecase.dart';
 import '../../../runs/domain/entities/run_session_entity.dart';
+import '../controllers/exercise_details_controller.dart';
 
 class ExerciseDetailsPage extends StatefulWidget {
   final RunSessionEntity runSession;
 
-  const ExerciseDetailsPage({
-    super.key,
-    required this.runSession,
-  });
+  const ExerciseDetailsPage({super.key, required this.runSession});
 
   @override
   State<ExerciseDetailsPage> createState() => _ExerciseDetailsPageState();
 }
 
 class _ExerciseDetailsPageState extends State<ExerciseDetailsPage> {
-  late final List<LatLng> _polylineData;
-  final Set<Polyline> _polylines = {};
-  final Set<Marker> _markers = {};
+  late final ExerciseDetailsController _controller;
   GoogleMapController? _mapController;
 
   @override
   void initState() {
     super.initState();
-    _polylineData = _decodePolyline(widget.runSession.polyline);
-    _setupMapData();
+    _controller = ExerciseDetailsController(
+      GetProfileUseCase(ProfileRepositoryImpl()),
+      widget.runSession,
+    );
+    _controller.loadProfile();
   }
 
-  List<LatLng> _decodePolyline(String polylineString) {
-    if (polylineString.isEmpty) return [];
-    try {
-      List<LatLng> data = [];
-      List<dynamic> list = jsonDecode(polylineString);
-      for (var element in list) {
-        var lat = double.parse((element)[0].toString());
-        var long = double.parse((element)[1].toString());
-        data.add(LatLng(lat, long));
-      }
-      return data;
-    } catch (e) {
-      return [];
-    }
-  }
-
-  void _setupMapData() {
-    if (_polylineData.isNotEmpty) {
-      _polylines.add(
-        Polyline(
-          polylineId: const PolylineId('route'),
-          points: _polylineData,
-          color: AppColors.primaryDark,
-          width: 5,
-        ),
-      );
-
-      _markers.add(
-        Marker(
-          markerId: const MarkerId('start'),
-          position: _polylineData.first,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-        ),
-      );
-
-      _markers.add(
-        Marker(
-          markerId: const MarkerId('end'),
-          position: _polylineData.last,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-        ),
-      );
-    }
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
-    if (_polylineData.isNotEmpty) {
+    if (_controller.polylinePoints.isNotEmpty) {
       // Small delay to ensure map is fully sized before bounds are applied
       Future.delayed(const Duration(milliseconds: 200), _fitMapToPolyline);
     }
   }
 
   void _fitMapToPolyline() {
-    if (_polylineData.isEmpty || _mapController == null) return;
-    
-    double minLat = _polylineData.first.latitude;
-    double minLong = _polylineData.first.longitude;
-    double maxLat = _polylineData.first.latitude;
-    double maxLong = _polylineData.first.longitude;
+    final points = _controller.polylinePoints;
+    if (points.isEmpty || _mapController == null) return;
 
-    for (var point in _polylineData) {
+    double minLat = points.first.latitude;
+    double minLong = points.first.longitude;
+    double maxLat = points.first.latitude;
+    double maxLong = points.first.longitude;
+
+    for (var point in points) {
       if (point.latitude < minLat) minLat = point.latitude;
       if (point.latitude > maxLat) maxLat = point.latitude;
       if (point.longitude < minLong) minLong = point.longitude;
@@ -120,7 +82,7 @@ class _ExerciseDetailsPageState extends State<ExerciseDetailsPage> {
     }
     return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
   }
-  
+
   String _formatPace(double paceMinPerKm) {
     final mins = paceMinPerKm.floor();
     final secs = ((paceMinPerKm - mins) * 60).round();
@@ -145,17 +107,14 @@ class _ExerciseDetailsPageState extends State<ExerciseDetailsPage> {
     final run = widget.runSession;
     final l10n = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).toString();
-    
-    final dateStr = DateFormat('E., d/MM/yyyy', locale).format(run.createdAt).toUpperCase();
 
-    // Mock calculations for missing data for display purposes
-    final dehydrationMl = (run.durationSeconds / 60) * 8; // dummy: 8ml per minute
-    final elevationGain = 20; // dummy
-    final elevationLoss = 19; // dummy
-    final maxElevation = 86; // dummy
+    final dateStr = DateFormat(
+      'E., d/MM/yyyy',
+      locale,
+    ).format(run.createdAt).toUpperCase();
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
           dateStr,
@@ -165,137 +124,125 @@ class _ExerciseDetailsPageState extends State<ExerciseDetailsPage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         elevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.share_rounded),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.more_vert_rounded),
-            onPressed: () {},
-          )
-        ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Map section
-            SizedBox(
-              height: 300,
-              child: GoogleMap(
-                initialCameraPosition: CameraPosition(
-                  target: _polylineData.isNotEmpty 
-                      ? _polylineData.first 
-                      : const LatLng(0, 0),
-                  zoom: 15,
+      body: ListenableBuilder(
+        listenable: _controller,
+        builder: (context, _) {
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Map section
+                SizedBox(
+                  height: 300,
+                  child: GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: _controller.polylinePoints.isNotEmpty
+                          ? _controller.polylinePoints.first
+                          : const LatLng(0, 0),
+                      zoom: 15,
+                    ),
+                    polylines: _controller.polylines,
+                    markers: _controller.markers,
+                    onMapCreated: _onMapCreated,
+                    myLocationButtonEnabled: false,
+                    zoomControlsEnabled: false,
+                  ),
                 ),
-                polylines: _polylines,
-                markers: _markers,
-                onMapCreated: _onMapCreated,
-                myLocationButtonEnabled: false,
-                zoomControlsEnabled: false,
-              ),
-            ),
-            
-            // Header with Exercise Type
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              color: const Color(0xFFF5F6F8), // light gray background from mockup
-              child: Text(
-                _labelForExerciseType(run.exerciseType).toUpperCase(),
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                  color: AppColors.textPrimary,
+
+                // Header with Exercise Type
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 16,
+                  ),
+                  color: AppColors.background,
+                  child: Text(
+                    _labelForExerciseType(run.exerciseType).toUpperCase(),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
                 ),
-              ),
-            ),
 
-            // Main Stats
-            Container(
-              color: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildMainStat(
-                    run.distanceKm.toStringAsFixed(2),
-                    l10n.exercisesDetailsDistance(l10n.homeUnitKm).toUpperCase(),
+                // Main Stats
+                Container(
+                  color: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 24,
                   ),
-                  _buildMainStat(
-                    _formatDuration(run.durationSeconds),
-                    l10n.exercisesDetailsDuration.toUpperCase(),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildMainStat(
+                        run.distanceKm.toStringAsFixed(2),
+                        l10n
+                            .exercisesDetailsDistance(l10n.homeUnitKm)
+                            .toUpperCase(),
+                      ),
+                      _buildMainStat(
+                        _formatDuration(run.durationSeconds),
+                        l10n.exercisesDetailsDuration.toUpperCase(),
+                      ),
+                      _buildMainStat(
+                        run.calories.toStringAsFixed(0),
+                        l10n.exercisesDetailsCalories.toUpperCase(),
+                      ),
+                    ],
                   ),
-                  _buildMainStat(
-                    run.calories.toStringAsFixed(0),
-                    l10n.exercisesDetailsCalories.toUpperCase(),
-                  ),
-                ],
-              ),
-            ),
+                ),
 
-            // Detailed List section
-            Container(
-              color: Colors.white,
-              child: Column(
-                children: [
-                  _buildListTile(
-                    icon: Icons.timer_outlined, 
-                    title: l10n.exercisesDetailsPace, 
-                    value: '${_formatPace(run.pace)} min/km',
+                // Detailed List section
+                Container(
+                  color: Colors.white,
+                  child: Column(
+                    children: [
+                      _buildListTile(
+                        icon: Icons.timer_outlined,
+                        title: l10n.exercisesDetailsPace,
+                        value: '${_formatPace(run.pace)} min/km',
+                      ),
+                      _buildListTile(
+                        icon: Icons.speed_rounded,
+                        title: l10n.exercisesDetailsAvgSpeed,
+                        value: '${run.averageSpeed.toStringAsFixed(1)} km/h',
+                      ),
+                      _buildListTile(
+                        icon: Icons.speed_rounded,
+                        title: l10n.exercisesDetailsMaxSpeed,
+                        value: '${run.maxSpeed.toStringAsFixed(1)} km/h',
+                      ),
+                      _buildListTile(
+                        icon: Icons.local_drink_outlined,
+                        title: l10n.exercisesDetailsDehydration,
+                        value: '${_controller.dehydrationMl.toInt()} ml',
+                      ),
+                      _buildListTile(
+                        icon: Icons.forest_outlined,
+                        title: l10n.exercisesDetailsSeedsEarned,
+                        value: '${run.treesEarned}',
+                      ),
+                      _buildListTile(
+                        icon: Icons.access_time_rounded,
+                        title: l10n.exercisesDetailsStartTime,
+                        value: DateFormat.Hm(locale).format(run.createdAt),
+                        showDivider: false,
+                      ),
+                    ],
                   ),
-                  _buildListTile(
-                    icon: Icons.speed_rounded, 
-                    title: l10n.exercisesDetailsAvgSpeed, 
-                    value: '${run.averageSpeed.toStringAsFixed(1)} km/h',
-                  ),
-                  _buildListTile(
-                    icon: Icons.speed_rounded, 
-                    title: l10n.exercisesDetailsMaxSpeed, 
-                    value: '${run.maxSpeed.toStringAsFixed(1)} km/h',
-                  ),
-                  _buildListTile(
-                    icon: Icons.terrain_rounded, 
-                    title: l10n.exercisesDetailsElevationGain, 
-                    value: '$elevationGain m',
-                  ),
-                  _buildListTile(
-                    icon: Icons.terrain_rounded, 
-                    title: l10n.exercisesDetailsElevationLoss, 
-                    value: '$elevationLoss m',
-                  ),
-                  _buildListTile(
-                    icon: Icons.terrain_rounded, 
-                    title: l10n.exercisesDetailsMaxElevation, 
-                    value: '$maxElevation m',
-                  ),
-                  _buildListTile(
-                    icon: Icons.local_drink_outlined, 
-                    title: l10n.exercisesDetailsDehydration, 
-                    value: '${dehydrationMl.toInt()} ml',
-                  ),
-                  _buildListTile(
-                    icon: Icons.forest_outlined, 
-                    title: l10n.exercisesDetailsSeedsEarned, 
-                    value: '${run.treesEarned}',
-                  ),
-                  _buildListTile(
-                    icon: Icons.access_time_rounded, 
-                    title: l10n.exercisesDetailsStartTime, 
-                    value: DateFormat.Hm(locale).format(run.createdAt),
-                    showDivider: false,
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -325,10 +272,10 @@ class _ExerciseDetailsPageState extends State<ExerciseDetailsPage> {
   }
 
   Widget _buildListTile({
-    required IconData icon, 
-    required String title, 
-    required String value, 
-    bool showDivider = true
+    required IconData icon,
+    required String title,
+    required String value,
+    bool showDivider = true,
   }) {
     return Column(
       children: [
@@ -359,7 +306,12 @@ class _ExerciseDetailsPageState extends State<ExerciseDetailsPage> {
           ),
         ),
         if (showDivider)
-          const Divider(height: 1, indent: 68, endIndent: 24, color: Color(0xFFEEEEEE)),
+          const Divider(
+            height: 1,
+            indent: 68,
+            endIndent: 24,
+            color: Color(0xFFEEEEEE),
+          ),
       ],
     );
   }
