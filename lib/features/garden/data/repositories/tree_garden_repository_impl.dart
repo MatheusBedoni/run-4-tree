@@ -5,7 +5,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../../../core/database/app_database.dart';
 import '../../../../core/utils/purchases_safe_call.dart';
 import '../../../../core/services/models/plant_tree_request.dart';
+import '../../../../core/services/models/plant_tree_response.dart';
 import '../../../../core/services/tree_nation_service.dart';
+import '../../domain/entities/planted_tree_entity.dart';
 import '../../domain/entities/tree_progress_entity.dart';
 import '../../domain/repositories/tree_garden_repository.dart';
 
@@ -46,9 +48,10 @@ class TreeGardenRepositoryImpl implements TreeGardenRepository {
 
     while (revenue >= treePriceUsd) {
       try {
-        await _treeNationService.plantTree(
+        final response = await _treeNationService.plantTree(
           PlantTreeRequest(quantity: 1, planterId: planterId),
         );
+        await _savePlantedTrees(response);
         revenue -= treePriceUsd;
         trees += 1;
       } catch (_) {
@@ -106,4 +109,53 @@ class TreeGardenRepositoryImpl implements TreeGardenRepository {
     treePriceUsd: treePriceUsd,
     treesPlanted: row.treesPlanted,
   );
+
+  /// Persiste cada árvore de [response.trees] na "floresta" local — usado
+  /// para exibir o grid de árvores e o CO2 total compensado na GardenPage.
+  Future<void> _savePlantedTrees(PlantTreeResponse response) async {
+    for (final tree in response.trees) {
+      await _db
+          .into(_db.plantedTrees)
+          .insert(
+            PlantedTreesCompanion.insert(
+              treeNationId: tree.id,
+              token: tree.token,
+              collectUrl: tree.collectUrl,
+              certificateUrl: tree.certificateUrl,
+              country: tree.country,
+              projectId: tree.projectId,
+              projectName: tree.projectName,
+              projectUrl: tree.projectUrl,
+              speciesId: tree.speciesId,
+              speciesName: tree.speciesName,
+              speciesLifeTimeCo2: Value(tree.speciesLifeTimeCo2),
+              paymentId: Value(response.paymentId),
+            ),
+          );
+    }
+  }
+
+  @override
+  Future<List<PlantedTreeEntity>> getPlantedTrees() async {
+    final rows =
+        await (_db.select(_db.plantedTrees)
+              ..orderBy([(t) => OrderingTerm.desc(t.plantedAt)]))
+            .get();
+
+    return rows
+        .map(
+          (row) => PlantedTreeEntity(
+            treeNationId: row.treeNationId,
+            certificateUrl: row.certificateUrl,
+            collectUrl: row.collectUrl,
+            country: row.country,
+            projectName: row.projectName,
+            projectUrl: row.projectUrl,
+            speciesName: row.speciesName,
+            co2LifeTimeKg: row.speciesLifeTimeCo2,
+            plantedAt: row.plantedAt,
+          ),
+        )
+        .toList();
+  }
 }

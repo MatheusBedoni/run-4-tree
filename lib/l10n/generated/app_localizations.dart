@@ -598,6 +598,42 @@ abstract class AppLocalizations {
   /// **'Watch ad and earn a seed'**
   String get gardenWatchAdButton;
 
+  /// No description provided for @gardenCo2CompensatedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'CO2 compensated'**
+  String get gardenCo2CompensatedLabel;
+
+  /// No description provided for @gardenCo2CompensatedValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{kg} kg'**
+  String gardenCo2CompensatedValue(String kg);
+
+  /// No description provided for @gardenForestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your forest'**
+  String get gardenForestTitle;
+
+  /// No description provided for @gardenForestEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No trees planted yet. Watch ads to plant your first one.'**
+  String get gardenForestEmptyMessage;
+
+  /// No description provided for @gardenViewCertificate.
+  ///
+  /// In en, this message translates to:
+  /// **'View certificate'**
+  String get gardenViewCertificate;
+
+  /// No description provided for @gardenCertificateOpenError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t open the certificate link.'**
+  String get gardenCertificateOpenError;
+
   /// No description provided for @exercisesDetailsPace.
   ///
   /// In en, this message translates to:

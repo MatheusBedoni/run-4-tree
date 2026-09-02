@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../data/repositories/tree_garden_repository_impl.dart';
+import '../../domain/entities/planted_tree_entity.dart';
 import '../../domain/entities/tree_progress_entity.dart';
+import '../../domain/usecases/get_planted_trees_usecase.dart';
 import '../../domain/usecases/get_tree_progress_usecase.dart';
 import '../controllers/garden_controller.dart';
 
-/// GardenPage — mostra quantas árvores o usuário já plantou e o progresso
-/// rumo à próxima, alimentado pelos anúncios exibidos durante o ciclo de
-/// uma corrida (início, fim e banner).
+/// GardenPage — mostra a floresta real do usuário (árvores plantadas via
+/// Tree-Nation, financiadas pelos anúncios assistidos) e o progresso rumo
+/// à próxima árvore.
 class GardenPage extends StatefulWidget {
   const GardenPage({super.key});
 
@@ -25,7 +28,10 @@ class GardenPageState extends State<GardenPage> {
   void initState() {
     super.initState();
     final repository = TreeGardenRepositoryImpl();
-    _controller = GardenController(GetTreeProgressUseCase(repository));
+    _controller = GardenController(
+      GetTreeProgressUseCase(repository),
+      GetPlantedTreesUseCase(repository),
+    );
     _controller.loadProgress();
   }
 
@@ -57,6 +63,8 @@ class GardenPageState extends State<GardenPage> {
             final progressPercent = progress?.progressPercent ?? 0.0;
             final seedsAccumulated = progress?.seedsAccumulated ?? 0;
             const seedsPerTree = TreeProgressEntity.seedsPerTree;
+            final plantedTrees = _controller.plantedTrees;
+            final co2CompensatedKg = _controller.co2CompensatedKg;
 
             return SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
@@ -77,16 +85,28 @@ class GardenPageState extends State<GardenPage> {
                     style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: 28),
-                  _buildTreesCard(treesPlanted),
+                  _buildImpactCard(treesPlanted, co2CompensatedKg),
                   const SizedBox(height: 20),
                   _buildProgressCard(
                     seedsAccumulated: seedsAccumulated,
                     seedsPerTree: seedsPerTree,
                     progressPercent: progressPercent,
                   ),
-                  const SizedBox(height: 20),
-                  if (_controller.error != null)
+                  const SizedBox(height: 28),
+                  Text(
+                    AppLocalizations.of(context)!.gardenForestTitle,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  _buildForestGrid(plantedTrees),
+                  if (_controller.error != null) ...[
+                    const SizedBox(height: 20),
                     _buildErrorBanner(_messageFor(context)),
+                  ],
                 ],
               ),
             );
@@ -100,62 +120,77 @@ class GardenPageState extends State<GardenPage> {
     return AppLocalizations.of(context)!.gardenLoadErrorMessage;
   }
 
-  Widget _buildTreesCard(int treesPlanted) {
+  /// Card de destaque com as duas métricas de maior impacto: total de
+  /// árvores plantadas e CO2 (kg) compensado por elas.
+  Widget _buildImpactCard(int treesPlanted, double co2CompensatedKg) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
         borderRadius: BorderRadius.circular(24),
+        gradient: const LinearGradient(
+          colors: [AppColors.progressGreen, AppColors.primaryDark],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
+            color: AppColors.progressGreen.withValues(alpha: 0.35),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
         ],
       ),
-      child: Column(
+      child: Row(
         children: [
-          Container(
-            width: 76,
-            height: 76,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: const LinearGradient(
-                colors: [AppColors.progressGreen, AppColors.primaryDark],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.progressGreen.withValues(alpha: 0.35),
-                  blurRadius: 16,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-            child: const Center(
-              child: FaIcon(FontAwesomeIcons.tree, color: Colors.white, size: 32),
+          Expanded(
+            child: _buildImpactStat(
+              icon: FontAwesomeIcons.tree,
+              value: '$treesPlanted',
+              label: AppLocalizations.of(context)!.gardenTreesPlanted(treesPlanted),
             ),
           ),
-          const SizedBox(height: 16),
-          Text(
-            '$treesPlanted',
-            style: const TextStyle(
-              fontSize: 40,
-              fontWeight: FontWeight.bold,
-              color: AppColors.primaryDark,
-              height: 1,
+          Container(width: 1, height: 56, color: Colors.white.withValues(alpha: 0.3)),
+          Expanded(
+            child: _buildImpactStat(
+              icon: FontAwesomeIcons.leaf,
+              value: AppLocalizations.of(
+                context,
+              )!.gardenCo2CompensatedValue(co2CompensatedKg.toStringAsFixed(2)),
+              label: AppLocalizations.of(context)!.gardenCo2CompensatedLabel,
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            AppLocalizations.of(context)!.gardenTreesPlanted(treesPlanted),
-            style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildImpactStat({
+    required FaIconData icon,
+    required String value,
+    required String label,
+  }) {
+    return Column(
+      children: [
+        FaIcon(icon, color: Colors.white, size: 22),
+        const SizedBox(height: 10),
+        Text(
+          value,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 26,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            height: 1,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.9)),
+        ),
+      ],
     );
   }
 
@@ -228,6 +263,132 @@ class GardenPageState extends State<GardenPage> {
         ],
       ),
     );
+  }
+
+  Widget _buildForestGrid(List<PlantedTreeEntity> plantedTrees) {
+    if (plantedTrees.isEmpty) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          children: [
+            const FaIcon(FontAwesomeIcons.seedling, size: 28, color: AppColors.textSecondary),
+            const SizedBox(height: 12),
+            Text(
+              AppLocalizations.of(context)!.gardenForestEmptyMessage,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: plantedTrees.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 14,
+        mainAxisSpacing: 14,
+        childAspectRatio: 0.85,
+      ),
+      itemBuilder: (context, index) => _buildTreeCard(plantedTrees[index]),
+    );
+  }
+
+  Widget _buildTreeCard(PlantedTreeEntity tree) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.progressTrack,
+            ),
+            child: const Center(
+              child: FaIcon(FontAwesomeIcons.tree, color: AppColors.primaryDark, size: 18),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            tree.speciesName,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            tree.country,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+          ),
+          const Spacer(),
+          GestureDetector(
+            onTap: () => _openCertificate(tree.certificateUrl),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const FaIcon(
+                  FontAwesomeIcons.certificate,
+                  size: 12,
+                  color: AppColors.primaryLight,
+                ),
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    AppLocalizations.of(context)!.gardenViewCertificate,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primaryLight,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _openCertificate(String url) async {
+    final uri = Uri.tryParse(url);
+    final launched =
+        uri != null && await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!launched && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.gardenCertificateOpenError)),
+      );
+    }
   }
 
   Widget _buildErrorBanner(String message) {

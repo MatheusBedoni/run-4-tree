@@ -16,7 +16,11 @@ class TreeNationService {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return PlantTreeResponse.fromJson(response.data);
+        final result = PlantTreeResponse.fromJson(response.data);
+        if (result.status != 'ok' || result.trees.isEmpty) {
+          throw Exception('Tree-Nation API returned no trees: ${response.data}');
+        }
+        return result;
       } else {
         throw Exception('Failed to plant tree: ${response.statusCode} - ${response.data}');
       }

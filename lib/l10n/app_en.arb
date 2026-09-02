@@ -122,6 +122,18 @@
   "gardenAdRewardErrorMessage": "We couldn't confirm the reward. Please try again.",
   "gardenWatchAdButton": "Watch ad and earn a seed",
 
+  "gardenCo2CompensatedLabel": "CO2 compensated",
+  "gardenCo2CompensatedValue": "{kg} kg",
+  "@gardenCo2CompensatedValue": {
+    "placeholders": {
+      "kg": { "type": "String" }
+    }
+  },
+  "gardenForestTitle": "Your forest",
+  "gardenForestEmptyMessage": "No trees planted yet. Watch ads to plant your first one.",
+  "gardenViewCertificate": "View certificate",
+  "gardenCertificateOpenError": "We couldn't open the certificate link.",
+
   "exercisesDetailsPace": "Avg. Pace",
   "exercisesDetailsAvgSpeed": "Avg. Speed",
   "exercisesDetailsMaxSpeed": "Max Speed",

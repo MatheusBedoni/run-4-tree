@@ -1988,6 +1988,827 @@ class UserProfileCompanion extends UpdateCompanion<UserProfileData> {
   }
 }
 
+class $PlantedTreesTable extends PlantedTrees
+    with TableInfo<$PlantedTreesTable, PlantedTree> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PlantedTreesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _treeNationIdMeta = const VerificationMeta(
+    'treeNationId',
+  );
+  @override
+  late final GeneratedColumn<int> treeNationId = GeneratedColumn<int>(
+    'tree_nation_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _tokenMeta = const VerificationMeta('token');
+  @override
+  late final GeneratedColumn<String> token = GeneratedColumn<String>(
+    'token',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _collectUrlMeta = const VerificationMeta(
+    'collectUrl',
+  );
+  @override
+  late final GeneratedColumn<String> collectUrl = GeneratedColumn<String>(
+    'collect_url',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _certificateUrlMeta = const VerificationMeta(
+    'certificateUrl',
+  );
+  @override
+  late final GeneratedColumn<String> certificateUrl = GeneratedColumn<String>(
+    'certificate_url',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _countryMeta = const VerificationMeta(
+    'country',
+  );
+  @override
+  late final GeneratedColumn<String> country = GeneratedColumn<String>(
+    'country',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _projectIdMeta = const VerificationMeta(
+    'projectId',
+  );
+  @override
+  late final GeneratedColumn<int> projectId = GeneratedColumn<int>(
+    'project_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _projectNameMeta = const VerificationMeta(
+    'projectName',
+  );
+  @override
+  late final GeneratedColumn<String> projectName = GeneratedColumn<String>(
+    'project_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _projectUrlMeta = const VerificationMeta(
+    'projectUrl',
+  );
+  @override
+  late final GeneratedColumn<String> projectUrl = GeneratedColumn<String>(
+    'project_url',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _speciesIdMeta = const VerificationMeta(
+    'speciesId',
+  );
+  @override
+  late final GeneratedColumn<int> speciesId = GeneratedColumn<int>(
+    'species_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _speciesNameMeta = const VerificationMeta(
+    'speciesName',
+  );
+  @override
+  late final GeneratedColumn<String> speciesName = GeneratedColumn<String>(
+    'species_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _speciesLifeTimeCo2Meta =
+      const VerificationMeta('speciesLifeTimeCo2');
+  @override
+  late final GeneratedColumn<double> speciesLifeTimeCo2 =
+      GeneratedColumn<double>(
+        'species_life_time_co2',
+        aliasedName,
+        false,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(0.0),
+      );
+  static const VerificationMeta _paymentIdMeta = const VerificationMeta(
+    'paymentId',
+  );
+  @override
+  late final GeneratedColumn<int> paymentId = GeneratedColumn<int>(
+    'payment_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _plantedAtMeta = const VerificationMeta(
+    'plantedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> plantedAt = GeneratedColumn<DateTime>(
+    'planted_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    treeNationId,
+    token,
+    collectUrl,
+    certificateUrl,
+    country,
+    projectId,
+    projectName,
+    projectUrl,
+    speciesId,
+    speciesName,
+    speciesLifeTimeCo2,
+    paymentId,
+    plantedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'planted_trees';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PlantedTree> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('tree_nation_id')) {
+      context.handle(
+        _treeNationIdMeta,
+        treeNationId.isAcceptableOrUnknown(
+          data['tree_nation_id']!,
+          _treeNationIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_treeNationIdMeta);
+    }
+    if (data.containsKey('token')) {
+      context.handle(
+        _tokenMeta,
+        token.isAcceptableOrUnknown(data['token']!, _tokenMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_tokenMeta);
+    }
+    if (data.containsKey('collect_url')) {
+      context.handle(
+        _collectUrlMeta,
+        collectUrl.isAcceptableOrUnknown(data['collect_url']!, _collectUrlMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_collectUrlMeta);
+    }
+    if (data.containsKey('certificate_url')) {
+      context.handle(
+        _certificateUrlMeta,
+        certificateUrl.isAcceptableOrUnknown(
+          data['certificate_url']!,
+          _certificateUrlMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_certificateUrlMeta);
+    }
+    if (data.containsKey('country')) {
+      context.handle(
+        _countryMeta,
+        country.isAcceptableOrUnknown(data['country']!, _countryMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_countryMeta);
+    }
+    if (data.containsKey('project_id')) {
+      context.handle(
+        _projectIdMeta,
+        projectId.isAcceptableOrUnknown(data['project_id']!, _projectIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_projectIdMeta);
+    }
+    if (data.containsKey('project_name')) {
+      context.handle(
+        _projectNameMeta,
+        projectName.isAcceptableOrUnknown(
+          data['project_name']!,
+          _projectNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_projectNameMeta);
+    }
+    if (data.containsKey('project_url')) {
+      context.handle(
+        _projectUrlMeta,
+        projectUrl.isAcceptableOrUnknown(data['project_url']!, _projectUrlMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_projectUrlMeta);
+    }
+    if (data.containsKey('species_id')) {
+      context.handle(
+        _speciesIdMeta,
+        speciesId.isAcceptableOrUnknown(data['species_id']!, _speciesIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_speciesIdMeta);
+    }
+    if (data.containsKey('species_name')) {
+      context.handle(
+        _speciesNameMeta,
+        speciesName.isAcceptableOrUnknown(
+          data['species_name']!,
+          _speciesNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_speciesNameMeta);
+    }
+    if (data.containsKey('species_life_time_co2')) {
+      context.handle(
+        _speciesLifeTimeCo2Meta,
+        speciesLifeTimeCo2.isAcceptableOrUnknown(
+          data['species_life_time_co2']!,
+          _speciesLifeTimeCo2Meta,
+        ),
+      );
+    }
+    if (data.containsKey('payment_id')) {
+      context.handle(
+        _paymentIdMeta,
+        paymentId.isAcceptableOrUnknown(data['payment_id']!, _paymentIdMeta),
+      );
+    }
+    if (data.containsKey('planted_at')) {
+      context.handle(
+        _plantedAtMeta,
+        plantedAt.isAcceptableOrUnknown(data['planted_at']!, _plantedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PlantedTree map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PlantedTree(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      treeNationId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}tree_nation_id'],
+      )!,
+      token: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}token'],
+      )!,
+      collectUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}collect_url'],
+      )!,
+      certificateUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}certificate_url'],
+      )!,
+      country: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}country'],
+      )!,
+      projectId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}project_id'],
+      )!,
+      projectName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}project_name'],
+      )!,
+      projectUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}project_url'],
+      )!,
+      speciesId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}species_id'],
+      )!,
+      speciesName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}species_name'],
+      )!,
+      speciesLifeTimeCo2: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}species_life_time_co2'],
+      )!,
+      paymentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}payment_id'],
+      ),
+      plantedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}planted_at'],
+      )!,
+    );
+  }
+
+  @override
+  $PlantedTreesTable createAlias(String alias) {
+    return $PlantedTreesTable(attachedDatabase, alias);
+  }
+}
+
+class PlantedTree extends DataClass implements Insertable<PlantedTree> {
+  final int id;
+
+  /// Id da árvore na Tree-Nation (`trees[].id`).
+  final int treeNationId;
+  final String token;
+  final String collectUrl;
+  final String certificateUrl;
+  final String country;
+  final int projectId;
+  final String projectName;
+  final String projectUrl;
+  final int speciesId;
+  final String speciesName;
+
+  /// CO2 (kg) que a espécie compensa ao longo de sua vida útil.
+  final double speciesLifeTimeCo2;
+  final int? paymentId;
+  final DateTime plantedAt;
+  const PlantedTree({
+    required this.id,
+    required this.treeNationId,
+    required this.token,
+    required this.collectUrl,
+    required this.certificateUrl,
+    required this.country,
+    required this.projectId,
+    required this.projectName,
+    required this.projectUrl,
+    required this.speciesId,
+    required this.speciesName,
+    required this.speciesLifeTimeCo2,
+    this.paymentId,
+    required this.plantedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['tree_nation_id'] = Variable<int>(treeNationId);
+    map['token'] = Variable<String>(token);
+    map['collect_url'] = Variable<String>(collectUrl);
+    map['certificate_url'] = Variable<String>(certificateUrl);
+    map['country'] = Variable<String>(country);
+    map['project_id'] = Variable<int>(projectId);
+    map['project_name'] = Variable<String>(projectName);
+    map['project_url'] = Variable<String>(projectUrl);
+    map['species_id'] = Variable<int>(speciesId);
+    map['species_name'] = Variable<String>(speciesName);
+    map['species_life_time_co2'] = Variable<double>(speciesLifeTimeCo2);
+    if (!nullToAbsent || paymentId != null) {
+      map['payment_id'] = Variable<int>(paymentId);
+    }
+    map['planted_at'] = Variable<DateTime>(plantedAt);
+    return map;
+  }
+
+  PlantedTreesCompanion toCompanion(bool nullToAbsent) {
+    return PlantedTreesCompanion(
+      id: Value(id),
+      treeNationId: Value(treeNationId),
+      token: Value(token),
+      collectUrl: Value(collectUrl),
+      certificateUrl: Value(certificateUrl),
+      country: Value(country),
+      projectId: Value(projectId),
+      projectName: Value(projectName),
+      projectUrl: Value(projectUrl),
+      speciesId: Value(speciesId),
+      speciesName: Value(speciesName),
+      speciesLifeTimeCo2: Value(speciesLifeTimeCo2),
+      paymentId: paymentId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(paymentId),
+      plantedAt: Value(plantedAt),
+    );
+  }
+
+  factory PlantedTree.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PlantedTree(
+      id: serializer.fromJson<int>(json['id']),
+      treeNationId: serializer.fromJson<int>(json['treeNationId']),
+      token: serializer.fromJson<String>(json['token']),
+      collectUrl: serializer.fromJson<String>(json['collectUrl']),
+      certificateUrl: serializer.fromJson<String>(json['certificateUrl']),
+      country: serializer.fromJson<String>(json['country']),
+      projectId: serializer.fromJson<int>(json['projectId']),
+      projectName: serializer.fromJson<String>(json['projectName']),
+      projectUrl: serializer.fromJson<String>(json['projectUrl']),
+      speciesId: serializer.fromJson<int>(json['speciesId']),
+      speciesName: serializer.fromJson<String>(json['speciesName']),
+      speciesLifeTimeCo2: serializer.fromJson<double>(
+        json['speciesLifeTimeCo2'],
+      ),
+      paymentId: serializer.fromJson<int?>(json['paymentId']),
+      plantedAt: serializer.fromJson<DateTime>(json['plantedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'treeNationId': serializer.toJson<int>(treeNationId),
+      'token': serializer.toJson<String>(token),
+      'collectUrl': serializer.toJson<String>(collectUrl),
+      'certificateUrl': serializer.toJson<String>(certificateUrl),
+      'country': serializer.toJson<String>(country),
+      'projectId': serializer.toJson<int>(projectId),
+      'projectName': serializer.toJson<String>(projectName),
+      'projectUrl': serializer.toJson<String>(projectUrl),
+      'speciesId': serializer.toJson<int>(speciesId),
+      'speciesName': serializer.toJson<String>(speciesName),
+      'speciesLifeTimeCo2': serializer.toJson<double>(speciesLifeTimeCo2),
+      'paymentId': serializer.toJson<int?>(paymentId),
+      'plantedAt': serializer.toJson<DateTime>(plantedAt),
+    };
+  }
+
+  PlantedTree copyWith({
+    int? id,
+    int? treeNationId,
+    String? token,
+    String? collectUrl,
+    String? certificateUrl,
+    String? country,
+    int? projectId,
+    String? projectName,
+    String? projectUrl,
+    int? speciesId,
+    String? speciesName,
+    double? speciesLifeTimeCo2,
+    Value<int?> paymentId = const Value.absent(),
+    DateTime? plantedAt,
+  }) => PlantedTree(
+    id: id ?? this.id,
+    treeNationId: treeNationId ?? this.treeNationId,
+    token: token ?? this.token,
+    collectUrl: collectUrl ?? this.collectUrl,
+    certificateUrl: certificateUrl ?? this.certificateUrl,
+    country: country ?? this.country,
+    projectId: projectId ?? this.projectId,
+    projectName: projectName ?? this.projectName,
+    projectUrl: projectUrl ?? this.projectUrl,
+    speciesId: speciesId ?? this.speciesId,
+    speciesName: speciesName ?? this.speciesName,
+    speciesLifeTimeCo2: speciesLifeTimeCo2 ?? this.speciesLifeTimeCo2,
+    paymentId: paymentId.present ? paymentId.value : this.paymentId,
+    plantedAt: plantedAt ?? this.plantedAt,
+  );
+  PlantedTree copyWithCompanion(PlantedTreesCompanion data) {
+    return PlantedTree(
+      id: data.id.present ? data.id.value : this.id,
+      treeNationId: data.treeNationId.present
+          ? data.treeNationId.value
+          : this.treeNationId,
+      token: data.token.present ? data.token.value : this.token,
+      collectUrl: data.collectUrl.present
+          ? data.collectUrl.value
+          : this.collectUrl,
+      certificateUrl: data.certificateUrl.present
+          ? data.certificateUrl.value
+          : this.certificateUrl,
+      country: data.country.present ? data.country.value : this.country,
+      projectId: data.projectId.present ? data.projectId.value : this.projectId,
+      projectName: data.projectName.present
+          ? data.projectName.value
+          : this.projectName,
+      projectUrl: data.projectUrl.present
+          ? data.projectUrl.value
+          : this.projectUrl,
+      speciesId: data.speciesId.present ? data.speciesId.value : this.speciesId,
+      speciesName: data.speciesName.present
+          ? data.speciesName.value
+          : this.speciesName,
+      speciesLifeTimeCo2: data.speciesLifeTimeCo2.present
+          ? data.speciesLifeTimeCo2.value
+          : this.speciesLifeTimeCo2,
+      paymentId: data.paymentId.present ? data.paymentId.value : this.paymentId,
+      plantedAt: data.plantedAt.present ? data.plantedAt.value : this.plantedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PlantedTree(')
+          ..write('id: $id, ')
+          ..write('treeNationId: $treeNationId, ')
+          ..write('token: $token, ')
+          ..write('collectUrl: $collectUrl, ')
+          ..write('certificateUrl: $certificateUrl, ')
+          ..write('country: $country, ')
+          ..write('projectId: $projectId, ')
+          ..write('projectName: $projectName, ')
+          ..write('projectUrl: $projectUrl, ')
+          ..write('speciesId: $speciesId, ')
+          ..write('speciesName: $speciesName, ')
+          ..write('speciesLifeTimeCo2: $speciesLifeTimeCo2, ')
+          ..write('paymentId: $paymentId, ')
+          ..write('plantedAt: $plantedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    treeNationId,
+    token,
+    collectUrl,
+    certificateUrl,
+    country,
+    projectId,
+    projectName,
+    projectUrl,
+    speciesId,
+    speciesName,
+    speciesLifeTimeCo2,
+    paymentId,
+    plantedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PlantedTree &&
+          other.id == this.id &&
+          other.treeNationId == this.treeNationId &&
+          other.token == this.token &&
+          other.collectUrl == this.collectUrl &&
+          other.certificateUrl == this.certificateUrl &&
+          other.country == this.country &&
+          other.projectId == this.projectId &&
+          other.projectName == this.projectName &&
+          other.projectUrl == this.projectUrl &&
+          other.speciesId == this.speciesId &&
+          other.speciesName == this.speciesName &&
+          other.speciesLifeTimeCo2 == this.speciesLifeTimeCo2 &&
+          other.paymentId == this.paymentId &&
+          other.plantedAt == this.plantedAt);
+}
+
+class PlantedTreesCompanion extends UpdateCompanion<PlantedTree> {
+  final Value<int> id;
+  final Value<int> treeNationId;
+  final Value<String> token;
+  final Value<String> collectUrl;
+  final Value<String> certificateUrl;
+  final Value<String> country;
+  final Value<int> projectId;
+  final Value<String> projectName;
+  final Value<String> projectUrl;
+  final Value<int> speciesId;
+  final Value<String> speciesName;
+  final Value<double> speciesLifeTimeCo2;
+  final Value<int?> paymentId;
+  final Value<DateTime> plantedAt;
+  const PlantedTreesCompanion({
+    this.id = const Value.absent(),
+    this.treeNationId = const Value.absent(),
+    this.token = const Value.absent(),
+    this.collectUrl = const Value.absent(),
+    this.certificateUrl = const Value.absent(),
+    this.country = const Value.absent(),
+    this.projectId = const Value.absent(),
+    this.projectName = const Value.absent(),
+    this.projectUrl = const Value.absent(),
+    this.speciesId = const Value.absent(),
+    this.speciesName = const Value.absent(),
+    this.speciesLifeTimeCo2 = const Value.absent(),
+    this.paymentId = const Value.absent(),
+    this.plantedAt = const Value.absent(),
+  });
+  PlantedTreesCompanion.insert({
+    this.id = const Value.absent(),
+    required int treeNationId,
+    required String token,
+    required String collectUrl,
+    required String certificateUrl,
+    required String country,
+    required int projectId,
+    required String projectName,
+    required String projectUrl,
+    required int speciesId,
+    required String speciesName,
+    this.speciesLifeTimeCo2 = const Value.absent(),
+    this.paymentId = const Value.absent(),
+    this.plantedAt = const Value.absent(),
+  }) : treeNationId = Value(treeNationId),
+       token = Value(token),
+       collectUrl = Value(collectUrl),
+       certificateUrl = Value(certificateUrl),
+       country = Value(country),
+       projectId = Value(projectId),
+       projectName = Value(projectName),
+       projectUrl = Value(projectUrl),
+       speciesId = Value(speciesId),
+       speciesName = Value(speciesName);
+  static Insertable<PlantedTree> custom({
+    Expression<int>? id,
+    Expression<int>? treeNationId,
+    Expression<String>? token,
+    Expression<String>? collectUrl,
+    Expression<String>? certificateUrl,
+    Expression<String>? country,
+    Expression<int>? projectId,
+    Expression<String>? projectName,
+    Expression<String>? projectUrl,
+    Expression<int>? speciesId,
+    Expression<String>? speciesName,
+    Expression<double>? speciesLifeTimeCo2,
+    Expression<int>? paymentId,
+    Expression<DateTime>? plantedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (treeNationId != null) 'tree_nation_id': treeNationId,
+      if (token != null) 'token': token,
+      if (collectUrl != null) 'collect_url': collectUrl,
+      if (certificateUrl != null) 'certificate_url': certificateUrl,
+      if (country != null) 'country': country,
+      if (projectId != null) 'project_id': projectId,
+      if (projectName != null) 'project_name': projectName,
+      if (projectUrl != null) 'project_url': projectUrl,
+      if (speciesId != null) 'species_id': speciesId,
+      if (speciesName != null) 'species_name': speciesName,
+      if (speciesLifeTimeCo2 != null)
+        'species_life_time_co2': speciesLifeTimeCo2,
+      if (paymentId != null) 'payment_id': paymentId,
+      if (plantedAt != null) 'planted_at': plantedAt,
+    });
+  }
+
+  PlantedTreesCompanion copyWith({
+    Value<int>? id,
+    Value<int>? treeNationId,
+    Value<String>? token,
+    Value<String>? collectUrl,
+    Value<String>? certificateUrl,
+    Value<String>? country,
+    Value<int>? projectId,
+    Value<String>? projectName,
+    Value<String>? projectUrl,
+    Value<int>? speciesId,
+    Value<String>? speciesName,
+    Value<double>? speciesLifeTimeCo2,
+    Value<int?>? paymentId,
+    Value<DateTime>? plantedAt,
+  }) {
+    return PlantedTreesCompanion(
+      id: id ?? this.id,
+      treeNationId: treeNationId ?? this.treeNationId,
+      token: token ?? this.token,
+      collectUrl: collectUrl ?? this.collectUrl,
+      certificateUrl: certificateUrl ?? this.certificateUrl,
+      country: country ?? this.country,
+      projectId: projectId ?? this.projectId,
+      projectName: projectName ?? this.projectName,
+      projectUrl: projectUrl ?? this.projectUrl,
+      speciesId: speciesId ?? this.speciesId,
+      speciesName: speciesName ?? this.speciesName,
+      speciesLifeTimeCo2: speciesLifeTimeCo2 ?? this.speciesLifeTimeCo2,
+      paymentId: paymentId ?? this.paymentId,
+      plantedAt: plantedAt ?? this.plantedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (treeNationId.present) {
+      map['tree_nation_id'] = Variable<int>(treeNationId.value);
+    }
+    if (token.present) {
+      map['token'] = Variable<String>(token.value);
+    }
+    if (collectUrl.present) {
+      map['collect_url'] = Variable<String>(collectUrl.value);
+    }
+    if (certificateUrl.present) {
+      map['certificate_url'] = Variable<String>(certificateUrl.value);
+    }
+    if (country.present) {
+      map['country'] = Variable<String>(country.value);
+    }
+    if (projectId.present) {
+      map['project_id'] = Variable<int>(projectId.value);
+    }
+    if (projectName.present) {
+      map['project_name'] = Variable<String>(projectName.value);
+    }
+    if (projectUrl.present) {
+      map['project_url'] = Variable<String>(projectUrl.value);
+    }
+    if (speciesId.present) {
+      map['species_id'] = Variable<int>(speciesId.value);
+    }
+    if (speciesName.present) {
+      map['species_name'] = Variable<String>(speciesName.value);
+    }
+    if (speciesLifeTimeCo2.present) {
+      map['species_life_time_co2'] = Variable<double>(speciesLifeTimeCo2.value);
+    }
+    if (paymentId.present) {
+      map['payment_id'] = Variable<int>(paymentId.value);
+    }
+    if (plantedAt.present) {
+      map['planted_at'] = Variable<DateTime>(plantedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PlantedTreesCompanion(')
+          ..write('id: $id, ')
+          ..write('treeNationId: $treeNationId, ')
+          ..write('token: $token, ')
+          ..write('collectUrl: $collectUrl, ')
+          ..write('certificateUrl: $certificateUrl, ')
+          ..write('country: $country, ')
+          ..write('projectId: $projectId, ')
+          ..write('projectName: $projectName, ')
+          ..write('projectUrl: $projectUrl, ')
+          ..write('speciesId: $speciesId, ')
+          ..write('speciesName: $speciesName, ')
+          ..write('speciesLifeTimeCo2: $speciesLifeTimeCo2, ')
+          ..write('paymentId: $paymentId, ')
+          ..write('plantedAt: $plantedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1995,6 +2816,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ExercisesTable exercises = $ExercisesTable(this);
   late final $TreeProgressTable treeProgress = $TreeProgressTable(this);
   late final $UserProfileTable userProfile = $UserProfileTable(this);
+  late final $PlantedTreesTable plantedTrees = $PlantedTreesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2004,6 +2826,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     exercises,
     treeProgress,
     userProfile,
+    plantedTrees,
   ];
 }
 
@@ -2997,6 +3820,385 @@ typedef $$UserProfileTableProcessedTableManager =
       UserProfileData,
       PrefetchHooks Function()
     >;
+typedef $$PlantedTreesTableCreateCompanionBuilder =
+    PlantedTreesCompanion Function({
+      Value<int> id,
+      required int treeNationId,
+      required String token,
+      required String collectUrl,
+      required String certificateUrl,
+      required String country,
+      required int projectId,
+      required String projectName,
+      required String projectUrl,
+      required int speciesId,
+      required String speciesName,
+      Value<double> speciesLifeTimeCo2,
+      Value<int?> paymentId,
+      Value<DateTime> plantedAt,
+    });
+typedef $$PlantedTreesTableUpdateCompanionBuilder =
+    PlantedTreesCompanion Function({
+      Value<int> id,
+      Value<int> treeNationId,
+      Value<String> token,
+      Value<String> collectUrl,
+      Value<String> certificateUrl,
+      Value<String> country,
+      Value<int> projectId,
+      Value<String> projectName,
+      Value<String> projectUrl,
+      Value<int> speciesId,
+      Value<String> speciesName,
+      Value<double> speciesLifeTimeCo2,
+      Value<int?> paymentId,
+      Value<DateTime> plantedAt,
+    });
+
+class $$PlantedTreesTableFilterComposer
+    extends Composer<_$AppDatabase, $PlantedTreesTable> {
+  $$PlantedTreesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get treeNationId => $composableBuilder(
+    column: $table.treeNationId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get token => $composableBuilder(
+    column: $table.token,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get collectUrl => $composableBuilder(
+    column: $table.collectUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get certificateUrl => $composableBuilder(
+    column: $table.certificateUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get country => $composableBuilder(
+    column: $table.country,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get projectId => $composableBuilder(
+    column: $table.projectId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get projectName => $composableBuilder(
+    column: $table.projectName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get projectUrl => $composableBuilder(
+    column: $table.projectUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get speciesId => $composableBuilder(
+    column: $table.speciesId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get speciesName => $composableBuilder(
+    column: $table.speciesName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get speciesLifeTimeCo2 => $composableBuilder(
+    column: $table.speciesLifeTimeCo2,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get paymentId => $composableBuilder(
+    column: $table.paymentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get plantedAt => $composableBuilder(
+    column: $table.plantedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PlantedTreesTableOrderingComposer
+    extends Composer<_$AppDatabase, $PlantedTreesTable> {
+  $$PlantedTreesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get treeNationId => $composableBuilder(
+    column: $table.treeNationId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get token => $composableBuilder(
+    column: $table.token,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get collectUrl => $composableBuilder(
+    column: $table.collectUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get certificateUrl => $composableBuilder(
+    column: $table.certificateUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get country => $composableBuilder(
+    column: $table.country,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get projectId => $composableBuilder(
+    column: $table.projectId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get projectName => $composableBuilder(
+    column: $table.projectName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get projectUrl => $composableBuilder(
+    column: $table.projectUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get speciesId => $composableBuilder(
+    column: $table.speciesId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get speciesName => $composableBuilder(
+    column: $table.speciesName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get speciesLifeTimeCo2 => $composableBuilder(
+    column: $table.speciesLifeTimeCo2,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get paymentId => $composableBuilder(
+    column: $table.paymentId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get plantedAt => $composableBuilder(
+    column: $table.plantedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PlantedTreesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PlantedTreesTable> {
+  $$PlantedTreesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get treeNationId => $composableBuilder(
+    column: $table.treeNationId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get token =>
+      $composableBuilder(column: $table.token, builder: (column) => column);
+
+  GeneratedColumn<String> get collectUrl => $composableBuilder(
+    column: $table.collectUrl,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get certificateUrl => $composableBuilder(
+    column: $table.certificateUrl,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get country =>
+      $composableBuilder(column: $table.country, builder: (column) => column);
+
+  GeneratedColumn<int> get projectId =>
+      $composableBuilder(column: $table.projectId, builder: (column) => column);
+
+  GeneratedColumn<String> get projectName => $composableBuilder(
+    column: $table.projectName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get projectUrl => $composableBuilder(
+    column: $table.projectUrl,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get speciesId =>
+      $composableBuilder(column: $table.speciesId, builder: (column) => column);
+
+  GeneratedColumn<String> get speciesName => $composableBuilder(
+    column: $table.speciesName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get speciesLifeTimeCo2 => $composableBuilder(
+    column: $table.speciesLifeTimeCo2,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get paymentId =>
+      $composableBuilder(column: $table.paymentId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get plantedAt =>
+      $composableBuilder(column: $table.plantedAt, builder: (column) => column);
+}
+
+class $$PlantedTreesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PlantedTreesTable,
+          PlantedTree,
+          $$PlantedTreesTableFilterComposer,
+          $$PlantedTreesTableOrderingComposer,
+          $$PlantedTreesTableAnnotationComposer,
+          $$PlantedTreesTableCreateCompanionBuilder,
+          $$PlantedTreesTableUpdateCompanionBuilder,
+          (
+            PlantedTree,
+            BaseReferences<_$AppDatabase, $PlantedTreesTable, PlantedTree>,
+          ),
+          PlantedTree,
+          PrefetchHooks Function()
+        > {
+  $$PlantedTreesTableTableManager(_$AppDatabase db, $PlantedTreesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PlantedTreesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PlantedTreesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PlantedTreesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> treeNationId = const Value.absent(),
+                Value<String> token = const Value.absent(),
+                Value<String> collectUrl = const Value.absent(),
+                Value<String> certificateUrl = const Value.absent(),
+                Value<String> country = const Value.absent(),
+                Value<int> projectId = const Value.absent(),
+                Value<String> projectName = const Value.absent(),
+                Value<String> projectUrl = const Value.absent(),
+                Value<int> speciesId = const Value.absent(),
+                Value<String> speciesName = const Value.absent(),
+                Value<double> speciesLifeTimeCo2 = const Value.absent(),
+                Value<int?> paymentId = const Value.absent(),
+                Value<DateTime> plantedAt = const Value.absent(),
+              }) => PlantedTreesCompanion(
+                id: id,
+                treeNationId: treeNationId,
+                token: token,
+                collectUrl: collectUrl,
+                certificateUrl: certificateUrl,
+                country: country,
+                projectId: projectId,
+                projectName: projectName,
+                projectUrl: projectUrl,
+                speciesId: speciesId,
+                speciesName: speciesName,
+                speciesLifeTimeCo2: speciesLifeTimeCo2,
+                paymentId: paymentId,
+                plantedAt: plantedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int treeNationId,
+                required String token,
+                required String collectUrl,
+                required String certificateUrl,
+                required String country,
+                required int projectId,
+                required String projectName,
+                required String projectUrl,
+                required int speciesId,
+                required String speciesName,
+                Value<double> speciesLifeTimeCo2 = const Value.absent(),
+                Value<int?> paymentId = const Value.absent(),
+                Value<DateTime> plantedAt = const Value.absent(),
+              }) => PlantedTreesCompanion.insert(
+                id: id,
+                treeNationId: treeNationId,
+                token: token,
+                collectUrl: collectUrl,
+                certificateUrl: certificateUrl,
+                country: country,
+                projectId: projectId,
+                projectName: projectName,
+                projectUrl: projectUrl,
+                speciesId: speciesId,
+                speciesName: speciesName,
+                speciesLifeTimeCo2: speciesLifeTimeCo2,
+                paymentId: paymentId,
+                plantedAt: plantedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PlantedTreesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PlantedTreesTable,
+      PlantedTree,
+      $$PlantedTreesTableFilterComposer,
+      $$PlantedTreesTableOrderingComposer,
+      $$PlantedTreesTableAnnotationComposer,
+      $$PlantedTreesTableCreateCompanionBuilder,
+      $$PlantedTreesTableUpdateCompanionBuilder,
+      (
+        PlantedTree,
+        BaseReferences<_$AppDatabase, $PlantedTreesTable, PlantedTree>,
+      ),
+      PlantedTree,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3009,4 +4211,6 @@ class $AppDatabaseManager {
       $$TreeProgressTableTableManager(_db, _db.treeProgress);
   $$UserProfileTableTableManager get userProfile =>
       $$UserProfileTableTableManager(_db, _db.userProfile);
+  $$PlantedTreesTableTableManager get plantedTrees =>
+      $$PlantedTreesTableTableManager(_db, _db.plantedTrees);
 }

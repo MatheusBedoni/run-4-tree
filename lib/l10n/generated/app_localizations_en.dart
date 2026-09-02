@@ -289,6 +289,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gardenWatchAdButton => 'Watch ad and earn a seed';
 
   @override
+  String get gardenCo2CompensatedLabel => 'CO2 compensated';
+
+  @override
+  String gardenCo2CompensatedValue(String kg) {
+    return '$kg kg';
+  }
+
+  @override
+  String get gardenForestTitle => 'Your forest';
+
+  @override
+  String get gardenForestEmptyMessage =>
+      'No trees planted yet. Watch ads to plant your first one.';
+
+  @override
+  String get gardenViewCertificate => 'View certificate';
+
+  @override
+  String get gardenCertificateOpenError =>
+      'We couldn\'t open the certificate link.';
+
+  @override
   String get exercisesDetailsPace => 'Avg. Pace';
 
   @override
