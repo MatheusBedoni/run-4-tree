@@ -82,7 +82,10 @@ class GardenPageState extends State<GardenPage> {
                   const SizedBox(height: 4),
                   Text(
                     AppLocalizations.of(context)!.gardenSubtitle,
-                    style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   const SizedBox(height: 28),
                   _buildImpactCard(treesPlanted, co2CompensatedKg),
@@ -127,19 +130,10 @@ class GardenPageState extends State<GardenPage> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        gradient: const LinearGradient(
-          colors: [AppColors.progressGreen, AppColors.primaryDark],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.progressGreen.withValues(alpha: 0.35),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
+        color: AppColors.progressGreen,
+
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.white, width: 2),
       ),
       child: Row(
         children: [
@@ -147,10 +141,16 @@ class GardenPageState extends State<GardenPage> {
             child: _buildImpactStat(
               icon: FontAwesomeIcons.tree,
               value: '$treesPlanted',
-              label: AppLocalizations.of(context)!.gardenTreesPlanted(treesPlanted),
+              label: AppLocalizations.of(
+                context,
+              )!.gardenTreesPlanted(treesPlanted),
             ),
           ),
-          Container(width: 1, height: 56, color: Colors.white.withValues(alpha: 0.3)),
+          Container(
+            width: 1,
+            height: 56,
+            color: Colors.white.withValues(alpha: 0.3),
+          ),
           Expanded(
             child: _buildImpactStat(
               icon: FontAwesomeIcons.leaf,
@@ -188,7 +188,10 @@ class GardenPageState extends State<GardenPage> {
         Text(
           label,
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.9)),
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.white.withValues(alpha: 0.9),
+          ),
         ),
       ],
     );
@@ -236,10 +239,9 @@ class GardenPageState extends State<GardenPage> {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    AppLocalizations.of(context)!.gardenSeedsProgress(
-                      seedsAccumulated,
-                      seedsPerTree,
-                    ),
+                    AppLocalizations.of(
+                      context,
+                    )!.gardenSeedsProgress(seedsAccumulated, seedsPerTree),
                     style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -276,12 +278,19 @@ class GardenPageState extends State<GardenPage> {
         ),
         child: Column(
           children: [
-            const FaIcon(FontAwesomeIcons.seedling, size: 28, color: AppColors.textSecondary),
+            const FaIcon(
+              FontAwesomeIcons.seedling,
+              size: 28,
+              color: AppColors.textSecondary,
+            ),
             const SizedBox(height: 12),
             Text(
               AppLocalizations.of(context)!.gardenForestEmptyMessage,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+              style: const TextStyle(
+                fontSize: 13,
+                color: AppColors.textSecondary,
+              ),
             ),
           ],
         ),
@@ -327,7 +336,11 @@ class GardenPageState extends State<GardenPage> {
               color: AppColors.progressTrack,
             ),
             child: const Center(
-              child: FaIcon(FontAwesomeIcons.tree, color: AppColors.primaryDark, size: 18),
+              child: FaIcon(
+                FontAwesomeIcons.tree,
+                color: AppColors.primaryDark,
+                size: 18,
+              ),
             ),
           ),
           const SizedBox(height: 10),
@@ -346,7 +359,10 @@ class GardenPageState extends State<GardenPage> {
             tree.country,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            style: const TextStyle(
+              fontSize: 12,
+              color: AppColors.textSecondary,
+            ),
           ),
           const Spacer(),
           GestureDetector(
@@ -383,10 +399,15 @@ class GardenPageState extends State<GardenPage> {
   Future<void> _openCertificate(String url) async {
     final uri = Uri.tryParse(url);
     final launched =
-        uri != null && await launchUrl(uri, mode: LaunchMode.externalApplication);
+        uri != null &&
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!launched && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.gardenCertificateOpenError)),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.gardenCertificateOpenError,
+          ),
+        ),
       );
     }
   }
@@ -402,12 +423,19 @@ class GardenPageState extends State<GardenPage> {
       ),
       child: Row(
         children: [
-          const Icon(Icons.info_outline_rounded, color: Colors.orange, size: 20),
+          const Icon(
+            Icons.info_outline_rounded,
+            color: Colors.orange,
+            size: 20,
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               message,
-              style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
+              style: const TextStyle(
+                fontSize: 13,
+                color: AppColors.textPrimary,
+              ),
             ),
           ),
         ],

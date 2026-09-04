@@ -21,6 +21,7 @@ import '../../../runs/data/datasources/run_session_local_datasource_impl.dart';
 import '../../../runs/data/repositories/run_session_repository_impl.dart';
 import '../../../runs/domain/entities/run_session_entity.dart';
 import '../../../runs/domain/usecases/save_run_usecase.dart';
+import '../../../runs/presentation/pages/run_completed_page.dart';
 import '../../data/repositories/home_repository_impl.dart';
 import '../../domain/entities/run_stats_entity.dart';
 import '../../domain/usecases/get_run_stats_usecase.dart';
@@ -87,7 +88,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // ─── Run State ─────────────────────────────────────────────────────────────
   RunState _runState = RunState.idle;
-  ExerciseType _selectedExerciseType = ExerciseType.run;
+  ExerciseType _selectedExerciseType = ExerciseType.walk;
   int _runSeconds = 0;
   Timer? _runTimer;
 
@@ -116,7 +117,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     final runRepository = RunSessionRepositoryImpl(runDataSource);
     _saveRunUseCase = SaveRunUseCase(runRepository);
 
-    _creditAdRevenueUseCase = CreditAdRevenueUseCase(TreeGardenRepositoryImpl());
+    _creditAdRevenueUseCase = CreditAdRevenueUseCase(
+      TreeGardenRepositoryImpl(),
+    );
 
     // Resolve a posição real do usuário antes de montar o mapa
     _initialCameraFuture = _getInitialCameraPosition();
@@ -200,7 +203,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _runTimer?.cancel();
 
     // Salva a corrida no banco Drift antes de limpar o estado
-    _saveCurrentRun();
+    final savedRun = await _saveCurrentRun();
 
     _stopTracking();
 
@@ -212,6 +215,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       _runSeconds = 0;
     });
     _gardenPageKey.currentState?.refresh();
+
+    // Abre a tela de detalhes com as estatísticas + mapa + compartilhamento
+    if (savedRun != null && mounted) {
+      Navigator.of(context, rootNavigator: true).push(
+        MaterialPageRoute<void>(
+          builder: (_) => RunCompletedPage(runSession: savedRun),
+        ),
+      );
+    }
   }
 
   /// Exibe um anúncio de vídeo (rewarded interstitial) bloqueante — usado nos
@@ -226,9 +238,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       showDialog<void>(
         context: context,
         barrierDismissible: false,
-        builder: (_) => const Center(
-          child: CircularProgressIndicator(color: Colors.white),
-        ),
+        builder: (_) =>
+            const Center(child: CircularProgressIndicator(color: Colors.white)),
       );
     }
 
@@ -257,9 +268,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   /// Persiste a sessão de corrida atual no SQLite via Drift.
-  Future<void> _saveCurrentRun() async {
+  /// Retorna a entidade salva (com o ID) ou `null` se não houver corrida.
+  Future<RunSessionEntity?> _saveCurrentRun() async {
     // Não salva se não houve movimentação
-    if (_runSeconds <= 0 && _runDistanceKm <= 0) return;
+    if (_runSeconds <= 0 && _runDistanceKm <= 0) return null;
 
     try {
       // Serializa a polyline como JSON
@@ -297,39 +309,31 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         createdAt: DateTime.now(),
       );
 
-      await _saveRunUseCase(entity);
+      final savedId = await _saveRunUseCase(entity);
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.check_circle, color: Colors.white, size: 20),
-                const SizedBox(width: 10),
-                Text(
-                  AppLocalizations.of(context)!.homeRunSavedMessage(
-                    _runDistanceKm.toStringAsFixed(2),
-                  ),
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-              ],
-            ),
-            backgroundColor: AppColors.progressGreen,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            margin: const EdgeInsets.all(16),
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      }
+      return RunSessionEntity(
+        id: savedId,
+        durationSeconds: entity.durationSeconds,
+        distanceKm: entity.distanceKm,
+        calories: entity.calories,
+        averageSpeed: entity.averageSpeed,
+        maxSpeed: entity.maxSpeed,
+        pace: entity.pace,
+        polyline: entity.polyline,
+        temperature: entity.temperature,
+        isNight: entity.isNight,
+        treesEarned: entity.treesEarned,
+        exerciseType: entity.exerciseType,
+        createdAt: entity.createdAt,
+      );
     } catch (e) {
       debugPrint('Erro ao salvar corrida: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.homeRunSaveErrorMessage),
+            content: Text(
+              AppLocalizations.of(context)!.homeRunSaveErrorMessage,
+            ),
             backgroundColor: Colors.redAccent,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
@@ -339,6 +343,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           ),
         );
       }
+      return null;
     }
   }
 
@@ -456,7 +461,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildUserAvatar(),
                     const Spacer(),
                     ListenableBuilder(
                       listenable: _controller,
@@ -660,48 +664,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // ─── Avatar ────────────────────────────────────────────────────────────────
 
-  Widget _buildUserAvatar() {
-    return Container(
-      width: 52,
-      height: 52,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: const LinearGradient(
-          colors: [AppColors.accentOrange, Color(0xFFE67E22)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        border: Border.all(color: Colors.white, width: 3),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.accentOrange.withValues(alpha: 0.5),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-        image: _userAvatarUrl != null
-            ? DecorationImage(
-                image: NetworkImage(_userAvatarUrl!),
-                fit: BoxFit.cover,
-              )
-            : null,
-      ),
-      child: _userAvatarUrl == null
-          ? const Center(
-              child: FaIcon(
-                FontAwesomeIcons.seedling,
-                color: Colors.white,
-                size: 20,
-              ),
-            )
-          : null,
-    );
-  }
-
   // ─── Stats cards ───────────────────────────────────────────────────────────
 
   Widget _buildWeatherIcon(String condition) {
     switch (condition) {
+      case 'sunny':
+        return const Icon(Icons.sunny, color: Color(0xFF90A4AE), size: 22);
       case 'cloudy':
         return const Icon(
           Icons.cloud_rounded,
@@ -728,7 +696,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         );
       case 'foggy':
         return const Icon(Icons.foggy, color: Color(0xFFB0BEC5), size: 22);
-      case 'sunny':
       default:
         return const Icon(
           Icons.wb_sunny_rounded,
@@ -747,26 +714,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           iconWidget: _buildWeatherIcon(stats.weatherCondition),
           topLine: '${stats.weatherTemp}°',
           bottomLine: null,
-        ),
-        const SizedBox(height: 8),
-        _buildStatCard(
-          iconWidget: FaIcon(
-            FontAwesomeIcons.tree,
-            color: AppColors.primaryLight,
-            size: 20,
-          ),
-          topLine: '${stats.treesPlanted}',
-          bottomLine: null,
-        ),
-        const SizedBox(height: 8),
-        _buildStatCard(
-          iconWidget: Icon(
-            Icons.directions_run_rounded,
-            color: AppColors.skyBlue,
-            size: 22,
-          ),
-          topLine: stats.distanceKm.toStringAsFixed(2),
-          bottomLine: AppLocalizations.of(context)!.homeUnitKm,
         ),
       ],
     );
@@ -1065,6 +1012,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         height: 52,
         decoration: BoxDecoration(
           color: isSelected ? AppColors.progressGreen : Colors.white,
+          border: Border.all(color: AppColors.white, width: 2),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             if (!isSelected)
@@ -1133,7 +1081,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         height: 56,
                         decoration: BoxDecoration(
                           color: AppColors.progressGreen,
-
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(color: AppColors.white, width: 2),
                         ),

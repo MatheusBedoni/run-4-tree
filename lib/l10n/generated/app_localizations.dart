@@ -472,6 +472,36 @@ abstract class AppLocalizations {
   /// **'We couldn\'t save your changes. Please try again.'**
   String get profileSaveErrorMessage;
 
+  /// No description provided for @profileLegalSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal & About'**
+  String get profileLegalSectionTitle;
+
+  /// No description provided for @profileHowWePlantTreesButton.
+  ///
+  /// In en, this message translates to:
+  /// **'How We Plant Real Trees'**
+  String get profileHowWePlantTreesButton;
+
+  /// No description provided for @profileTermsButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service'**
+  String get profileTermsButton;
+
+  /// No description provided for @profilePrivacyButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get profilePrivacyButton;
+
+  /// No description provided for @profileLicensesButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Source Licenses'**
+  String get profileLicensesButton;
+
   /// No description provided for @weeklyGoalProgressLabel.
   ///
   /// In en, this message translates to:
@@ -705,6 +735,37 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Calories'**
   String get exercisesDetailsCalories;
+
+  /// No description provided for @runCompletedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Run completed!'**
+  String get runCompletedTitle;
+
+  /// No description provided for @runCompletedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Great job planting {trees} trees'**
+  String runCompletedSubtitle(int trees);
+
+  /// No description provided for @runCompletedShareButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get runCompletedShareButton;
+
+  /// No description provided for @runCompletedShareSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{exercise} • {distance} km\n\n⏱️ {duration}\n🔥 {calories} kcal\n⚡ Avg. speed: {speed} km/h\n📍 Avg. pace: {pace} min/km'**
+  String runCompletedShareSummary(
+    Object calories,
+    Object distance,
+    Object duration,
+    Object exercise,
+    Object pace,
+    Object speed,
+  );
 }
 
 class _AppLocalizationsDelegate

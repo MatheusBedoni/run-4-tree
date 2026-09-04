@@ -9,6 +9,9 @@ import 'package:run_4_tree/features/profile/domain/usecases/get_profile_usecase.
 import 'package:run_4_tree/features/profile/domain/usecases/update_profile_usecase.dart';
 import 'package:run_4_tree/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:run_4_tree/features/profile/presentation/pages/edit_profile_page.dart';
+import 'package:run_4_tree/features/profile/presentation/pages/how_we_plant_trees_page.dart';
+import 'package:run_4_tree/features/profile/presentation/pages/privacy_policy_page.dart';
+import 'package:run_4_tree/features/profile/presentation/pages/terms_of_service_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -41,7 +44,8 @@ class _ProfilePageState extends State<ProfilePage> {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => EditProfilePage(controller: _controller, profile: profile),
+        builder: (_) =>
+            EditProfilePage(controller: _controller, profile: profile),
       ),
     );
   }
@@ -66,12 +70,19 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.error_outline, size: 48, color: AppColors.textSecondary),
+                    Icon(
+                      Icons.error_outline,
+                      size: 48,
+                      color: AppColors.textSecondary,
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       AppLocalizations.of(context)!.profileLoadErrorMessage,
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 14,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(
@@ -79,9 +90,13 @@ class _ProfilePageState extends State<ProfilePage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primaryLight,
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                      child: Text(AppLocalizations.of(context)!.commonRetryButton),
+                      child: Text(
+                        AppLocalizations.of(context)!.commonRetryButton,
+                      ),
                     ),
                   ],
                 ),
@@ -113,31 +128,41 @@ class _ProfilePageState extends State<ProfilePage> {
                       profile.age,
                       _formatMonthYear(profile.memberSince),
                     ),
-                    style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton.icon(
                       onPressed: () => _openEditProfile(profile),
-                      icon: Icon(Icons.edit_rounded, size: 18, color: AppColors.primaryDark),
+                      icon: Icon(
+                        Icons.edit_rounded,
+                        size: 18,
+                        color: AppColors.primaryDark,
+                      ),
                       label: Text(
                         AppLocalizations.of(context)!.profileEditButton,
-                        style: TextStyle(color: AppColors.primaryDark, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          color: AppColors.primaryDark,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         side: const BorderSide(color: AppColors.primaryLight),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 28),
                   _buildWeeklyGoalCard(profile),
-                  const SizedBox(height: 24),
-                  _buildStatsGrid(profile),
-                  const SizedBox(height: 24),
-                  _buildBodyInfoCard(profile),
+                  const SizedBox(height: 28),
+                  _buildLegalSection(),
                   const SizedBox(height: 24),
                 ],
               ),
@@ -201,7 +226,10 @@ class _ProfilePageState extends State<ProfilePage> {
               const SizedBox(width: 8),
               Text(
                 AppLocalizations.of(context)!.fieldLabelWeeklyGoal,
-                style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
               ),
               const Spacer(),
               Text(
@@ -211,7 +239,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
-                  color: reachedGoal ? AppColors.primaryDark : AppColors.textSecondary,
+                  color: reachedGoal
+                      ? AppColors.primaryDark
+                      : AppColors.textSecondary,
                   fontSize: 13,
                 ),
               ),
@@ -233,7 +263,11 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 10),
             Text(
               AppLocalizations.of(context)!.profileGoalCompletedMessage,
-              style: TextStyle(fontSize: 12, color: AppColors.primaryDark, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontSize: 12,
+                color: AppColors.primaryDark,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ],
         ],
@@ -246,7 +280,11 @@ class _ProfilePageState extends State<ProfilePage> {
       children: [
         Expanded(
           child: _buildStatCard(
-            icon: FaIcon(FontAwesomeIcons.tree, color: AppColors.primaryLight, size: 22),
+            icon: FaIcon(
+              FontAwesomeIcons.tree,
+              color: AppColors.primaryLight,
+              size: 22,
+            ),
             value: '${profile.treesPlanted}',
             label: AppLocalizations.of(context)!.profileTreesLabel,
           ),
@@ -262,7 +300,11 @@ class _ProfilePageState extends State<ProfilePage> {
         const SizedBox(width: 12),
         Expanded(
           child: _buildStatCard(
-            icon: Icon(Icons.directions_run_rounded, color: AppColors.accentOrange, size: 24),
+            icon: Icon(
+              Icons.directions_run_rounded,
+              color: AppColors.accentOrange,
+              size: 24,
+            ),
             value: '${profile.totalRuns}',
             label: AppLocalizations.of(context)!.profileRunsLabel,
           ),
@@ -305,7 +347,11 @@ class _ProfilePageState extends State<ProfilePage> {
           Text(
             label,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 11, color: AppColors.textSecondary, height: 1.3),
+            style: TextStyle(
+              fontSize: 11,
+              color: AppColors.textSecondary,
+              height: 1.3,
+            ),
           ),
         ],
       ),
@@ -332,11 +378,18 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           Row(
             children: [
-              Icon(Icons.monitor_weight_outlined, color: AppColors.primaryDark, size: 20),
+              Icon(
+                Icons.monitor_weight_outlined,
+                color: AppColors.primaryDark,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Text(
                 AppLocalizations.of(context)!.profileBodyDataTitle,
-                style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
               ),
             ],
           ),
@@ -353,7 +406,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 '${profile.heightCm.toStringAsFixed(0)} ${AppLocalizations.of(context)!.suffixCm}',
               ),
               _buildBodyInfoDivider(),
-              _buildBodyInfoItem(AppLocalizations.of(context)!.profileBmiLabel, profile.bmi.toStringAsFixed(1)),
+              _buildBodyInfoItem(
+                AppLocalizations.of(context)!.profileBmiLabel,
+                profile.bmi.toStringAsFixed(1),
+              ),
             ],
           ),
         ],
@@ -374,16 +430,132 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
           const SizedBox(height: 4),
-          Text(label, style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+          Text(
+            label,
+            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildBodyInfoDivider() {
+    return Container(width: 1, height: 36, color: AppColors.background);
+  }
+
+  Widget _buildLegalSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 12),
+          child: Text(
+            AppLocalizations.of(context)!.profileLegalSectionTitle,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
+          ),
+        ),
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Column(
+              children: [
+                _buildLegalRow(
+                  icon: Icons.eco_rounded,
+                  label: AppLocalizations.of(context)!.profileHowWePlantTreesButton,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const HowWePlantTreesPage()),
+                  ),
+                ),
+                _buildLegalDivider(),
+                _buildLegalRow(
+                  icon: Icons.description_outlined,
+                  label: AppLocalizations.of(context)!.profileTermsButton,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const TermsOfServicePage()),
+                  ),
+                ),
+                _buildLegalDivider(),
+                _buildLegalRow(
+                  icon: Icons.privacy_tip_outlined,
+                  label: AppLocalizations.of(context)!.profilePrivacyButton,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const PrivacyPolicyPage()),
+                  ),
+                ),
+                _buildLegalDivider(),
+                _buildLegalRow(
+                  icon: Icons.code_rounded,
+                  label: AppLocalizations.of(context)!.profileLicensesButton,
+                  onTap: () => showLicensePage(
+                    context: context,
+                    applicationName: 'Run4Tree',
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLegalRow({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        child: Row(
+          children: [
+            Icon(icon, size: 20, color: AppColors.primaryDark),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              size: 20,
+              color: AppColors.textSecondary,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLegalDivider() {
     return Container(
-      width: 1,
-      height: 36,
+      height: 1,
+      margin: const EdgeInsets.symmetric(horizontal: 20),
       color: AppColors.background,
     );
   }

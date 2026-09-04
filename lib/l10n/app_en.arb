@@ -80,6 +80,11 @@
   "profileBmiLabel": "BMI",
   "profileLoadErrorMessage": "We couldn't load your profile. Please try again.",
   "profileSaveErrorMessage": "We couldn't save your changes. Please try again.",
+  "profileLegalSectionTitle": "Legal & About",
+  "profileHowWePlantTreesButton": "How We Plant Real Trees",
+  "profileTermsButton": "Terms of Service",
+  "profilePrivacyButton": "Privacy Policy",
+  "profileLicensesButton": "Open Source Licenses",
   "weeklyGoalProgressLabel": "{current} / {goal} km",
   "@weeklyGoalProgressLabel": {
     "placeholders": {
@@ -150,5 +155,15 @@
     }
   },
   "exercisesDetailsDuration": "Duration",
-  "exercisesDetailsCalories": "Calories"
+  "exercisesDetailsCalories": "Calories",
+
+  "runCompletedTitle": "Run completed!",
+  "runCompletedSubtitle": "Great job planting {trees} trees",
+  "@runCompletedSubtitle": {
+    "placeholders": {
+      "trees": { "type": "int" }
+    }
+  },
+  "runCompletedShareButton": "Share",
+  "runCompletedShareSummary": "{exercise} • {distance} km\n\n⏱️ {duration}\n🔥 {calories} kcal\n⚡ Avg. speed: {speed} km/h\n📍 Avg. pace: {pace} min/km"
 }

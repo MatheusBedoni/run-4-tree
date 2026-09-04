@@ -8,6 +8,8 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/pages/login_page.dart';
 import 'features/home/presentation/pages/home_page.dart';
+import 'features/onboarding/data/repositories/user_profile_repository_impl.dart';
+import 'features/onboarding/domain/usecases/has_completed_onboarding_usecase.dart';
 import 'features/onboarding/presentation/pages/onboarding_page.dart';
 import 'l10n/generated/app_localizations.dart';
 
@@ -26,7 +28,18 @@ void main() async {
     ),
   );
 
-  runApp(const Run4TreeApp());
+  final initialRoute = await _resolveInitialRoute();
+
+  runApp(Run4TreeApp(initialRoute: initialRoute));
+}
+
+/// Decide a rota inicial: se o usuário já respondeu o questionário de
+/// boas-vindas, vai direto para a home; senão, passa pelo login/onboarding.
+Future<String> _resolveInitialRoute() async {
+  final hasCompleted = await HasCompletedOnboardingUseCase(
+    UserProfileRepositoryImpl(),
+  )();
+  return hasCompleted ? '/home' : '/login';
 }
 
 /// Configura o SDK da RevenueCat com a chave pública da plataforma atual.
@@ -48,7 +61,9 @@ Future<void> _configureRevenueCat() async {
 }
 
 class Run4TreeApp extends StatelessWidget {
-  const Run4TreeApp({super.key});
+  const Run4TreeApp({super.key, required this.initialRoute});
+
+  final String initialRoute;
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +85,7 @@ class Run4TreeApp extends StatelessWidget {
         }
         return const Locale('en');
       },
-      initialRoute: '/login',
+      initialRoute: initialRoute,
       routes: {
         '/login': (_) => const LoginPage(),
         '/onboarding': (_) => const OnboardingPage(),

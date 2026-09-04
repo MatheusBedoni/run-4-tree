@@ -209,6 +209,21 @@ class AppLocalizationsEn extends AppLocalizations {
       'We couldn\'t save your changes. Please try again.';
 
   @override
+  String get profileLegalSectionTitle => 'Legal & About';
+
+  @override
+  String get profileHowWePlantTreesButton => 'How We Plant Real Trees';
+
+  @override
+  String get profileTermsButton => 'Terms of Service';
+
+  @override
+  String get profilePrivacyButton => 'Privacy Policy';
+
+  @override
+  String get profileLicensesButton => 'Open Source Licenses';
+
+  @override
   String weeklyGoalProgressLabel(String current, String goal) {
     return '$current / $goal km';
   }
@@ -347,4 +362,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exercisesDetailsCalories => 'Calories';
+
+  @override
+  String get runCompletedTitle => 'Run completed!';
+
+  @override
+  String runCompletedSubtitle(int trees) {
+    return 'Great job planting $trees trees';
+  }
+
+  @override
+  String get runCompletedShareButton => 'Share';
+
+  @override
+  String runCompletedShareSummary(
+    Object calories,
+    Object distance,
+    Object duration,
+    Object exercise,
+    Object pace,
+    Object speed,
+  ) {
+    return '$exercise • $distance km\n\n⏱️ $duration\n🔥 $calories kcal\n⚡ Avg. speed: $speed km/h\n📍 Avg. pace: $pace min/km';
+  }
 }
