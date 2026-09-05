@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:flutter/foundation.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -54,9 +55,10 @@ class TreeGardenRepositoryImpl implements TreeGardenRepository {
         await _savePlantedTrees(response);
         revenue -= treePriceUsd;
         trees += 1;
-      } catch (_) {
+      } catch (e) {
         // Falha ao plantar de verdade (rede/API indisponível): mantém a
         // receita acumulada para tentar novamente na próxima vez.
+        debugPrint('TreeNationService.plantTree falhou: $e');
         break;
       }
     }

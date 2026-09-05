@@ -12,6 +12,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Run4Tree';
 
   @override
+  String splashArtCredit(String handle) {
+    return 'Art by @$handle';
+  }
+
+  @override
   String get loginTaglineRunPrefix => 'Your run plants ';
 
   @override

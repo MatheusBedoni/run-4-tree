@@ -3,6 +3,14 @@
 
   "appTitle": "Run4Tree",
 
+  "splashArtCredit": "Art by @{handle}",
+  "@splashArtCredit": {
+    "description": "Credit shown at the bottom of the splash screen for the illustration artist",
+    "placeholders": {
+      "handle": { "type": "String" }
+    }
+  },
+
   "loginTaglineRunPrefix": "Your run plants ",
   "loginTaglineTreesHighlight": "real trees.\n",
   "loginTaglineOffline": "Works 100% offline.",

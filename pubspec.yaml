@@ -70,6 +70,8 @@ dev_dependencies:
   drift_dev: ^2.24.0
   flutter_launcher_icons: ^0.14.3
   flutter_native_splash: ^2.4.3
+  # Usado por tool/generate_native_splash_image.dart
+  image: ^4.8.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -127,10 +129,13 @@ flutter_launcher_icons:
   adaptive_icon_foreground: "assets/images/icon.png"
 
 flutter_native_splash:
-  color: "#ffffff"
-  image: assets/images/icon.png
+  # Mesma arte da SplashPage do Flutter: o splash nativo mostra a ilustração
+  # em tela cheia e a transição para a SplashPage fica imperceptível.
+  # Sem "color": o pacote ignora a background_image quando uma cor é definida.
+  background_image: native_splash/splash_screen.png
   android: true
   ios: true
+  # Android 12+ usa a API nativa de splash, que só aceita ícone + cor sólida.
   android_12:
     image: assets/images/icon.png
     color: "#ffffff"

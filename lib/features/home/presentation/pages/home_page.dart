@@ -248,6 +248,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       if (result.success) {
         final progress = await _creditAdRevenueUseCase(result.revenueUsd);
         _controller.applyTreeProgress(progress);
+      } else {
+        debugPrint('Anúncio de $placement não exibido: ${result.errorMessage}');
       }
     } catch (e) {
       debugPrint('Erro no anúncio de $placement: $e');
@@ -385,6 +387,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _locationSub =
         Geolocator.getPositionStream(locationSettings: locationSettings).listen(
           (pos) {
+            if (!mounted) return;
             final newPoint = LatLng(pos.latitude, pos.longitude);
             setState(() {
               if (_lastTrackingPosition != null) {

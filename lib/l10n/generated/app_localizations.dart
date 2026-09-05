@@ -100,6 +100,12 @@ abstract class AppLocalizations {
   /// **'Run4Tree'**
   String get appTitle;
 
+  /// Credit shown at the bottom of the splash screen for the illustration artist
+  ///
+  /// In en, this message translates to:
+  /// **'Art by @{handle}'**
+  String splashArtCredit(String handle);
+
   /// No description provided for @loginTaglineRunPrefix.
   ///
   /// In en, this message translates to:
