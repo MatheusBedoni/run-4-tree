@@ -263,6 +263,79 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exercisesKcalUnit => 'kcal';
 
   @override
+  String get exercisesHistoryTitle => 'History';
+
+  @override
+  String get exercisesRecordsTitle => 'Records';
+
+  @override
+  String get exercisesStatisticsTitle => 'Statistics';
+
+  @override
+  String get exercisesSectionMore => 'More';
+
+  @override
+  String get exercisesFilterAll => 'All';
+
+  @override
+  String get exercisesRecordLongestDistance => 'Longest distance';
+
+  @override
+  String get exercisesRecordLongestDuration => 'Longest duration';
+
+  @override
+  String get exercisesRecordMostCalories => 'Most kcal burned';
+
+  @override
+  String get exercisesRecordBestPace => 'Best pace';
+
+  @override
+  String get exercisesRecordTopSpeed => 'Top speed';
+
+  @override
+  String get exercisesRecordsEmptyMessage =>
+      'Finish your first activity to unlock records.';
+
+  @override
+  String get exercisesAllRecordsTitle => 'All records';
+
+  @override
+  String exercisesChartDistanceTitle(int months) {
+    return 'Distance (km) - last $months months';
+  }
+
+  @override
+  String get exercisesMonthlyBreakdownTitle => 'Month by month';
+
+  @override
+  String get exercisesStatsEmptyMessage =>
+      'No activities recorded in this period.';
+
+  @override
+  String get exercisesSummaryActivities => 'Activities';
+
+  @override
+  String get exercisesSummaryDuration => 'Duration';
+
+  @override
+  String get exercisesSummaryDistance => 'Distance';
+
+  @override
+  String get exercisesUnitKm => 'km';
+
+  @override
+  String get exercisesUnitKmh => 'km/h';
+
+  @override
+  String get exercisesUnitPerKm => '/km';
+
+  @override
+  String get exercisesUnitHour => 'h';
+
+  @override
+  String get exercisesUnitMinute => 'min';
+
+  @override
   String get gardenTitle => 'Your Garden';
 
   @override

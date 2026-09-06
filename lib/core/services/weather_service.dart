@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:weather/weather.dart';
 
@@ -28,6 +29,7 @@ class WeatherService {
   /// Mapeia a condição bruta da API (`weatherMain`, ex: "Clear", "Rain")
   /// para uma categoria simplificada usada pela UI.
   String mapCondition(String? weatherMain) {
+    debugPrint('Weather: $weatherMain');
     switch (weatherMain?.toLowerCase()) {
       case 'clear':
         return 'sunny';

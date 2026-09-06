@@ -23,8 +23,9 @@ class HomeRepositoryImpl implements HomeRepository {
   HomeRepositoryImpl({
     WeatherService weatherService = const WeatherService(),
     TreeGardenRepository? treeGardenRepository,
-  })  : _weatherService = weatherService,
-        _treeGardenRepository = treeGardenRepository ?? TreeGardenRepositoryImpl();
+  }) : _weatherService = weatherService,
+       _treeGardenRepository =
+           treeGardenRepository ?? TreeGardenRepositoryImpl();
 
   @override
   Future<RunStatsEntity> getRunStats() async {

@@ -568,6 +568,144 @@ abstract class AppLocalizations {
   /// **'kcal'**
   String get exercisesKcalUnit;
 
+  /// No description provided for @exercisesHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get exercisesHistoryTitle;
+
+  /// No description provided for @exercisesRecordsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Records'**
+  String get exercisesRecordsTitle;
+
+  /// No description provided for @exercisesStatisticsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get exercisesStatisticsTitle;
+
+  /// No description provided for @exercisesSectionMore.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get exercisesSectionMore;
+
+  /// No description provided for @exercisesFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get exercisesFilterAll;
+
+  /// No description provided for @exercisesRecordLongestDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Longest distance'**
+  String get exercisesRecordLongestDistance;
+
+  /// No description provided for @exercisesRecordLongestDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Longest duration'**
+  String get exercisesRecordLongestDuration;
+
+  /// No description provided for @exercisesRecordMostCalories.
+  ///
+  /// In en, this message translates to:
+  /// **'Most kcal burned'**
+  String get exercisesRecordMostCalories;
+
+  /// No description provided for @exercisesRecordBestPace.
+  ///
+  /// In en, this message translates to:
+  /// **'Best pace'**
+  String get exercisesRecordBestPace;
+
+  /// No description provided for @exercisesRecordTopSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Top speed'**
+  String get exercisesRecordTopSpeed;
+
+  /// No description provided for @exercisesRecordsEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish your first activity to unlock records.'**
+  String get exercisesRecordsEmptyMessage;
+
+  /// No description provided for @exercisesAllRecordsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All records'**
+  String get exercisesAllRecordsTitle;
+
+  /// No description provided for @exercisesChartDistanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance (km) - last {months} months'**
+  String exercisesChartDistanceTitle(int months);
+
+  /// No description provided for @exercisesMonthlyBreakdownTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Month by month'**
+  String get exercisesMonthlyBreakdownTitle;
+
+  /// No description provided for @exercisesStatsEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No activities recorded in this period.'**
+  String get exercisesStatsEmptyMessage;
+
+  /// No description provided for @exercisesSummaryActivities.
+  ///
+  /// In en, this message translates to:
+  /// **'Activities'**
+  String get exercisesSummaryActivities;
+
+  /// No description provided for @exercisesSummaryDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get exercisesSummaryDuration;
+
+  /// No description provided for @exercisesSummaryDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get exercisesSummaryDistance;
+
+  /// No description provided for @exercisesUnitKm.
+  ///
+  /// In en, this message translates to:
+  /// **'km'**
+  String get exercisesUnitKm;
+
+  /// No description provided for @exercisesUnitKmh.
+  ///
+  /// In en, this message translates to:
+  /// **'km/h'**
+  String get exercisesUnitKmh;
+
+  /// No description provided for @exercisesUnitPerKm.
+  ///
+  /// In en, this message translates to:
+  /// **'/km'**
+  String get exercisesUnitPerKm;
+
+  /// No description provided for @exercisesUnitHour.
+  ///
+  /// In en, this message translates to:
+  /// **'h'**
+  String get exercisesUnitHour;
+
+  /// No description provided for @exercisesUnitMinute.
+  ///
+  /// In en, this message translates to:
+  /// **'min'**
+  String get exercisesUnitMinute;
+
   /// No description provided for @gardenTitle.
   ///
   /// In en, this message translates to:

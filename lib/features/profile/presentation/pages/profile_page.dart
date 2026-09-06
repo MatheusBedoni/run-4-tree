@@ -160,8 +160,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   const SizedBox(height: 28),
-                  _buildWeeklyGoalCard(profile),
-                  const SizedBox(height: 28),
                   _buildLegalSection(),
                   const SizedBox(height: 24),
                 ],
@@ -195,82 +193,6 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       child: const Center(
         child: FaIcon(FontAwesomeIcons.seedling, color: Colors.white, size: 36),
-      ),
-    );
-  }
-
-  Widget _buildWeeklyGoalCard(ProfileEntity profile) {
-    final progress = profile.weeklyGoalProgress;
-    final reachedGoal = progress >= 1;
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.flag_rounded, color: AppColors.primaryDark, size: 20),
-              const SizedBox(width: 8),
-              Text(
-                AppLocalizations.of(context)!.fieldLabelWeeklyGoal,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const Spacer(),
-              Text(
-                AppLocalizations.of(context)!.weeklyGoalProgressLabel(
-                  profile.weeklyDistanceKm.toStringAsFixed(1),
-                  profile.weeklyGoalKm.toStringAsFixed(1),
-                ),
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: reachedGoal
-                      ? AppColors.primaryDark
-                      : AppColors.textSecondary,
-                  fontSize: 13,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: LinearProgressIndicator(
-              value: progress,
-              minHeight: 10,
-              backgroundColor: AppColors.progressTrack,
-              valueColor: AlwaysStoppedAnimation(
-                reachedGoal ? AppColors.progressGreen : AppColors.primaryLight,
-              ),
-            ),
-          ),
-          if (reachedGoal) ...[
-            const SizedBox(height: 10),
-            Text(
-              AppLocalizations.of(context)!.profileGoalCompletedMessage,
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.primaryDark,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ],
       ),
     );
   }
@@ -477,10 +399,14 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 _buildLegalRow(
                   icon: Icons.eco_rounded,
-                  label: AppLocalizations.of(context)!.profileHowWePlantTreesButton,
+                  label: AppLocalizations.of(
+                    context,
+                  )!.profileHowWePlantTreesButton,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const HowWePlantTreesPage()),
+                    MaterialPageRoute(
+                      builder: (_) => const HowWePlantTreesPage(),
+                    ),
                   ),
                 ),
                 _buildLegalDivider(),
@@ -489,7 +415,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   label: AppLocalizations.of(context)!.profileTermsButton,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const TermsOfServicePage()),
+                    MaterialPageRoute(
+                      builder: (_) => const TermsOfServicePage(),
+                    ),
                   ),
                 ),
                 _buildLegalDivider(),
@@ -498,7 +426,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   label: AppLocalizations.of(context)!.profilePrivacyButton,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const PrivacyPolicyPage()),
+                    MaterialPageRoute(
+                      builder: (_) => const PrivacyPolicyPage(),
+                    ),
                   ),
                 ),
                 _buildLegalDivider(),

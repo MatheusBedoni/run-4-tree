@@ -112,6 +112,35 @@
   "exercisesLoadErrorMessage": "We couldn't load your runs. Please try again.",
   "exercisesKcalUnit": "kcal",
 
+  "exercisesHistoryTitle": "History",
+  "exercisesRecordsTitle": "Records",
+  "exercisesStatisticsTitle": "Statistics",
+  "exercisesSectionMore": "More",
+  "exercisesFilterAll": "All",
+  "exercisesRecordLongestDistance": "Longest distance",
+  "exercisesRecordLongestDuration": "Longest duration",
+  "exercisesRecordMostCalories": "Most kcal burned",
+  "exercisesRecordBestPace": "Best pace",
+  "exercisesRecordTopSpeed": "Top speed",
+  "exercisesRecordsEmptyMessage": "Finish your first activity to unlock records.",
+  "exercisesAllRecordsTitle": "All records",
+  "exercisesChartDistanceTitle": "Distance (km) - last {months} months",
+  "@exercisesChartDistanceTitle": {
+    "placeholders": {
+      "months": { "type": "int" }
+    }
+  },
+  "exercisesMonthlyBreakdownTitle": "Month by month",
+  "exercisesStatsEmptyMessage": "No activities recorded in this period.",
+  "exercisesSummaryActivities": "Activities",
+  "exercisesSummaryDuration": "Duration",
+  "exercisesSummaryDistance": "Distance",
+  "exercisesUnitKm": "km",
+  "exercisesUnitKmh": "km/h",
+  "exercisesUnitPerKm": "/km",
+  "exercisesUnitHour": "h",
+  "exercisesUnitMinute": "min",
+
   "gardenTitle": "Your Garden",
   "gardenSubtitle": "Watch ads to plant real trees.",
   "gardenTreesPlanted": "{count, plural, one{tree planted} other{trees planted}}",

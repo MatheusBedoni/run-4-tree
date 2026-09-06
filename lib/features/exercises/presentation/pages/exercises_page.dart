@@ -4,12 +4,19 @@ import 'package:intl/intl.dart';
 import '../../../../core/database/app_database.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../profile/data/repositories/profile_repository_impl.dart';
+import '../../../profile/domain/entities/profile_entity.dart';
+import '../../../profile/domain/usecases/get_profile_usecase.dart';
 import '../../../runs/data/datasources/run_session_local_datasource_impl.dart';
 import '../../../runs/data/repositories/run_session_repository_impl.dart';
 import '../../../runs/domain/entities/run_session_entity.dart';
 import '../../../runs/domain/usecases/delete_run_usecase.dart';
 import '../../../runs/domain/usecases/get_all_runs_usecase.dart';
 import '../controllers/exercises_controller.dart';
+import '../utils/exercise_formatters.dart';
+import '../widgets/exercise_records_section.dart';
+import '../widgets/exercise_section_header.dart';
+import '../widgets/exercise_statistics_section.dart';
 import 'exercise_details_page.dart';
 
 class ExercisesPage extends StatefulWidget {
@@ -33,6 +40,7 @@ class _ExercisesPageState extends State<ExercisesPage> {
     _controller = ExercisesController(
       GetAllRunsUseCase(runRepository),
       DeleteRunUseCase(runRepository),
+      GetProfileUseCase(ProfileRepositoryImpl()),
     );
     _controller.loadRuns();
   }
@@ -43,106 +51,234 @@ class _ExercisesPageState extends State<ExercisesPage> {
     super.dispose();
   }
 
+  void _openRunDetails(RunSessionEntity run) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => ExerciseDetailsPage(runSession: run)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
           AppLocalizations.of(context)!.homeNavProgress,
-          style: TextStyle(
+          style: const TextStyle(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         elevation: 0,
         centerTitle: true,
       ),
-      body: _buildRunHistoryTab(),
+      body: ListenableBuilder(
+        listenable: _controller,
+        builder: (context, _) {
+          if (_controller.isLoading && _controller.runs.isEmpty) {
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.primaryDark),
+            );
+          }
+
+          if (_controller.hasLoadError && _controller.runs.isEmpty) {
+            return _buildErrorState(
+              AppLocalizations.of(context)!.exercisesLoadErrorMessage,
+            );
+          }
+
+          return RefreshIndicator(
+            color: AppColors.primaryDark,
+            onRefresh: _controller.refreshRuns,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.only(top: 8, bottom: 32),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: _buildSections(),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 
-  Widget _buildRunHistoryTab() {
-    return ListenableBuilder(
-      listenable: _controller,
-      builder: (context, _) {
-        if (_controller.isLoading && _controller.runs.isEmpty) {
-          return const Center(
-            child: CircularProgressIndicator(color: AppColors.primaryDark),
-          );
-        }
+  /// Monta a pilha de seções da página. Sem nenhuma atividade registrada,
+  /// recordes e estatísticas não teriam o que mostrar — nesse caso só a meta
+  /// semanal e o estado vazio aparecem.
+  List<Widget> _buildSections() {
+    final profile = _controller.profile;
+    final hasRuns = _controller.runs.isNotEmpty;
 
-        if (_controller.hasLoadError && _controller.runs.isEmpty) {
-          return _buildErrorState(
-            AppLocalizations.of(context)!.exercisesLoadErrorMessage,
-          );
-        }
+    return [
+      if (profile != null) ...[
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: _buildWeeklyGoalCard(profile),
+        ),
+        const SizedBox(height: 28),
+      ],
+      if (!hasRuns)
+        _buildEmptyState()
+      else ...[
+        ExerciseRecordsSection(
+          records: _controller.records,
+          onRecordTap: _openRunDetails,
+        ),
+        const SizedBox(height: 28),
+        ExerciseStatisticsSection(
+          monthlyStats: _controller.monthlyStats,
+          summary: _controller.summary,
+          availableTypes: _controller.availableExerciseTypes,
+          selectedType: _controller.statsFilter,
+          onFilterChanged: _controller.selectStatsFilter,
+        ),
+        const SizedBox(height: 28),
+        _buildRunHistorySection(),
+      ],
+    ];
+  }
 
-        if (_controller.runs.isEmpty) {
-          return _buildEmptyState();
-        }
+  Widget _buildWeeklyGoalCard(ProfileEntity profile) {
+    final progress = profile.weeklyGoalProgress;
+    final reachedGoal = progress >= 1;
 
-        return RefreshIndicator(
-          color: AppColors.primaryDark,
-          onRefresh: _controller.refreshRuns,
-          child: ListView.separated(
-            padding: const EdgeInsets.all(16),
-            itemCount: _controller.runs.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
-            itemBuilder: (context, index) {
-              final run = _controller.runs[index];
-              return _buildRunCard(run);
-            },
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
-        );
-      },
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.flag_rounded,
+                color: AppColors.primaryDark,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                AppLocalizations.of(context)!.fieldLabelWeeklyGoal,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                AppLocalizations.of(context)!.weeklyGoalProgressLabel(
+                  profile.weeklyDistanceKm.toStringAsFixed(1),
+                  profile.weeklyGoalKm.toStringAsFixed(1),
+                ),
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: reachedGoal
+                      ? AppColors.primaryDark
+                      : AppColors.textSecondary,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 10,
+              backgroundColor: AppColors.progressTrack,
+              valueColor: AlwaysStoppedAnimation(
+                reachedGoal ? AppColors.progressGreen : AppColors.primaryLight,
+              ),
+            ),
+          ),
+          if (reachedGoal) ...[
+            const SizedBox(height: 10),
+            Text(
+              AppLocalizations.of(context)!.profileGoalCompletedMessage,
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppColors.primaryDark,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRunHistorySection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: ExerciseSectionHeader(
+            title: AppLocalizations.of(context)!.exercisesHistoryTitle,
+          ),
+        ),
+        const SizedBox(height: 14),
+        ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          itemCount: _controller.runs.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 12),
+          itemBuilder: (context, index) {
+            return _buildRunCard(_controller.runs[index]);
+          },
+        ),
+      ],
     );
   }
 
   Widget _buildEmptyState() {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.directions_run_rounded,
-                      size: 56,
-                      color: AppColors.textSecondary,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      AppLocalizations.of(context)!.exercisesEmptyTitle,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      AppLocalizations.of(context)!.exercisesEmptySubtitle,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 48),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.directions_run_rounded,
+            size: 56,
+            color: AppColors.textSecondary,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            AppLocalizations.of(context)!.exercisesEmptyTitle,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
             ),
           ),
-        );
-      },
+          const SizedBox(height: 8),
+          Text(
+            AppLocalizations.of(context)!.exercisesEmptySubtitle,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 14,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -208,14 +344,7 @@ class _ExercisesPageState extends State<ExercisesPage> {
         if (run.id != null) _controller.deleteRun(run.id!);
       },
       child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ExerciseDetailsPage(runSession: run),
-            ),
-          );
-        },
+        onTap: () => _openRunDetails(run),
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -234,12 +363,12 @@ class _ExercisesPageState extends State<ExercisesPage> {
               Container(
                 width: 48,
                 height: 48,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: AppColors.progressTrack,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  _iconForExerciseType(run.exerciseType),
+                  iconForExerciseType(run.exerciseType),
                   color: AppColors.primaryDark,
                 ),
               ),
@@ -249,7 +378,7 @@ class _ExercisesPageState extends State<ExercisesPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _labelForExerciseType(run.exerciseType),
+                      labelForExerciseType(context, run.exerciseType),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
@@ -274,7 +403,7 @@ class _ExercisesPageState extends State<ExercisesPage> {
                         const SizedBox(width: 16),
                         _buildRunMetric(
                           Icons.timer_rounded,
-                          _formatDuration(run.durationSeconds),
+                          formatCompactDuration(run.durationSeconds),
                         ),
                         const SizedBox(width: 16),
                         _buildRunMetric(
@@ -309,41 +438,6 @@ class _ExercisesPageState extends State<ExercisesPage> {
         ),
       ],
     );
-  }
-
-  IconData _iconForExerciseType(String exerciseType) {
-    switch (exerciseType) {
-      case 'bike':
-        return Icons.directions_bike_rounded;
-      case 'walk':
-        return Icons.directions_walk_rounded;
-      case 'run':
-      default:
-        return Icons.directions_run_rounded;
-    }
-  }
-
-  String _labelForExerciseType(String exerciseType) {
-    final l10n = AppLocalizations.of(context)!;
-    switch (exerciseType) {
-      case 'bike':
-        return l10n.exercisesLabelBike;
-      case 'walk':
-        return l10n.exercisesLabelWalk;
-      case 'run':
-      default:
-        return l10n.exercisesLabelRun;
-    }
-  }
-
-  String _formatDuration(int seconds) {
-    final h = seconds ~/ 3600;
-    final m = (seconds % 3600) ~/ 60;
-    final s = seconds % 60;
-    if (h > 0) {
-      return '${h}h${m.toString().padLeft(2, '0')}m';
-    }
-    return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
   }
 
   String _formatDate(DateTime date) {
