@@ -2809,6 +2809,282 @@ class PlantedTreesCompanion extends UpdateCompanion<PlantedTree> {
   }
 }
 
+class $UnlockedStickersTable extends UnlockedStickers
+    with TableInfo<$UnlockedStickersTable, UnlockedSticker> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UnlockedStickersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _stickerIdMeta = const VerificationMeta(
+    'stickerId',
+  );
+  @override
+  late final GeneratedColumn<String> stickerId = GeneratedColumn<String>(
+    'sticker_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _unlockedAtMeta = const VerificationMeta(
+    'unlockedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> unlockedAt = GeneratedColumn<DateTime>(
+    'unlocked_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _isSelectedMeta = const VerificationMeta(
+    'isSelected',
+  );
+  @override
+  late final GeneratedColumn<bool> isSelected = GeneratedColumn<bool>(
+    'is_selected',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_selected" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [stickerId, unlockedAt, isSelected];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'unlocked_stickers';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<UnlockedSticker> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('sticker_id')) {
+      context.handle(
+        _stickerIdMeta,
+        stickerId.isAcceptableOrUnknown(data['sticker_id']!, _stickerIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_stickerIdMeta);
+    }
+    if (data.containsKey('unlocked_at')) {
+      context.handle(
+        _unlockedAtMeta,
+        unlockedAt.isAcceptableOrUnknown(data['unlocked_at']!, _unlockedAtMeta),
+      );
+    }
+    if (data.containsKey('is_selected')) {
+      context.handle(
+        _isSelectedMeta,
+        isSelected.isAcceptableOrUnknown(data['is_selected']!, _isSelectedMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {stickerId};
+  @override
+  UnlockedSticker map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return UnlockedSticker(
+      stickerId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sticker_id'],
+      )!,
+      unlockedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}unlocked_at'],
+      )!,
+      isSelected: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_selected'],
+      )!,
+    );
+  }
+
+  @override
+  $UnlockedStickersTable createAlias(String alias) {
+    return $UnlockedStickersTable(attachedDatabase, alias);
+  }
+}
+
+class UnlockedSticker extends DataClass implements Insertable<UnlockedSticker> {
+  /// Id do adesivo no catálogo (ex: "1", "monarch").
+  final String stickerId;
+  final DateTime unlockedAt;
+
+  /// Se este é o adesivo escolhido como avatar. No máximo uma linha `true`
+  /// (garantido pelo repositório, que limpa as demais ao selecionar).
+  final bool isSelected;
+  const UnlockedSticker({
+    required this.stickerId,
+    required this.unlockedAt,
+    required this.isSelected,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['sticker_id'] = Variable<String>(stickerId);
+    map['unlocked_at'] = Variable<DateTime>(unlockedAt);
+    map['is_selected'] = Variable<bool>(isSelected);
+    return map;
+  }
+
+  UnlockedStickersCompanion toCompanion(bool nullToAbsent) {
+    return UnlockedStickersCompanion(
+      stickerId: Value(stickerId),
+      unlockedAt: Value(unlockedAt),
+      isSelected: Value(isSelected),
+    );
+  }
+
+  factory UnlockedSticker.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return UnlockedSticker(
+      stickerId: serializer.fromJson<String>(json['stickerId']),
+      unlockedAt: serializer.fromJson<DateTime>(json['unlockedAt']),
+      isSelected: serializer.fromJson<bool>(json['isSelected']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'stickerId': serializer.toJson<String>(stickerId),
+      'unlockedAt': serializer.toJson<DateTime>(unlockedAt),
+      'isSelected': serializer.toJson<bool>(isSelected),
+    };
+  }
+
+  UnlockedSticker copyWith({
+    String? stickerId,
+    DateTime? unlockedAt,
+    bool? isSelected,
+  }) => UnlockedSticker(
+    stickerId: stickerId ?? this.stickerId,
+    unlockedAt: unlockedAt ?? this.unlockedAt,
+    isSelected: isSelected ?? this.isSelected,
+  );
+  UnlockedSticker copyWithCompanion(UnlockedStickersCompanion data) {
+    return UnlockedSticker(
+      stickerId: data.stickerId.present ? data.stickerId.value : this.stickerId,
+      unlockedAt: data.unlockedAt.present
+          ? data.unlockedAt.value
+          : this.unlockedAt,
+      isSelected: data.isSelected.present
+          ? data.isSelected.value
+          : this.isSelected,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UnlockedSticker(')
+          ..write('stickerId: $stickerId, ')
+          ..write('unlockedAt: $unlockedAt, ')
+          ..write('isSelected: $isSelected')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(stickerId, unlockedAt, isSelected);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is UnlockedSticker &&
+          other.stickerId == this.stickerId &&
+          other.unlockedAt == this.unlockedAt &&
+          other.isSelected == this.isSelected);
+}
+
+class UnlockedStickersCompanion extends UpdateCompanion<UnlockedSticker> {
+  final Value<String> stickerId;
+  final Value<DateTime> unlockedAt;
+  final Value<bool> isSelected;
+  final Value<int> rowid;
+  const UnlockedStickersCompanion({
+    this.stickerId = const Value.absent(),
+    this.unlockedAt = const Value.absent(),
+    this.isSelected = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  UnlockedStickersCompanion.insert({
+    required String stickerId,
+    this.unlockedAt = const Value.absent(),
+    this.isSelected = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : stickerId = Value(stickerId);
+  static Insertable<UnlockedSticker> custom({
+    Expression<String>? stickerId,
+    Expression<DateTime>? unlockedAt,
+    Expression<bool>? isSelected,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (stickerId != null) 'sticker_id': stickerId,
+      if (unlockedAt != null) 'unlocked_at': unlockedAt,
+      if (isSelected != null) 'is_selected': isSelected,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  UnlockedStickersCompanion copyWith({
+    Value<String>? stickerId,
+    Value<DateTime>? unlockedAt,
+    Value<bool>? isSelected,
+    Value<int>? rowid,
+  }) {
+    return UnlockedStickersCompanion(
+      stickerId: stickerId ?? this.stickerId,
+      unlockedAt: unlockedAt ?? this.unlockedAt,
+      isSelected: isSelected ?? this.isSelected,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (stickerId.present) {
+      map['sticker_id'] = Variable<String>(stickerId.value);
+    }
+    if (unlockedAt.present) {
+      map['unlocked_at'] = Variable<DateTime>(unlockedAt.value);
+    }
+    if (isSelected.present) {
+      map['is_selected'] = Variable<bool>(isSelected.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UnlockedStickersCompanion(')
+          ..write('stickerId: $stickerId, ')
+          ..write('unlockedAt: $unlockedAt, ')
+          ..write('isSelected: $isSelected, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2817,6 +3093,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $TreeProgressTable treeProgress = $TreeProgressTable(this);
   late final $UserProfileTable userProfile = $UserProfileTable(this);
   late final $PlantedTreesTable plantedTrees = $PlantedTreesTable(this);
+  late final $UnlockedStickersTable unlockedStickers = $UnlockedStickersTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2827,6 +3106,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     treeProgress,
     userProfile,
     plantedTrees,
+    unlockedStickers,
   ];
 }
 
@@ -4199,6 +4479,178 @@ typedef $$PlantedTreesTableProcessedTableManager =
       PlantedTree,
       PrefetchHooks Function()
     >;
+typedef $$UnlockedStickersTableCreateCompanionBuilder =
+    UnlockedStickersCompanion Function({
+      required String stickerId,
+      Value<DateTime> unlockedAt,
+      Value<bool> isSelected,
+      Value<int> rowid,
+    });
+typedef $$UnlockedStickersTableUpdateCompanionBuilder =
+    UnlockedStickersCompanion Function({
+      Value<String> stickerId,
+      Value<DateTime> unlockedAt,
+      Value<bool> isSelected,
+      Value<int> rowid,
+    });
+
+class $$UnlockedStickersTableFilterComposer
+    extends Composer<_$AppDatabase, $UnlockedStickersTable> {
+  $$UnlockedStickersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get stickerId => $composableBuilder(
+    column: $table.stickerId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get unlockedAt => $composableBuilder(
+    column: $table.unlockedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isSelected => $composableBuilder(
+    column: $table.isSelected,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$UnlockedStickersTableOrderingComposer
+    extends Composer<_$AppDatabase, $UnlockedStickersTable> {
+  $$UnlockedStickersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get stickerId => $composableBuilder(
+    column: $table.stickerId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get unlockedAt => $composableBuilder(
+    column: $table.unlockedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isSelected => $composableBuilder(
+    column: $table.isSelected,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$UnlockedStickersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $UnlockedStickersTable> {
+  $$UnlockedStickersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get stickerId =>
+      $composableBuilder(column: $table.stickerId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get unlockedAt => $composableBuilder(
+    column: $table.unlockedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isSelected => $composableBuilder(
+    column: $table.isSelected,
+    builder: (column) => column,
+  );
+}
+
+class $$UnlockedStickersTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $UnlockedStickersTable,
+          UnlockedSticker,
+          $$UnlockedStickersTableFilterComposer,
+          $$UnlockedStickersTableOrderingComposer,
+          $$UnlockedStickersTableAnnotationComposer,
+          $$UnlockedStickersTableCreateCompanionBuilder,
+          $$UnlockedStickersTableUpdateCompanionBuilder,
+          (
+            UnlockedSticker,
+            BaseReferences<
+              _$AppDatabase,
+              $UnlockedStickersTable,
+              UnlockedSticker
+            >,
+          ),
+          UnlockedSticker,
+          PrefetchHooks Function()
+        > {
+  $$UnlockedStickersTableTableManager(
+    _$AppDatabase db,
+    $UnlockedStickersTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$UnlockedStickersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UnlockedStickersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$UnlockedStickersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> stickerId = const Value.absent(),
+                Value<DateTime> unlockedAt = const Value.absent(),
+                Value<bool> isSelected = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => UnlockedStickersCompanion(
+                stickerId: stickerId,
+                unlockedAt: unlockedAt,
+                isSelected: isSelected,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String stickerId,
+                Value<DateTime> unlockedAt = const Value.absent(),
+                Value<bool> isSelected = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => UnlockedStickersCompanion.insert(
+                stickerId: stickerId,
+                unlockedAt: unlockedAt,
+                isSelected: isSelected,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$UnlockedStickersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $UnlockedStickersTable,
+      UnlockedSticker,
+      $$UnlockedStickersTableFilterComposer,
+      $$UnlockedStickersTableOrderingComposer,
+      $$UnlockedStickersTableAnnotationComposer,
+      $$UnlockedStickersTableCreateCompanionBuilder,
+      $$UnlockedStickersTableUpdateCompanionBuilder,
+      (
+        UnlockedSticker,
+        BaseReferences<_$AppDatabase, $UnlockedStickersTable, UnlockedSticker>,
+      ),
+      UnlockedSticker,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -4213,4 +4665,6 @@ class $AppDatabaseManager {
       $$UserProfileTableTableManager(_db, _db.userProfile);
   $$PlantedTreesTableTableManager get plantedTrees =>
       $$PlantedTreesTableTableManager(_db, _db.plantedTrees);
+  $$UnlockedStickersTableTableManager get unlockedStickers =>
+      $$UnlockedStickersTableTableManager(_db, _db.unlockedStickers);
 }

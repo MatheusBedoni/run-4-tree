@@ -9,6 +9,7 @@ import 'tables/exercises_table.dart';
 import 'tables/planted_trees_table.dart';
 import 'tables/run_sessions_table.dart';
 import 'tables/tree_progress_table.dart';
+import 'tables/unlocked_stickers_table.dart';
 import 'tables/user_profile_table.dart';
 
 part 'app_database.g.dart';
@@ -17,7 +18,16 @@ part 'app_database.g.dart';
 ///
 /// Registra todas as tabelas do app e provê acesso singleton.
 /// O código gerado (`app_database.g.dart`) é criado pelo `build_runner`.
-@DriftDatabase(tables: [RunSessions, Exercises, TreeProgress, UserProfile, PlantedTrees])
+@DriftDatabase(
+  tables: [
+    RunSessions,
+    Exercises,
+    TreeProgress,
+    UserProfile,
+    PlantedTrees,
+    UnlockedStickers,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase._() : super(_openConnection());
 
@@ -30,7 +40,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -49,6 +59,9 @@ class AppDatabase extends _$AppDatabase {
           }
           if (from < 5) {
             await m.createTable(plantedTrees);
+          }
+          if (from < 6) {
+            await m.createTable(unlockedStickers);
           }
         },
       );

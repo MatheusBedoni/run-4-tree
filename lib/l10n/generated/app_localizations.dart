@@ -910,6 +910,246 @@ abstract class AppLocalizations {
     Object pace,
     Object speed,
   );
+
+  /// No description provided for @stickerCollectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sticker collection'**
+  String get stickerCollectionTitle;
+
+  /// No description provided for @stickerCollectionProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{unlocked} of {total} unlocked'**
+  String stickerCollectionProgress(int unlocked, int total);
+
+  /// No description provided for @stickerCollectionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap an unlocked sticker to make it your avatar and your marker on the map.'**
+  String get stickerCollectionHint;
+
+  /// No description provided for @stickerCollectionInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'In use'**
+  String get stickerCollectionInUse;
+
+  /// No description provided for @stickerCollectionUseButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Use as avatar'**
+  String get stickerCollectionUseButton;
+
+  /// No description provided for @stickerCollectionLockedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked'**
+  String get stickerCollectionLockedLabel;
+
+  /// No description provided for @stickerCollectionLockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep moving to unlock this one.'**
+  String get stickerCollectionLockedMessage;
+
+  /// No description provided for @stickerCollectionLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load your stickers.'**
+  String get stickerCollectionLoadError;
+
+  /// No description provided for @stickerUnlockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New sticker unlocked!'**
+  String get stickerUnlockedTitle;
+
+  /// No description provided for @stickerUnlockedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} just joined your collection.'**
+  String stickerUnlockedSubtitle(String name);
+
+  /// No description provided for @stickerUnlockedUseButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Use as avatar'**
+  String get stickerUnlockedUseButton;
+
+  /// No description provided for @stickerUnlockedCloseButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Nice!'**
+  String get stickerUnlockedCloseButton;
+
+  /// No description provided for @profileStickersSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your collection'**
+  String get profileStickersSectionTitle;
+
+  /// No description provided for @profileStickersCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stickers'**
+  String get profileStickersCardTitle;
+
+  /// No description provided for @profileStickersCardSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{unlocked} of {total} unlocked'**
+  String profileStickersCardSubtitle(int unlocked, int total);
+
+  /// No description provided for @profileAvatarChangeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap your avatar to change it'**
+  String get profileAvatarChangeHint;
+
+  /// No description provided for @stickerRequirementFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Yours from day one'**
+  String get stickerRequirementFree;
+
+  /// No description provided for @stickerRequirementTotalDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover {target} km in total'**
+  String stickerRequirementTotalDistance(String target);
+
+  /// No description provided for @stickerRequirementSingleRun.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover {target} km in a single activity'**
+  String stickerRequirementSingleRun(String target);
+
+  /// No description provided for @stickerRequirementStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Move {target} days in a row'**
+  String stickerRequirementStreak(int target);
+
+  /// No description provided for @stickerRequirementTrees.
+  ///
+  /// In en, this message translates to:
+  /// **'{target, plural, =1{Plant your first tree} other{Plant {target} trees}}'**
+  String stickerRequirementTrees(int target);
+
+  /// No description provided for @stickerRequirementRuns.
+  ///
+  /// In en, this message translates to:
+  /// **'{target, plural, =1{Finish your first activity} other{Finish {target} activities}}'**
+  String stickerRequirementRuns(int target);
+
+  /// No description provided for @stickerRequirementWeeklyGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'{target, plural, =1{Hit your weekly goal once} other{Hit your weekly goal {target} weeks}}'**
+  String stickerRequirementWeeklyGoal(int target);
+
+  /// No description provided for @stickerRequirementNightRuns.
+  ///
+  /// In en, this message translates to:
+  /// **'{target, plural, =1{Work out once after 8 PM} other{Work out {target} times after 8 PM}}'**
+  String stickerRequirementNightRuns(int target);
+
+  /// No description provided for @stickerRequirementVariety.
+  ///
+  /// In en, this message translates to:
+  /// **'Try all three activities: walk, run and bike'**
+  String get stickerRequirementVariety;
+
+  /// No description provided for @stickerNameFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Sticker #{id}'**
+  String stickerNameFallback(String id);
+
+  /// No description provided for @stickerName1.
+  ///
+  /// In en, this message translates to:
+  /// **'Dawn Swallow'**
+  String get stickerName1;
+
+  /// No description provided for @stickerName2.
+  ///
+  /// In en, this message translates to:
+  /// **'Monarch'**
+  String get stickerName2;
+
+  /// No description provided for @stickerName3.
+  ///
+  /// In en, this message translates to:
+  /// **'Hawk Moth'**
+  String get stickerName3;
+
+  /// No description provided for @stickerName4.
+  ///
+  /// In en, this message translates to:
+  /// **'Tiger Moth'**
+  String get stickerName4;
+
+  /// No description provided for @stickerName5.
+  ///
+  /// In en, this message translates to:
+  /// **'Katydid'**
+  String get stickerName5;
+
+  /// No description provided for @stickerName6.
+  ///
+  /// In en, this message translates to:
+  /// **'Golden Moth'**
+  String get stickerName6;
+
+  /// No description provided for @stickerName7.
+  ///
+  /// In en, this message translates to:
+  /// **'Horned Beetle'**
+  String get stickerName7;
+
+  /// No description provided for @stickerName8.
+  ///
+  /// In en, this message translates to:
+  /// **'Apollo Butterfly'**
+  String get stickerName8;
+
+  /// No description provided for @stickerName9.
+  ///
+  /// In en, this message translates to:
+  /// **'Honeybee'**
+  String get stickerName9;
+
+  /// No description provided for @stickerName10.
+  ///
+  /// In en, this message translates to:
+  /// **'Tree Climber'**
+  String get stickerName10;
+
+  /// No description provided for @stickerName11.
+  ///
+  /// In en, this message translates to:
+  /// **'Ladybug'**
+  String get stickerName11;
+
+  /// No description provided for @stickerName12.
+  ///
+  /// In en, this message translates to:
+  /// **'Garden Spider'**
+  String get stickerName12;
+
+  /// No description provided for @stickerName13.
+  ///
+  /// In en, this message translates to:
+  /// **'Emerald Caterpillar'**
+  String get stickerName13;
+
+  /// No description provided for @stickerName14.
+  ///
+  /// In en, this message translates to:
+  /// **'Dragonfly'**
+  String get stickerName14;
 }
 
 class _AppLocalizationsDelegate

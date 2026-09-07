@@ -463,4 +463,173 @@ class AppLocalizationsEn extends AppLocalizations {
   ) {
     return '$exercise • $distance km\n\n⏱️ $duration\n🔥 $calories kcal\n⚡ Avg. speed: $speed km/h\n📍 Avg. pace: $pace min/km';
   }
+
+  @override
+  String get stickerCollectionTitle => 'Sticker collection';
+
+  @override
+  String stickerCollectionProgress(int unlocked, int total) {
+    return '$unlocked of $total unlocked';
+  }
+
+  @override
+  String get stickerCollectionHint =>
+      'Tap an unlocked sticker to make it your avatar and your marker on the map.';
+
+  @override
+  String get stickerCollectionInUse => 'In use';
+
+  @override
+  String get stickerCollectionUseButton => 'Use as avatar';
+
+  @override
+  String get stickerCollectionLockedLabel => 'Locked';
+
+  @override
+  String get stickerCollectionLockedMessage =>
+      'Keep moving to unlock this one.';
+
+  @override
+  String get stickerCollectionLoadError => 'Could not load your stickers.';
+
+  @override
+  String get stickerUnlockedTitle => 'New sticker unlocked!';
+
+  @override
+  String stickerUnlockedSubtitle(String name) {
+    return '$name just joined your collection.';
+  }
+
+  @override
+  String get stickerUnlockedUseButton => 'Use as avatar';
+
+  @override
+  String get stickerUnlockedCloseButton => 'Nice!';
+
+  @override
+  String get profileStickersSectionTitle => 'Your collection';
+
+  @override
+  String get profileStickersCardTitle => 'Stickers';
+
+  @override
+  String profileStickersCardSubtitle(int unlocked, int total) {
+    return '$unlocked of $total unlocked';
+  }
+
+  @override
+  String get profileAvatarChangeHint => 'Tap your avatar to change it';
+
+  @override
+  String get stickerRequirementFree => 'Yours from day one';
+
+  @override
+  String stickerRequirementTotalDistance(String target) {
+    return 'Cover $target km in total';
+  }
+
+  @override
+  String stickerRequirementSingleRun(String target) {
+    return 'Cover $target km in a single activity';
+  }
+
+  @override
+  String stickerRequirementStreak(int target) {
+    return 'Move $target days in a row';
+  }
+
+  @override
+  String stickerRequirementTrees(int target) {
+    String _temp0 = intl.Intl.pluralLogic(
+      target,
+      locale: localeName,
+      other: 'Plant $target trees',
+      one: 'Plant your first tree',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String stickerRequirementRuns(int target) {
+    String _temp0 = intl.Intl.pluralLogic(
+      target,
+      locale: localeName,
+      other: 'Finish $target activities',
+      one: 'Finish your first activity',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String stickerRequirementWeeklyGoal(int target) {
+    String _temp0 = intl.Intl.pluralLogic(
+      target,
+      locale: localeName,
+      other: 'Hit your weekly goal $target weeks',
+      one: 'Hit your weekly goal once',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String stickerRequirementNightRuns(int target) {
+    String _temp0 = intl.Intl.pluralLogic(
+      target,
+      locale: localeName,
+      other: 'Work out $target times after 8 PM',
+      one: 'Work out once after 8 PM',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stickerRequirementVariety =>
+      'Try all three activities: walk, run and bike';
+
+  @override
+  String stickerNameFallback(String id) {
+    return 'Sticker #$id';
+  }
+
+  @override
+  String get stickerName1 => 'Dawn Swallow';
+
+  @override
+  String get stickerName2 => 'Monarch';
+
+  @override
+  String get stickerName3 => 'Hawk Moth';
+
+  @override
+  String get stickerName4 => 'Tiger Moth';
+
+  @override
+  String get stickerName5 => 'Katydid';
+
+  @override
+  String get stickerName6 => 'Golden Moth';
+
+  @override
+  String get stickerName7 => 'Horned Beetle';
+
+  @override
+  String get stickerName8 => 'Apollo Butterfly';
+
+  @override
+  String get stickerName9 => 'Honeybee';
+
+  @override
+  String get stickerName10 => 'Tree Climber';
+
+  @override
+  String get stickerName11 => 'Ladybug';
+
+  @override
+  String get stickerName12 => 'Garden Spider';
+
+  @override
+  String get stickerName13 => 'Emerald Caterpillar';
+
+  @override
+  String get stickerName14 => 'Dragonfly';
 }

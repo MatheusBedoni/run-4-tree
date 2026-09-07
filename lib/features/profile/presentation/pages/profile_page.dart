@@ -12,9 +12,18 @@ import 'package:run_4_tree/features/profile/presentation/pages/edit_profile_page
 import 'package:run_4_tree/features/profile/presentation/pages/how_we_plant_trees_page.dart';
 import 'package:run_4_tree/features/profile/presentation/pages/privacy_policy_page.dart';
 import 'package:run_4_tree/features/profile/presentation/pages/terms_of_service_page.dart';
+import 'package:run_4_tree/features/stickers/presentation/controllers/sticker_controller.dart';
+import 'package:run_4_tree/features/stickers/presentation/controllers/sticker_controller_factory.dart';
+import 'package:run_4_tree/features/stickers/presentation/pages/sticker_collection_page.dart';
+import 'package:run_4_tree/features/stickers/presentation/widgets/sticker_avatar.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  /// Controller da coleção de adesivos. A [HomePage] passa o dela para que a
+  /// troca de avatar aqui atualize o marcador do mapa na hora; quando ausente,
+  /// a página cria o seu.
+  final StickerController? stickerController;
+
+  const ProfilePage({super.key, this.stickerController});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -22,6 +31,10 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   late final ProfileController _controller;
+  late final StickerController _stickerController;
+
+  /// Só descarta o controller de adesivos se ele nasceu aqui.
+  late final bool _ownsStickerController;
 
   @override
   void initState() {
@@ -32,12 +45,28 @@ class _ProfilePageState extends State<ProfilePage> {
       UpdateProfileUseCase(repository),
     );
     _controller.loadProfile();
+
+    _ownsStickerController = widget.stickerController == null;
+    _stickerController = widget.stickerController ?? createStickerController();
+    if (_ownsStickerController) {
+      _stickerController.load();
+    }
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    if (_ownsStickerController) _stickerController.dispose();
     super.dispose();
+  }
+
+  Future<void> _openStickerCollection() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => StickerCollectionPage(controller: _stickerController),
+      ),
+    );
   }
 
   Future<void> _openEditProfile(ProfileEntity profile) async {
@@ -160,6 +189,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   const SizedBox(height: 28),
+                  _buildStickersSection(),
+                  const SizedBox(height: 24),
                   _buildLegalSection(),
                   const SizedBox(height: 24),
                 ],
@@ -171,29 +202,174 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  /// Avatar do usuário: o adesivo escolhido na coleção. Tocar abre a galeria
+  /// para trocar (ou ver o que ainda falta desbloquear).
   Widget _buildAvatar() {
-    return Container(
-      width: 96,
-      height: 96,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: const LinearGradient(
-          colors: [AppColors.primaryLight, AppColors.primaryDark],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        border: Border.all(color: Colors.white, width: 4),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primaryLight.withValues(alpha: 0.4),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: const Center(
-        child: FaIcon(FontAwesomeIcons.seedling, color: Colors.white, size: 36),
-      ),
+    return ListenableBuilder(
+      listenable: _stickerController,
+      builder: (context, _) {
+        final selected = _stickerController.selectedSticker;
+        return Column(
+          children: [
+            GestureDetector(
+              onTap: _openStickerCollection,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  StickerAvatar(assetPath: selected?.assetPath, size: 96),
+                  Positioned(
+                    right: -2,
+                    bottom: -2,
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: AppColors.accentOrange,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 2),
+                      ),
+                      child: const Icon(
+                        Icons.auto_awesome_rounded,
+                        size: 14,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              AppLocalizations.of(context)!.profileAvatarChangeHint,
+              style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// Atalho para a coleção, com prévia dos adesivos já conquistados.
+  Widget _buildStickersSection() {
+    return ListenableBuilder(
+      listenable: _stickerController,
+      builder: (context, _) {
+        final l10n = AppLocalizations.of(context)!;
+        final unlocked = _stickerController.stickers
+            .where((sticker) => sticker.isUnlocked)
+            .toList();
+        final preview = unlocked.take(5).toList();
+        final remaining = unlocked.length - preview.length;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 4, bottom: 12),
+              child: Text(
+                l10n.profileStickersSectionTitle,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ),
+            Material(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(20),
+                onTap: _openStickerCollection,
+                child: Ink(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.06),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          const FaIcon(
+                            FontAwesomeIcons.solidStar,
+                            size: 18,
+                            color: AppColors.accentOrange,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  l10n.profileStickersCardTitle,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  l10n.profileStickersCardSubtitle(
+                                    unlocked.length,
+                                    _stickerController.totalCount,
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Icon(
+                            Icons.chevron_right_rounded,
+                            size: 20,
+                            color: AppColors.textSecondary,
+                          ),
+                        ],
+                      ),
+                      if (preview.isNotEmpty) ...[
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            for (final sticker in preview)
+                              Padding(
+                                padding: const EdgeInsets.only(right: 8),
+                                child: StickerAvatar(
+                                  assetPath: sticker.assetPath,
+                                  size: 40,
+                                  borderWidth: 2,
+                                  showShadow: false,
+                                ),
+                              ),
+                            if (remaining > 0)
+                              Text(
+                                '+$remaining',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

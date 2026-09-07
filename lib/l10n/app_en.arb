@@ -202,5 +202,105 @@
     }
   },
   "runCompletedShareButton": "Share",
-  "runCompletedShareSummary": "{exercise} • {distance} km\n\n⏱️ {duration}\n🔥 {calories} kcal\n⚡ Avg. speed: {speed} km/h\n📍 Avg. pace: {pace} min/km"
+  "runCompletedShareSummary": "{exercise} • {distance} km\n\n⏱️ {duration}\n🔥 {calories} kcal\n⚡ Avg. speed: {speed} km/h\n📍 Avg. pace: {pace} min/km",
+
+  "stickerCollectionTitle": "Sticker collection",
+  "stickerCollectionProgress": "{unlocked} of {total} unlocked",
+  "@stickerCollectionProgress": {
+    "placeholders": {
+      "unlocked": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "stickerCollectionHint": "Tap an unlocked sticker to make it your avatar and your marker on the map.",
+  "stickerCollectionInUse": "In use",
+  "stickerCollectionUseButton": "Use as avatar",
+  "stickerCollectionLockedLabel": "Locked",
+  "stickerCollectionLockedMessage": "Keep moving to unlock this one.",
+  "stickerCollectionLoadError": "Could not load your stickers.",
+  "stickerUnlockedTitle": "New sticker unlocked!",
+  "stickerUnlockedSubtitle": "{name} just joined your collection.",
+  "@stickerUnlockedSubtitle": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "stickerUnlockedUseButton": "Use as avatar",
+  "stickerUnlockedCloseButton": "Nice!",
+  "profileStickersSectionTitle": "Your collection",
+  "profileStickersCardTitle": "Stickers",
+  "profileStickersCardSubtitle": "{unlocked} of {total} unlocked",
+  "@profileStickersCardSubtitle": {
+    "placeholders": {
+      "unlocked": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "profileAvatarChangeHint": "Tap your avatar to change it",
+
+  "stickerRequirementFree": "Yours from day one",
+  "stickerRequirementTotalDistance": "Cover {target} km in total",
+  "@stickerRequirementTotalDistance": {
+    "placeholders": {
+      "target": { "type": "String" }
+    }
+  },
+  "stickerRequirementSingleRun": "Cover {target} km in a single activity",
+  "@stickerRequirementSingleRun": {
+    "placeholders": {
+      "target": { "type": "String" }
+    }
+  },
+  "stickerRequirementStreak": "Move {target} days in a row",
+  "@stickerRequirementStreak": {
+    "placeholders": {
+      "target": { "type": "int" }
+    }
+  },
+  "stickerRequirementTrees": "{target, plural, =1{Plant your first tree} other{Plant {target} trees}}",
+  "@stickerRequirementTrees": {
+    "placeholders": {
+      "target": { "type": "int" }
+    }
+  },
+  "stickerRequirementRuns": "{target, plural, =1{Finish your first activity} other{Finish {target} activities}}",
+  "@stickerRequirementRuns": {
+    "placeholders": {
+      "target": { "type": "int" }
+    }
+  },
+  "stickerRequirementWeeklyGoal": "{target, plural, =1{Hit your weekly goal once} other{Hit your weekly goal {target} weeks}}",
+  "@stickerRequirementWeeklyGoal": {
+    "placeholders": {
+      "target": { "type": "int" }
+    }
+  },
+  "stickerRequirementNightRuns": "{target, plural, =1{Work out once after 8 PM} other{Work out {target} times after 8 PM}}",
+  "@stickerRequirementNightRuns": {
+    "placeholders": {
+      "target": { "type": "int" }
+    }
+  },
+  "stickerRequirementVariety": "Try all three activities: walk, run and bike",
+
+  "stickerNameFallback": "Sticker #{id}",
+  "@stickerNameFallback": {
+    "placeholders": {
+      "id": { "type": "String" }
+    }
+  },
+  "stickerName1": "Dawn Swallow",
+  "stickerName2": "Monarch",
+  "stickerName3": "Hawk Moth",
+  "stickerName4": "Tiger Moth",
+  "stickerName5": "Katydid",
+  "stickerName6": "Golden Moth",
+  "stickerName7": "Horned Beetle",
+  "stickerName8": "Apollo Butterfly",
+  "stickerName9": "Honeybee",
+  "stickerName10": "Tree Climber",
+  "stickerName11": "Ladybug",
+  "stickerName12": "Garden Spider",
+  "stickerName13": "Emerald Caterpillar",
+  "stickerName14": "Dragonfly"
 }

@@ -22,6 +22,10 @@ import '../../../runs/data/repositories/run_session_repository_impl.dart';
 import '../../../runs/domain/entities/run_session_entity.dart';
 import '../../../runs/domain/usecases/save_run_usecase.dart';
 import '../../../runs/presentation/pages/run_completed_page.dart';
+import '../../../stickers/presentation/controllers/sticker_controller.dart';
+import '../../../stickers/presentation/controllers/sticker_controller_factory.dart';
+import '../../../stickers/presentation/utils/sticker_marker_factory.dart';
+import '../../../stickers/presentation/widgets/sticker_unlocked_dialog.dart';
 import '../../data/repositories/home_repository_impl.dart';
 import '../../domain/entities/run_stats_entity.dart';
 import '../../domain/usecases/get_run_stats_usecase.dart';
@@ -76,6 +80,23 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // ─── Mapa ──────────────────────────────────────────────────────────────────
   GoogleMapController? _mapController;
 
+  // ─── Adesivos (avatar + marcador do usuário no mapa) ───────────────────────
+  late final StickerController _stickerController;
+
+  /// Marcador do usuário, desenhado a partir do adesivo escolhido.
+  BitmapDescriptor? _userMarkerIcon;
+
+  /// Adesivo que gerou o [_userMarkerIcon] atual — evita redesenhar a toa.
+  String? _renderedMarkerAsset;
+
+  /// Última posição conhecida do usuário (marcador do mapa).
+  LatLng? _currentPosition;
+
+  /// Stream de GPS fora da corrida, só para manter o marcador no lugar certo.
+  StreamSubscription<Position>? _ambientLocationSub;
+
+  Set<Marker> _markers = {};
+
   // ─── Variáveis (preparadas para receber dados reais) ───────────────────────
   String? _userAvatarUrl;
   String? _mascotImageUrl;
@@ -121,6 +142,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       TreeGardenRepositoryImpl(),
     );
 
+    // Adesivos: o mesmo controller alimenta o avatar do perfil e o marcador
+    // do mapa, então trocar o adesivo no perfil atualiza o mapa na hora.
+    _stickerController = createStickerController();
+    _stickerController.addListener(_onSelectedStickerChanged);
+    _stickerController.load();
+
     // Resolve a posição real do usuário antes de montar o mapa
     _initialCameraFuture = _getInitialCameraPosition();
 
@@ -161,10 +188,100 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
   }
 
+  // ─── Marcador do usuário (adesivo) ─────────────────────────────────────────
+
+  void _onSelectedStickerChanged() => _refreshUserMarkerIcon();
+
+  /// Redesenha o bitmap do marcador quando o adesivo escolhido muda.
+  Future<void> _refreshUserMarkerIcon() async {
+    if (!mounted) return;
+    final sticker = _stickerController.selectedSticker;
+    if (sticker == null) return;
+    if (sticker.assetPath == _renderedMarkerAsset && _userMarkerIcon != null) {
+      return;
+    }
+
+    try {
+      final icon = await StickerMarkerFactory.build(
+        assetPath: sticker.assetPath,
+        devicePixelRatio: MediaQuery.devicePixelRatioOf(context),
+      );
+      if (!mounted) return;
+      setState(() {
+        _userMarkerIcon = icon;
+        _renderedMarkerAsset = sticker.assetPath;
+        _updateUserMarker();
+      });
+    } catch (e) {
+      debugPrint('Erro ao gerar o marcador do adesivo: $e');
+    }
+  }
+
+  /// Reconstrói o conjunto de marcadores. Chamar sempre dentro de um setState.
+  void _updateUserMarker() {
+    final position = _currentPosition;
+    final icon = _userMarkerIcon;
+    if (position == null || icon == null) {
+      _markers = {};
+      return;
+    }
+    _markers = {
+      Marker(
+        markerId: const MarkerId('user_avatar'),
+        position: position,
+        icon: icon,
+        anchor: const Offset(0.5, 0.5),
+        flat: true,
+      ),
+    };
+  }
+
+  /// GPS de baixa frequência fora da corrida, só para o marcador acompanhar o
+  /// usuário. Durante a corrida quem atualiza é o stream de tracking.
+  void _subscribeToAmbientLocation() {
+    _ambientLocationSub?.cancel();
+    _ambientLocationSub =
+        Geolocator.getPositionStream(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.high,
+            distanceFilter: 8,
+          ),
+        ).listen(
+          (pos) {
+            if (!mounted) return;
+            setState(() {
+              _currentPosition = LatLng(pos.latitude, pos.longitude);
+              _updateUserMarker();
+            });
+          },
+          onError: (Object e) =>
+              debugPrint('Erro no stream de localização ambiente: $e'),
+        );
+  }
+
+  /// Reavalia as conquistas e celebra os adesivos novos, um por vez.
+  Future<void> _syncStickersAndCelebrate() async {
+    await _stickerController.load();
+    if (!mounted) return;
+
+    final pending = List.of(_stickerController.pendingCelebrations);
+    for (final sticker in pending) {
+      if (!mounted) return;
+      final useAsAvatar = await showStickerUnlockedDialog(context, sticker);
+      _stickerController.consumeCelebration(sticker);
+      if (useAsAvatar) {
+        await _stickerController.selectSticker(sticker.id);
+      }
+    }
+  }
+
   @override
   void dispose() {
     _runTimer?.cancel();
     _locationSub?.cancel();
+    _ambientLocationSub?.cancel();
+    _stickerController.removeListener(_onSelectedStickerChanged);
+    _stickerController.dispose();
     _controller.removeListener(_onStatsLoaded);
     _controller.dispose();
     _progressAnimCtrl.dispose();
@@ -218,12 +335,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
     // Abre a tela de detalhes com as estatísticas + mapa + compartilhamento
     if (savedRun != null && mounted) {
-      Navigator.of(context, rootNavigator: true).push(
+      await Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute<void>(
           builder: (_) => RunCompletedPage(runSession: savedRun),
         ),
       );
     }
+
+    // A corrida pode ter completado uma conquista (distância, sequência...).
+    if (mounted) await _syncStickersAndCelebrate();
   }
 
   /// Exibe um anúncio de vídeo (rewarded interstitial) bloqueante — usado nos
@@ -352,6 +472,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // ─── GPS Tracking ──────────────────────────────────────────────────────────
 
   void _startTracking() {
+    // Durante a corrida o stream de tracking já atualiza o marcador.
+    _ambientLocationSub?.cancel();
+    _ambientLocationSub = null;
     _routePoints = [];
     _lastTrackingPosition = null;
     _runDistanceKm = 0.0;
@@ -377,6 +500,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       _runDistanceKm = 0.0;
       _lastTrackingPosition = null;
     });
+    _subscribeToAmbientLocation();
   }
 
   void _subscribeToLocationStream() {
@@ -401,6 +525,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               }
               _routePoints.add(newPoint);
               _lastTrackingPosition = newPoint;
+              _currentPosition = newPoint;
+              _updateUserMarker();
               _polylines = {
                 Polyline(
                   polylineId: const PolylineId('run_route'),
@@ -431,7 +557,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           _buildMapPage(),
           const ExercisesPage(),
           GardenPage(key: _gardenPageKey),
-          const ProfilePage(),
+          ProfilePage(stickerController: _stickerController),
         ],
       ),
       bottomNavigationBar: _runState == RunState.idle
@@ -568,13 +694,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           style: MapStyles.cartoonStyle,
           onMapCreated: (controller) => _mapController = controller,
           mapType: MapType.normal,
-          myLocationEnabled: true,
+          // O ponto azul padrão dá lugar ao adesivo escolhido pelo usuário.
+          myLocationEnabled: false,
           myLocationButtonEnabled: false,
           zoomControlsEnabled: false,
           compassEnabled: false,
           rotateGesturesEnabled: true,
           scrollGesturesEnabled: true,
           polylines: _polylines,
+          markers: _markers,
         );
       },
     );
@@ -615,11 +743,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           accuracy: LocationAccuracy.high,
         ),
       );
-      if (mounted) setState(() => _isMapReady = true);
-      return CameraPosition(
-        target: LatLng(position.latitude, position.longitude),
-        zoom: 16.5,
-      );
+      final target = LatLng(position.latitude, position.longitude);
+      if (mounted) {
+        setState(() {
+          _isMapReady = true;
+          _currentPosition = target;
+          _updateUserMarker();
+        });
+        await _refreshUserMarkerIcon();
+        _subscribeToAmbientLocation();
+      }
+      return CameraPosition(target: target, zoom: 16.5);
     } catch (e) {
       debugPrint('Erro ao obter posição inicial: $e');
       if (mounted) setState(() => _isMapReady = true);
