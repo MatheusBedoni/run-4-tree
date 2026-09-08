@@ -60,16 +60,35 @@ class PlantedTree {
 }
 
 /// Resposta completa de `POST /api/plant` da Tree-Nation.
+///
+/// A API responde HTTP 200 tanto no sucesso (`status: "ok"`, com `trees`)
+/// quanto no erro (`status: "error"`, com `errorCode`/`errorMessage` e **sem**
+/// `trees`) — por isso `trees` tolera ausência e os campos de erro existem.
 @JsonSerializable()
 class PlantTreeResponse {
   final String status;
 
+  @JsonKey(defaultValue: <PlantedTree>[])
   final List<PlantedTree> trees;
 
   @JsonKey(name: 'payment_id')
   final int? paymentId;
 
-  PlantTreeResponse({required this.status, required this.trees, this.paymentId});
+  /// Código do erro quando `status == 'error'` (ex: `tree_template`).
+  final String? errorCode;
+
+  /// Mensagem do erro quando `status == 'error'` (ex: `no tree template`).
+  final String? errorMessage;
+
+  PlantTreeResponse({
+    required this.status,
+    required this.trees,
+    this.paymentId,
+    this.errorCode,
+    this.errorMessage,
+  });
+
+  bool get isOk => status == 'ok';
 
   factory PlantTreeResponse.fromJson(Map<String, dynamic> json) => _$PlantTreeResponseFromJson(json);
 

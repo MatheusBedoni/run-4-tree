@@ -40,10 +40,14 @@ Map<String, dynamic> _$PlantedTreeToJson(PlantedTree instance) =>
 PlantTreeResponse _$PlantTreeResponseFromJson(Map<String, dynamic> json) =>
     PlantTreeResponse(
       status: json['status'] as String,
-      trees: (json['trees'] as List<dynamic>)
-          .map((e) => PlantedTree.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      trees:
+          (json['trees'] as List<dynamic>?)
+              ?.map((e) => PlantedTree.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
       paymentId: (json['payment_id'] as num?)?.toInt(),
+      errorCode: json['errorCode'] as String?,
+      errorMessage: json['errorMessage'] as String?,
     );
 
 Map<String, dynamic> _$PlantTreeResponseToJson(PlantTreeResponse instance) =>
@@ -51,4 +55,6 @@ Map<String, dynamic> _$PlantTreeResponseToJson(PlantTreeResponse instance) =>
       'status': instance.status,
       'trees': instance.trees,
       'payment_id': instance.paymentId,
+      'errorCode': instance.errorCode,
+      'errorMessage': instance.errorMessage,
     };

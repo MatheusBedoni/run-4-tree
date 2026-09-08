@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/foundation.dart';
+
+import '../utils/env.dart';
 
 class DioClient {
   static Dio? _dio;
@@ -7,7 +9,8 @@ class DioClient {
   static Dio get instance {
     if (_dio != null) return _dio!;
 
-    final baseUrl = dotenv.env['TREE_NATION_BASE_URL'] ?? 'https://tree-nation.com';
+    final baseUrl = envOrNull('TREE_NATION_BASE_URL') ?? 'https://tree-nation.com';
+    debugPrint('[Dio] baseUrl da Tree-Nation: $baseUrl');
     
     _dio = Dio(BaseOptions(
       baseUrl: baseUrl,
@@ -21,18 +24,24 @@ class DioClient {
 
     _dio!.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) {
-        final token = dotenv.env['TREE_NATION_API_TOKEN'];
-        if (token != null && token.isNotEmpty) {
+        final token = envOrNull('TREE_NATION_API_TOKEN');
+        if (token != null) {
           options.headers['Authorization'] = 'Bearer $token';
+        } else {
+          debugPrint('[Dio] TREE_NATION_API_TOKEN ausente — request irá sem Authorization');
         }
+        debugPrint('[Dio] -> ${options.method} ${options.uri}');
         return handler.next(options);
       },
       onResponse: (response, handler) {
-        // Você pode adicionar logs ou tratamentos globais de sucesso aqui
+        debugPrint('[Dio] <- ${response.statusCode} ${response.requestOptions.uri}');
         return handler.next(response);
       },
       onError: (DioException e, handler) {
-        // Você pode adicionar logs ou tratamentos globais de erro aqui
+        debugPrint(
+          '[Dio] xx ${e.requestOptions.method} ${e.requestOptions.uri} '
+          'tipo=${e.type} status=${e.response?.statusCode} body=${e.response?.data}',
+        );
         return handler.next(e);
       },
     ));

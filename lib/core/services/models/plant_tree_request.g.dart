@@ -18,8 +18,8 @@ PlantTreeRequest _$PlantTreeRequestFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$PlantTreeRequestToJson(PlantTreeRequest instance) =>
     <String, dynamic>{
       'quantity': instance.quantity,
-      'planter_id': instance.planterId,
-      'species_id': instance.speciesId,
-      'order_id': instance.orderId,
-      'message': instance.message,
+      'planter_id': ?instance.planterId,
+      'species_id': ?instance.speciesId,
+      'order_id': ?instance.orderId,
+      'message': ?instance.message,
     };

@@ -365,6 +365,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
     try {
       final result = await _runAdService.watchAd(placement: placement);
+      debugPrint(
+        '[Ad:$placement] success=${result.success} '
+        'revenueUsd=${result.revenueUsd} estimada=${result.isEstimatedRevenue}',
+      );
       if (result.success) {
         final progress = await _creditAdRevenueUseCase(result.revenueUsd);
         _controller.applyTreeProgress(progress);
@@ -381,6 +385,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   /// Chamado pelo [RunBannerAd] a cada crédito de receita durante a corrida.
   Future<void> _onBannerAdRevenue(double revenueUsd) async {
+    debugPrint('[Ad:banner] revenueUsd=$revenueUsd');
     try {
       final progress = await _creditAdRevenueUseCase(revenueUsd);
       if (mounted) _controller.applyTreeProgress(progress);

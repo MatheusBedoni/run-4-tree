@@ -2,7 +2,10 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'plant_tree_request.g.dart';
 
-@JsonSerializable()
+/// `includeIfNull: false` é essencial: a Tree-Nation rejeita o payload quando
+/// campos opcionais chegam explicitamente como `null` (ex: `species_id: null`)
+/// em vez de simplesmente ausentes.
+@JsonSerializable(includeIfNull: false)
 class PlantTreeRequest {
   @JsonKey(name: 'quantity')
   final int quantity;

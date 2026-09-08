@@ -46,7 +46,22 @@ class HomeController extends ChangeNotifier {
   /// receita) sem precisar refazer o fetch completo de stats.
   void applyTreeProgress(TreeProgressEntity progress) {
     final current = _stats;
-    if (current == null) return;
+    if (current == null) {
+      // Stats ainda não carregados: o progresso creditado no banco é
+      // descartado da UI e o anel continua mostrando o valor antigo.
+      debugPrint(
+        'HomeController.applyTreeProgress ignorado: stats ainda não carregados '
+        '(árvores=${progress.treesPlanted}, '
+        '${(progress.progressPercent * 100).toStringAsFixed(1)}%)',
+      );
+      return;
+    }
+    debugPrint(
+      'HomeController.applyTreeProgress: '
+      '${(current.progressPercent * 100).toStringAsFixed(1)}% -> '
+      '${(progress.progressPercent * 100).toStringAsFixed(1)}% | '
+      'árvores ${current.treesPlanted} -> ${progress.treesPlanted}',
+    );
     _stats = current.copyWith(
       treesPlanted: progress.treesPlanted,
       progressPercent: progress.progressPercent,
