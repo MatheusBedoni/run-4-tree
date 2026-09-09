@@ -111,6 +111,7 @@ void main() {
           availableTypes: const ['run', 'walk', 'bike'],
           selectedType: null,
           onFilterChanged: (_) {},
+          runs: const [],
         ),
       ),
     );
@@ -138,6 +139,7 @@ void main() {
           availableTypes: const ['run'],
           selectedType: null,
           onFilterChanged: _noop,
+          runs: const [],
         ),
       ),
     );

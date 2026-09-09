@@ -135,6 +135,7 @@ class _ExercisesPageState extends State<ExercisesPage> {
           availableTypes: _controller.availableExerciseTypes,
           selectedType: _controller.statsFilter,
           onFilterChanged: _controller.selectStatsFilter,
+          runs: _controller.runs,
         ),
         const SizedBox(height: 28),
         _buildRunHistorySection(),

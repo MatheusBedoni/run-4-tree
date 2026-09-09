@@ -6,6 +6,8 @@ import '../../../../l10n/generated/app_localizations.dart';
 import '../../domain/entities/exercise_stats.dart';
 import '../utils/exercise_formatters.dart';
 import 'exercise_section_header.dart';
+import '../pages/exercise_detailed_statistics_page.dart';
+import '../../../runs/domain/entities/run_session_entity.dart';
 
 /// Seção "Estatísticas": filtro por modalidade, gráfico de distância dos
 /// últimos meses e os totais consolidados do período.
@@ -19,6 +21,8 @@ class ExerciseStatisticsSection extends StatelessWidget {
   /// Modalidade selecionada (`null` = todas).
   final String? selectedType;
   final ValueChanged<String?> onFilterChanged;
+  
+  final List<RunSessionEntity> runs;
 
   const ExerciseStatisticsSection({
     super.key,
@@ -27,6 +31,7 @@ class ExerciseStatisticsSection extends StatelessWidget {
     required this.availableTypes,
     required this.selectedType,
     required this.onFilterChanged,
+    required this.runs,
   });
 
   @override
@@ -156,88 +161,11 @@ class ExerciseStatisticsSection extends StatelessWidget {
   }
 
   void _openMonthlyBreakdown(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: Colors.white,
-      showDragHandle: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ExerciseDetailedStatisticsPage(runs: runs),
       ),
-      builder: (sheetContext) {
-        final l10n = AppLocalizations.of(sheetContext)!;
-        final locale = Localizations.localeOf(sheetContext).toString();
-        // Mais recente primeiro: é o que o usuário quer conferir ao abrir.
-        final months = monthlyStats.reversed.toList();
-
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.exercisesMonthlyBreakdownTitle.toUpperCase(),
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.1,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Flexible(
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: months.length,
-                    separatorBuilder: (_, __) =>
-                        const Divider(height: 1, color: AppColors.progressTrack),
-                    itemBuilder: (context, index) {
-                      final month = months[index];
-                      return ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: Text(
-                          toBeginningOfSentenceCase(
-                                DateFormat(
-                                  'MMMM yyyy',
-                                  locale,
-                                ).format(month.month),
-                              ) ??
-                              '',
-                          style: const TextStyle(
-                            color: AppColors.textPrimary,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                        ),
-                        subtitle: Text(
-                          '${month.activityCount} · '
-                          '${formatCompactDuration(month.durationSeconds)}',
-                          style: const TextStyle(
-                            color: AppColors.textSecondary,
-                            fontSize: 12,
-                          ),
-                        ),
-                        trailing: Text(
-                          '${NumberFormat('0.0', locale).format(month.distanceKm)}'
-                          ' ${l10n.exercisesUnitKm}',
-                          style: TextStyle(
-                            color: month.distanceKm > 0
-                                ? AppColors.textPrimary
-                                : AppColors.textSecondary,
-                            fontWeight: FontWeight.w800,
-                            fontSize: 15,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 }

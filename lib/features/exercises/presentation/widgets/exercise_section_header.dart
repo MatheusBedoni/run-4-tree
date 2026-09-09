@@ -34,14 +34,14 @@ class ExerciseSectionHeader extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
               child: Text(
-                AppLocalizations.of(context)!.exercisesSectionMore.toUpperCase(),
+                AppLocalizations.of(
+                  context,
+                )!.exercisesSectionMore.toUpperCase(),
                 style: const TextStyle(
                   color: AppColors.primaryDark,
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 1.2,
-                  decoration: TextDecoration.underline,
-                  decorationThickness: 2,
                 ),
               ),
             ),
