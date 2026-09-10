@@ -808,6 +808,48 @@ abstract class AppLocalizations {
   /// **'We couldn\'t open the certificate link.'**
   String get gardenCertificateOpenError;
 
+  /// No description provided for @gardenGlobalForestButton.
+  ///
+  /// In en, this message translates to:
+  /// **'See the Global Forest'**
+  String get gardenGlobalForestButton;
+
+  /// No description provided for @globalForestPageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Global Forest'**
+  String get globalForestPageTitle;
+
+  /// No description provided for @globalForestSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Every tree planted by every Run4Tree user, in one place.'**
+  String get globalForestSubtitle;
+
+  /// No description provided for @globalForestTotalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{tree planted by everyone} other{trees planted by everyone}}'**
+  String globalForestTotalLabel(int count);
+
+  /// No description provided for @globalForestRecentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently planted'**
+  String get globalForestRecentTitle;
+
+  /// No description provided for @globalForestEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No trees published yet. Be the first to plant one!'**
+  String get globalForestEmptyMessage;
+
+  /// No description provided for @globalForestUnavailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The Global Forest is unavailable right now. Please try again later.'**
+  String get globalForestUnavailableMessage;
+
   /// No description provided for @exercisesDetailsPace.
   ///
   /// In en, this message translates to:
@@ -1150,6 +1192,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dragonfly'**
   String get stickerName14;
+
+  /// No description provided for @profileEnvironmentalEducationButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Environmental Education'**
+  String get profileEnvironmentalEducationButton;
+
+  /// No description provided for @educationPageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Environmental Education'**
+  String get educationPageTitle;
+
+  /// No description provided for @educationForestsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The Importance of Forests'**
+  String get educationForestsTitle;
+
+  /// No description provided for @educationForestsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Forests are the lungs of our planet. They purify the air we breathe, filter the water we drink, and provide habitat for over 80% of terrestrial biodiversity. By planting trees, we help restore these vital ecosystems and support the communities that depend on them.'**
+  String get educationForestsBody;
+
+  /// No description provided for @educationGlobalWarmingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Global Warming & Risks'**
+  String get educationGlobalWarmingTitle;
+
+  /// No description provided for @educationGlobalWarmingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Global temperatures have risen by approximately 1.1°C since the pre-industrial era, leading to extreme weather, rising sea levels, and loss of biodiversity. Without significant action to reduce emissions, we risk irreversible damage to our planet\'s climate systems.'**
+  String get educationGlobalWarmingBody;
+
+  /// No description provided for @educationCo2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'The Role of CO2'**
+  String get educationCo2Title;
+
+  /// No description provided for @educationCo2Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Carbon dioxide (CO2) is the primary greenhouse gas driving climate change. Human activities release over 35 billion tons of CO2 into the atmosphere each year. Trees play a critical role in mitigating this by absorbing CO2 and storing carbon in their trunks, branches, and roots.'**
+  String get educationCo2Body;
 }
 
 class _AppLocalizationsDelegate

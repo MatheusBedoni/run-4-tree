@@ -404,6 +404,38 @@ class AppLocalizationsEn extends AppLocalizations {
       'We couldn\'t open the certificate link.';
 
   @override
+  String get gardenGlobalForestButton => 'See the Global Forest';
+
+  @override
+  String get globalForestPageTitle => 'Global Forest';
+
+  @override
+  String get globalForestSubtitle =>
+      'Every tree planted by every Run4Tree user, in one place.';
+
+  @override
+  String globalForestTotalLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'trees planted by everyone',
+      one: 'tree planted by everyone',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get globalForestRecentTitle => 'Recently planted';
+
+  @override
+  String get globalForestEmptyMessage =>
+      'No trees published yet. Be the first to plant one!';
+
+  @override
+  String get globalForestUnavailableMessage =>
+      'The Global Forest is unavailable right now. Please try again later.';
+
+  @override
   String get exercisesDetailsPace => 'Avg. Pace';
 
   @override
@@ -632,4 +664,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stickerName14 => 'Dragonfly';
+
+  @override
+  String get profileEnvironmentalEducationButton => 'Environmental Education';
+
+  @override
+  String get educationPageTitle => 'Environmental Education';
+
+  @override
+  String get educationForestsTitle => 'The Importance of Forests';
+
+  @override
+  String get educationForestsBody =>
+      'Forests are the lungs of our planet. They purify the air we breathe, filter the water we drink, and provide habitat for over 80% of terrestrial biodiversity. By planting trees, we help restore these vital ecosystems and support the communities that depend on them.';
+
+  @override
+  String get educationGlobalWarmingTitle => 'Global Warming & Risks';
+
+  @override
+  String get educationGlobalWarmingBody =>
+      'Global temperatures have risen by approximately 1.1°C since the pre-industrial era, leading to extreme weather, rising sea levels, and loss of biodiversity. Without significant action to reduce emissions, we risk irreversible damage to our planet\'s climate systems.';
+
+  @override
+  String get educationCo2Title => 'The Role of CO2';
+
+  @override
+  String get educationCo2Body =>
+      'Carbon dioxide (CO2) is the primary greenhouse gas driving climate change. Human activities release over 35 billion tons of CO2 into the atmosphere each year. Trees play a critical role in mitigating this by absorbing CO2 and storing carbon in their trunks, branches, and roots.';
 }

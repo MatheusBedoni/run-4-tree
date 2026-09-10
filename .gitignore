@@ -50,3 +50,16 @@ app.*.map.json
 
 privacy.pdf
 PRIVACY_POLICY.md
+
+# Firebase
+**/android/app/google-services.json
+**/ios/Runner/GoogleService-Info.plist
+**/macos/Runner/GoogleService-Info.plist
+lib/firebase_options.dart
+firebase.json
+firestore.indexes.json
+firestore.rules
+firebase_crashlytics.json
+.firebaserc
+
+SHIPATON.md

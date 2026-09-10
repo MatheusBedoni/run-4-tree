@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,12 +11,14 @@ import 'features/auth/presentation/pages/login_page.dart';
 import 'features/home/presentation/pages/home_page.dart';
 import 'features/onboarding/presentation/pages/onboarding_page.dart';
 import 'features/splash/presentation/pages/splash_page.dart';
+import 'firebase_options.dart';
 import 'l10n/generated/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load(fileName: '.env');
+  await _configureFirebase();
   await _configureRevenueCat();
   await MobileAds.instance.initialize();
 
@@ -28,6 +31,19 @@ void main() async {
   );
 
   runApp(const Run4TreeApp());
+}
+
+/// Inicializa o Firebase (usado hoje só pelo Firestore do mural global de
+/// árvores). Best-effort: se o app rodar numa plataforma sem
+/// `firebase_options.dart` configurado (ex: linux/web ainda não registrados)
+/// ou sem rede, o mural global simplesmente fica indisponível em vez de
+/// travar o boot do app inteiro.
+Future<void> _configureFirebase() async {
+  try {
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  } catch (e) {
+    debugPrint('Firebase: initializeApp falhou: $e');
+  }
 }
 
 /// Configura o SDK da RevenueCat com a chave pública da plataforma atual.

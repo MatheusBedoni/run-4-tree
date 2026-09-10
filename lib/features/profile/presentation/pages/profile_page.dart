@@ -12,6 +12,7 @@ import 'package:run_4_tree/features/profile/presentation/pages/edit_profile_page
 import 'package:run_4_tree/features/profile/presentation/pages/how_we_plant_trees_page.dart';
 import 'package:run_4_tree/features/profile/presentation/pages/privacy_policy_page.dart';
 import 'package:run_4_tree/features/profile/presentation/pages/terms_of_service_page.dart';
+import 'package:run_4_tree/features/profile/presentation/pages/environmental_education_page.dart';
 import 'package:run_4_tree/features/stickers/presentation/controllers/sticker_controller.dart';
 import 'package:run_4_tree/features/stickers/presentation/controllers/sticker_controller_factory.dart';
 import 'package:run_4_tree/features/stickers/presentation/pages/sticker_collection_page.dart';
@@ -582,6 +583,17 @@ class _ProfilePageState extends State<ProfilePage> {
                     context,
                     MaterialPageRoute(
                       builder: (_) => const HowWePlantTreesPage(),
+                    ),
+                  ),
+                ),
+                _buildLegalDivider(),
+                _buildLegalRow(
+                  icon: Icons.school_rounded,
+                  label: AppLocalizations.of(context)!.profileEnvironmentalEducationButton,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const EnvironmentalEducationPage(),
                     ),
                   ),
                 ),

@@ -4,11 +4,15 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 
 import '../../../../core/database/app_database.dart';
 import '../../../../core/utils/env.dart';
+import '../../../../core/utils/firestore_safe_call.dart';
 import '../../../../core/utils/purchases_safe_call.dart';
 import '../../../../core/services/models/plant_tree_request.dart';
 import '../../../../core/services/models/plant_tree_response.dart';
 import '../../../../core/services/models/tree_nation_exception.dart';
 import '../../../../core/services/tree_nation_service.dart';
+import '../../../global_forest/data/repositories/global_forest_repository_impl.dart';
+import '../../../global_forest/domain/entities/global_planted_tree_entity.dart';
+import '../../../global_forest/domain/repositories/global_forest_repository.dart';
 import '../../domain/entities/planted_tree_entity.dart';
 import '../../domain/entities/tree_progress_entity.dart';
 import '../../domain/repositories/tree_garden_repository.dart';
@@ -47,10 +51,15 @@ class TreeGardenRepositoryImpl implements TreeGardenRepository {
 
   final AppDatabase _db;
   final TreeNationService _treeNationService;
+  final GlobalForestRepository _globalForestRepository;
 
-  TreeGardenRepositoryImpl({AppDatabase? db, TreeNationService? treeNationService})
-    : _db = db ?? AppDatabase.instance,
-      _treeNationService = treeNationService ?? TreeNationService();
+  TreeGardenRepositoryImpl({
+    AppDatabase? db,
+    TreeNationService? treeNationService,
+    GlobalForestRepository? globalForestRepository,
+  })  : _db = db ?? AppDatabase.instance,
+        _treeNationService = treeNationService ?? TreeNationService(),
+        _globalForestRepository = globalForestRepository ?? GlobalForestRepositoryImpl();
 
   @override
   Future<TreeProgressEntity> getProgress() async {
@@ -231,6 +240,25 @@ class TreeGardenRepositoryImpl implements TreeGardenRepository {
               paymentId: Value(response.paymentId),
             ),
           );
+
+      // Publica no mural global (Firestore) — best-effort: uma falha aqui
+      // (offline, Firebase ainda não configurado) nunca deve desfazer o
+      // plantio real, que já aconteceu na Tree-Nation e foi salvo localmente.
+      fireAndForgetFirestoreCall(
+        'publishPlantedTree',
+        () => _globalForestRepository.publishPlantedTree(
+          GlobalPlantedTreeEntity(
+            id: '',
+            certificateUrl: tree.certificateUrl,
+            collectUrl: tree.collectUrl,
+            country: tree.country,
+            projectName: tree.projectName,
+            speciesName: tree.speciesName,
+            co2LifeTimeKg: tree.speciesLifeTimeCo2,
+            plantedAt: DateTime.now(),
+          ),
+        ),
+      );
     }
   }
 
