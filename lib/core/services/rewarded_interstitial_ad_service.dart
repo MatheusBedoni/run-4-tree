@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
+import '../observability/critical_flow_telemetry.dart';
 import '../utils/purchases_safe_call.dart';
 
 /// Resultado de uma sessão de anúncio.
@@ -68,8 +69,13 @@ class RewardedInterstitialAdService {
   /// [placement] identifica o momento da corrida em que o anúncio é exibido
   /// (ex: `run_start`, `run_end`) — repassado ao tracking da RevenueCat.
   Future<AdWatchResult> watchAd({required String placement}) async {
+    await CriticalFlowTelemetry.adWatchStarted(placement);
     final adUnitId = _adUnitId;
     if (adUnitId.isEmpty) {
+      await CriticalFlowTelemetry.adWatchFailed(
+        placement: placement,
+        reason: 'ad_unit_not_configured',
+      );
       return const AdWatchResult.failure('ad_unit_not_configured');
     }
 
@@ -94,6 +100,10 @@ class RewardedInterstitialAdService {
             ),
           );
           if (!completer.isCompleted) {
+            unawaited(CriticalFlowTelemetry.adWatchFailed(
+              placement: placement,
+              reason: 'load_failed',
+            ));
             completer.complete(
               AdWatchResult.failure('load_failed: ${error.message}'),
             );
@@ -117,6 +127,10 @@ class RewardedInterstitialAdService {
       final impressionId = ad.responseInfo?.responseId;
       if (impressionId == null) {
         ad.dispose();
+        await CriticalFlowTelemetry.adWatchFailed(
+          placement: placement,
+          reason: 'missing_impression_id',
+        );
         completer.complete(const AdWatchResult.failure('missing_impression_id'));
         return;
       }
@@ -203,6 +217,10 @@ class RewardedInterstitialAdService {
         onAdFailedToShowFullScreenContent: (ad, error) {
           ad.dispose();
           if (!completer.isCompleted) {
+            unawaited(CriticalFlowTelemetry.adWatchFailed(
+              placement: placement,
+              reason: 'show_failed',
+            ));
             completer.complete(AdWatchResult.failure('show_failed: ${error.message}'));
           }
         },
@@ -224,6 +242,10 @@ class RewardedInterstitialAdService {
 
           if (result != null && !result.failed) {
             final revenue = capturedRevenueUsd;
+            unawaited(CriticalFlowTelemetry.adWatchCompleted(
+              placement: placement,
+              usedEstimatedRevenue: revenue == null,
+            ));
             completer.complete(
               AdWatchResult.success(
                 revenue ?? _estimatedRevenuePerViewUsd,
@@ -231,13 +253,23 @@ class RewardedInterstitialAdService {
               ),
             );
           } else {
+            unawaited(CriticalFlowTelemetry.adWatchFailed(
+              placement: placement,
+              reason: 'verification_failed',
+            ));
             completer.complete(const AdWatchResult.failure('verification_failed'));
           }
         },
       );
-    } catch (e) {
+    } catch (e, st) {
       ad.dispose();
       debugPrint('RewardedInterstitialAdService error: $e');
+      unawaited(CriticalFlowTelemetry.adWatchFailed(
+        placement: placement,
+        reason: 'unexpected_error',
+        error: e,
+        stackTrace: st,
+      ));
       if (!completer.isCompleted) {
         completer.complete(AdWatchResult.failure(e.toString()));
       }

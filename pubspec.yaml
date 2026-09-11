@@ -55,6 +55,7 @@ dependencies:
   share_plus: ^10.1.4
   firebase_core: ^3.15.2
   cloud_firestore: ^5.6.12
+  sentry_flutter: ^9.29.0
 
 
 dev_dependencies:

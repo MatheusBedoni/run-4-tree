@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 import '../../../../core/database/app_database.dart';
+import '../../../../core/observability/critical_flow_telemetry.dart';
 import '../../../../core/utils/env.dart';
 import '../../../../core/utils/firestore_safe_call.dart';
 import '../../../../core/utils/purchases_safe_call.dart';
@@ -117,6 +120,7 @@ class TreeGardenRepositoryImpl implements TreeGardenRepository {
     while (revenue >= treePriceUsd) {
       debugPrint('[Garden] tentando plantar árvore (saldo \$$revenue)...');
       try {
+        await CriticalFlowTelemetry.treePlantingStarted();
         final response = await _treeNationService.plantTree(
           PlantTreeRequest(
             quantity: 1,
@@ -127,6 +131,7 @@ class TreeGardenRepositoryImpl implements TreeGardenRepository {
         await _savePlantedTrees(response);
         revenue -= treePriceUsd;
         trees += 1;
+        unawaited(CriticalFlowTelemetry.treePlanted());
         debugPrint(
           '[Garden] árvore plantada! total=$trees | saldo restante \$$revenue',
         );
@@ -142,6 +147,11 @@ class TreeGardenRepositoryImpl implements TreeGardenRepository {
           );
         }
         _logStuckAtFullRing(revenue);
+        unawaited(CriticalFlowTelemetry.treePlantingFailed(
+          reason: e.isAccountConfigError ? 'account_configuration' : 'provider_rejected',
+          error: e,
+          stackTrace: StackTrace.current,
+        ));
         break;
       } catch (e, st) {
         // Falha ao plantar de verdade (rede/API indisponível): mantém a
@@ -151,6 +161,11 @@ class TreeGardenRepositoryImpl implements TreeGardenRepository {
         debugPrint('[Garden] FALHA ao plantar: $e');
         debugPrint('[Garden] stack: $st');
         _logStuckAtFullRing(revenue);
+        unawaited(CriticalFlowTelemetry.treePlantingFailed(
+          reason: 'request_failed',
+          error: e,
+          stackTrace: st,
+        ));
         break;
       }
     }

@@ -74,34 +74,36 @@ class _ExercisesPageState extends State<ExercisesPage> {
         elevation: 0,
         centerTitle: true,
       ),
-      body: ListenableBuilder(
-        listenable: _controller,
-        builder: (context, _) {
-          if (_controller.isLoading && _controller.runs.isEmpty) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.primaryDark),
-            );
-          }
+      body: SafeArea(
+        child: ListenableBuilder(
+          listenable: _controller,
+          builder: (context, _) {
+            if (_controller.isLoading && _controller.runs.isEmpty) {
+              return const Center(
+                child: CircularProgressIndicator(color: AppColors.primaryDark),
+              );
+            }
 
-          if (_controller.hasLoadError && _controller.runs.isEmpty) {
-            return _buildErrorState(
-              AppLocalizations.of(context)!.exercisesLoadErrorMessage,
-            );
-          }
+            if (_controller.hasLoadError && _controller.runs.isEmpty) {
+              return _buildErrorState(
+                AppLocalizations.of(context)!.exercisesLoadErrorMessage,
+              );
+            }
 
-          return RefreshIndicator(
-            color: AppColors.primaryDark,
-            onRefresh: _controller.refreshRuns,
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.only(top: 8, bottom: 32),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: _buildSections(),
+            return RefreshIndicator(
+              color: AppColors.primaryDark,
+              onRefresh: _controller.refreshRuns,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.only(top: 8, bottom: 32),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: _buildSections(),
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

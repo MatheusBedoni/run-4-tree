@@ -12,6 +12,7 @@ import 'package:run_4_tree/features/profile/presentation/pages/profile_page.dart
 
 import '../../../../../core/constants/map_styles.dart';
 import '../../../../../core/database/app_database.dart';
+import '../../../../../core/observability/critical_flow_telemetry.dart';
 import '../../../../../core/services/rewarded_interstitial_ad_service.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../l10n/generated/app_localizations.dart';
@@ -371,11 +372,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       );
       if (result.success) {
         final progress = await _creditAdRevenueUseCase(result.revenueUsd);
+        unawaited(CriticalFlowTelemetry.seedRewarded(source: placement));
         _controller.applyTreeProgress(progress);
       } else {
         debugPrint('Anúncio de $placement não exibido: ${result.errorMessage}');
       }
-    } catch (e) {
+    } catch (e, st) {
+      unawaited(CriticalFlowTelemetry.seedRewardFailed(
+        source: placement,
+        error: e,
+        stackTrace: st,
+      ));
       debugPrint('Erro no anúncio de $placement: $e');
     } finally {
       _isShowingRunAd = false;
@@ -388,8 +395,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     debugPrint('[Ad:banner] revenueUsd=$revenueUsd');
     try {
       final progress = await _creditAdRevenueUseCase(revenueUsd);
+      unawaited(CriticalFlowTelemetry.seedRewarded(source: 'run_banner'));
       if (mounted) _controller.applyTreeProgress(progress);
-    } catch (e) {
+    } catch (e, st) {
+      unawaited(CriticalFlowTelemetry.seedRewardFailed(
+        source: 'run_banner',
+        error: e,
+        stackTrace: st,
+      ));
       debugPrint('Erro ao creditar receita do banner: $e');
     }
   }

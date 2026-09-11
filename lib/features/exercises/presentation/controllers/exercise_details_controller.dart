@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -7,6 +8,8 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../profile/domain/entities/profile_entity.dart';
 import '../../../profile/domain/usecases/get_profile_usecase.dart';
 import '../../../runs/domain/entities/run_session_entity.dart';
+import '../../../stickers/presentation/controllers/sticker_controller_factory.dart';
+import '../../../stickers/presentation/utils/sticker_marker_factory.dart';
 
 /// Controller da [ExerciseDetailsPage] seguindo o padrão ChangeNotifier.
 ///
@@ -15,6 +18,7 @@ import '../../../runs/domain/entities/run_session_entity.dart';
 class ExerciseDetailsController extends ChangeNotifier {
   final GetProfileUseCase _getProfileUseCase;
   final RunSessionEntity runSession;
+  final _stickerController = createStickerController();
 
   ExerciseDetailsController(this._getProfileUseCase, this.runSession) {
     _polylinePoints = _decodePolyline(runSession.polyline);
@@ -56,6 +60,41 @@ class ExerciseDetailsController extends ChangeNotifier {
     }
   }
 
+  /// Exibe o adesivo escolhido pelo usuário no término do trajeto.
+  ///
+  /// O mapa de detalhes representa uma atividade concluída, então o avatar é
+  /// posicionado no último ponto registrado em vez de usar os pinos genéricos
+  /// de início e fim.
+  Future<void> loadAvatarMarker(double devicePixelRatio) async {
+    if (_polylinePoints.isEmpty) return;
+
+    try {
+      await _stickerController.load();
+      final sticker = _stickerController.selectedSticker;
+      if (sticker == null) return;
+
+      final icon = await StickerMarkerFactory.build(
+        assetPath: sticker.assetPath,
+        devicePixelRatio: devicePixelRatio,
+      );
+
+      markers
+        ..clear()
+        ..add(
+          Marker(
+            markerId: const MarkerId('user_avatar'),
+            position: _polylinePoints.last,
+            icon: icon,
+            anchor: const Offset(0.5, 0.5),
+            flat: true,
+          ),
+        );
+      notifyListeners();
+    } catch (e) {
+      debugPrint('ExerciseDetailsController.loadAvatarMarker error: $e');
+    }
+  }
+
   // ─── Helpers privados ──────────────────────────────────────────────────────
 
   List<LatLng> _decodePolyline(String polylineString) {
@@ -81,22 +120,6 @@ class ExerciseDetailsController extends ChangeNotifier {
         points: _polylinePoints,
         color: AppColors.primaryDark,
         width: 5,
-      ),
-    );
-
-    markers.add(
-      Marker(
-        markerId: const MarkerId('start'),
-        position: _polylinePoints.first,
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-      ),
-    );
-
-    markers.add(
-      Marker(
-        markerId: const MarkerId('end'),
-        position: _polylinePoints.last,
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
       ),
     );
   }

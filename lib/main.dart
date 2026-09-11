@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/pages/login_page.dart';
@@ -18,6 +19,18 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load(fileName: '.env');
+  await SentryFlutter.init(
+    (options) {
+      options.dsn = dotenv.env['SENTRY_DSN'] ?? '';
+      options.environment = dotenv.env['SENTRY_ENVIRONMENT'] ?? 'production';
+      options.sendDefaultPii = false;
+      options.tracesSampleRate = kReleaseMode ? 0.2 : 1.0;
+    },
+    appRunner: _runApp,
+  );
+}
+
+Future<void> _runApp() async {
   await _configureFirebase();
   await _configureRevenueCat();
   await MobileAds.instance.initialize();
@@ -75,6 +88,7 @@ class Run4TreeApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      navigatorObservers: [SentryNavigatorObserver()],
       // English is the app's default/fallback locale — the device locale is
       // used only when it matches one of the locales we actually ship.
       localeResolutionCallback: (deviceLocale, supportedLocales) {

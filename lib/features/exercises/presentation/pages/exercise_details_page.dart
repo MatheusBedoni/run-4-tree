@@ -33,6 +33,12 @@ class _ExerciseDetailsPageState extends State<ExerciseDetailsPage> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _controller.loadAvatarMarker(MediaQuery.devicePixelRatioOf(context));
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
