@@ -51,6 +51,10 @@
 		     (AdMob > Configurações do app) antes de publicar. -->
 		<key>GADApplicationIdentifier</key>
 		<string>ca-app-pub-3940256099942544~1458002511</string>
+		<key>NSCameraUsageDescription</key>
+		<string>Usamos a câmera para você tirar uma foto e compartilhar junto com o seu treino.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Usamos suas fotos para você escolher o fundo da imagem do seu treino.</string>
 		<key>NSUserTrackingUsageDescription</key>
 		<string>Seus dados serão usados para exibir anúncios recompensados mais relevantes e financiar o plantio de árvores.</string>
 	</dict>

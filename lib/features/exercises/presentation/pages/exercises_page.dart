@@ -12,6 +12,7 @@ import '../../../runs/data/repositories/run_session_repository_impl.dart';
 import '../../../runs/domain/entities/run_session_entity.dart';
 import '../../../runs/domain/usecases/delete_run_usecase.dart';
 import '../../../runs/domain/usecases/get_all_runs_usecase.dart';
+import '../../../share/presentation/pages/share_run_page.dart';
 import '../controllers/exercises_controller.dart';
 import '../utils/exercise_formatters.dart';
 import '../widgets/exercise_records_section.dart';
@@ -417,6 +418,12 @@ class _ExercisesPageState extends State<ExercisesPage> {
                     ),
                   ],
                 ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.share_rounded, size: 20),
+                color: AppColors.textSecondary,
+                tooltip: AppLocalizations.of(context)!.runCompletedShareButton,
+                onPressed: () => ShareRunPage.open(context, run),
               ),
             ],
           ),

@@ -7,6 +7,7 @@ import '../../../../l10n/generated/app_localizations.dart';
 import '../../../profile/data/repositories/profile_repository_impl.dart';
 import '../../../profile/domain/usecases/get_profile_usecase.dart';
 import '../../../runs/domain/entities/run_session_entity.dart';
+import '../../../share/presentation/pages/share_run_page.dart';
 import '../controllers/exercise_details_controller.dart';
 
 class ExerciseDetailsPage extends StatefulWidget {
@@ -134,6 +135,13 @@ class _ExerciseDetailsPageState extends State<ExerciseDetailsPage> {
         elevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.share_rounded),
+            tooltip: l10n.runCompletedShareButton,
+            onPressed: () => ShareRunPage.open(context, run),
+          ),
+        ],
       ),
       body: ListenableBuilder(
         listenable: _controller,

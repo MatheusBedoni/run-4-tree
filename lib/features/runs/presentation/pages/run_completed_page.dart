@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../share/presentation/pages/share_run_page.dart';
 import '../../domain/entities/run_session_entity.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -133,49 +133,7 @@ class _RunCompletedPageState extends State<RunCompletedPage> {
     return '${mins.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
   }
 
-  String _labelForExerciseType(String exerciseType) {
-    final l10n = AppLocalizations.of(context)!;
-    switch (exerciseType) {
-      case 'bike':
-        return l10n.exercisesLabelBike;
-      case 'walk':
-        return l10n.exercisesLabelWalk;
-      case 'run':
-      default:
-        return l10n.exercisesLabelRun;
-    }
-  }
-
-  Future<void> _shareRun() async {
-    final l10n = AppLocalizations.of(context)!;
-    final run = widget.runSession;
-
-    final summary = l10n.runCompletedShareSummary(
-      run.calories.toStringAsFixed(0),
-      run.distanceKm.toStringAsFixed(2),
-      _formatDuration(run.durationSeconds),
-      _labelForExerciseType(run.exerciseType),
-      _formatPace(run.pace),
-      run.averageSpeed.toStringAsFixed(1),
-    );
-
-    try {
-      await Share.share(summary);
-    } catch (e) {
-      debugPrint('Erro ao compartilhar corrida: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context)!.homeRunSaveErrorMessage,
-            ),
-            backgroundColor: Colors.redAccent,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    }
-  }
+  void _shareRun() => ShareRunPage.open(context, widget.runSession);
 
   @override
   Widget build(BuildContext context) {

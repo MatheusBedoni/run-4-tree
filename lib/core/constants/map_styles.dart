@@ -127,4 +127,55 @@ class MapStyles {
   }
 ]
 ''';
+
+  /// Cinza claro e discreto do card de compartilhamento (percurso em preto).
+  static const String shareLightStyle = '''
+[
+  {"elementType": "geometry", "stylers": [{"color": "#f2f3f0"}]},
+  {"elementType": "labels.icon", "stylers": [{"visibility": "off"}]},
+  {"elementType": "labels.text.fill", "stylers": [{"color": "#5f6368"}]},
+  {"elementType": "labels.text.stroke", "stylers": [{"color": "#f5f5f5"}]},
+  {"featureType": "administrative.land_parcel", "stylers": [{"visibility": "off"}]},
+  {"featureType": "poi", "elementType": "labels", "stylers": [{"visibility": "off"}]},
+  {"featureType": "poi.park", "elementType": "geometry", "stylers": [{"color": "#cfe8c4"}]},
+  {"featureType": "road", "elementType": "geometry", "stylers": [{"color": "#ffffff"}]},
+  {"featureType": "road", "elementType": "labels.text.fill", "stylers": [{"color": "#9e9e9e"}]},
+  {"featureType": "road.highway", "elementType": "geometry", "stylers": [{"color": "#e3e3e3"}]},
+  {"featureType": "transit", "stylers": [{"visibility": "off"}]},
+  {"featureType": "water", "elementType": "geometry", "stylers": [{"color": "#b9dcea"}]},
+  {"featureType": "water", "elementType": "labels.text.fill", "stylers": [{"color": "#7aa7b8"}]}
+]
+''';
+
+  /// Azul-marinho do card de compartilhamento (percurso em branco).
+  static const String shareDarkStyle = '''
+[
+  {"elementType": "geometry", "stylers": [{"color": "#1b2336"}]},
+  {"elementType": "labels.icon", "stylers": [{"visibility": "off"}]},
+  {"elementType": "labels.text.fill", "stylers": [{"color": "#8a97b0"}]},
+  {"elementType": "labels.text.stroke", "stylers": [{"color": "#1b2336"}]},
+  {"featureType": "administrative", "elementType": "geometry", "stylers": [{"color": "#3b4a66"}]},
+  {"featureType": "landscape.natural", "elementType": "geometry", "stylers": [{"color": "#1d2a3c"}]},
+  {"featureType": "poi", "elementType": "geometry", "stylers": [{"color": "#212b40"}]},
+  {"featureType": "poi", "elementType": "labels", "stylers": [{"visibility": "off"}]},
+  {"featureType": "poi.park", "elementType": "geometry", "stylers": [{"color": "#1f4a33"}]},
+  {"featureType": "road", "elementType": "geometry", "stylers": [{"color": "#34405a"}]},
+  {"featureType": "road", "elementType": "geometry.stroke", "stylers": [{"color": "#1b2336"}]},
+  {"featureType": "road", "elementType": "labels.text.fill", "stylers": [{"color": "#6b7894"}]},
+  {"featureType": "road.highway", "elementType": "geometry", "stylers": [{"color": "#46557a"}]},
+  {"featureType": "transit", "stylers": [{"visibility": "off"}]},
+  {"featureType": "water", "elementType": "geometry", "stylers": [{"color": "#0f6fb3"}]},
+  {"featureType": "water", "elementType": "labels.text.fill", "stylers": [{"color": "#4f8fc0"}]}
+]
+''';
+
+  /// Satélite (tipo híbrido): só esconde ícones de comércio e transporte
+  /// para o percurso ser o destaque.
+  static const String shareSatelliteStyle = '''
+[
+  {"featureType": "poi", "stylers": [{"visibility": "off"}]},
+  {"featureType": "transit", "stylers": [{"visibility": "off"}]},
+  {"elementType": "labels.icon", "stylers": [{"visibility": "off"}]}
+]
+''';
 }

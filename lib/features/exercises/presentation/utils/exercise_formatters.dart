@@ -52,8 +52,17 @@ String formatClockDuration(int seconds) {
       '${s.toString().padLeft(2, '0')}';
 }
 
-/// Ritmo em min/km no formato `05:24`.
+/// Cronômetro: `01:16:49` a partir de uma hora, `25:10` abaixo disso.
+String formatStopwatchDuration(int seconds) {
+  return seconds >= 3600
+      ? formatClockDuration(seconds)
+      : formatCompactDuration(seconds);
+}
+
+/// Ritmo em min/km no formato `05:24`. Atividades sem distância têm ritmo
+/// infinito e viram `--:--`.
 String formatPace(double paceMinPerKm) {
+  if (!paceMinPerKm.isFinite) return '--:--';
   final mins = paceMinPerKm.floor();
   final secs = ((paceMinPerKm - mins) * 60).round();
   return '${mins.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';

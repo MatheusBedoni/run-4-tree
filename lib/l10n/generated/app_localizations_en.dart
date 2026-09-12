@@ -497,6 +497,98 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get shareRunTitle => 'Share your progress';
+
+  @override
+  String get shareRunFormatStory => 'Stories';
+
+  @override
+  String get shareRunFormatSquare => 'Square';
+
+  @override
+  String get shareRunTabPhoto => 'Photo';
+
+  @override
+  String get shareRunTabMap => 'Map';
+
+  @override
+  String get shareRunTabColor => 'Color';
+
+  @override
+  String get shareRunTabSticker => 'Sticker';
+
+  @override
+  String get shareRunPhotoAdd => 'Add';
+
+  @override
+  String get shareRunPhotoCamera => 'Take a photo';
+
+  @override
+  String get shareRunPhotoGallery => 'Choose from gallery';
+
+  @override
+  String get shareRunPhotoError => 'We couldn\'t open that photo.';
+
+  @override
+  String get shareRunMapLight => 'Light';
+
+  @override
+  String get shareRunMapSatellite => 'Satellite';
+
+  @override
+  String get shareRunMapDark => 'Dark';
+
+  @override
+  String get shareRunMapCartoon => 'Run4Tree';
+
+  @override
+  String get shareRunColorForest => 'Forest';
+
+  @override
+  String get shareRunColorSunrise => 'Sunrise';
+
+  @override
+  String get shareRunColorNight => 'Night';
+
+  @override
+  String get shareRunColorTransparent => 'Transparent';
+
+  @override
+  String get shareRunStickerNone => 'None';
+
+  @override
+  String get shareRunStickerHint => 'Drag the sticker to move it';
+
+  @override
+  String get shareRunNoRoute =>
+      'This activity has no GPS route to show on a map.';
+
+  @override
+  String get shareRunExportError =>
+      'We couldn\'t create the image. Please try again.';
+
+  @override
+  String get shareRunCaptionFooter =>
+      'Every km I move helps plant real trees 🌳 #Run4Tree';
+
+  @override
+  String get shareCardDistance => 'Distance';
+
+  @override
+  String shareCardSeeds(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '+$count seeds for real trees',
+      one: '+1 seed for real trees',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get shareCardTagline => 'Moving for a greener planet';
+
+  @override
   String get stickerCollectionTitle => 'Sticker collection';
 
   @override

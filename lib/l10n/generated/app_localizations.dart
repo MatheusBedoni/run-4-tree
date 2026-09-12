@@ -953,6 +953,168 @@ abstract class AppLocalizations {
     Object speed,
   );
 
+  /// No description provided for @shareRunTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your progress'**
+  String get shareRunTitle;
+
+  /// No description provided for @shareRunFormatStory.
+  ///
+  /// In en, this message translates to:
+  /// **'Stories'**
+  String get shareRunFormatStory;
+
+  /// No description provided for @shareRunFormatSquare.
+  ///
+  /// In en, this message translates to:
+  /// **'Square'**
+  String get shareRunFormatSquare;
+
+  /// No description provided for @shareRunTabPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get shareRunTabPhoto;
+
+  /// No description provided for @shareRunTabMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Map'**
+  String get shareRunTabMap;
+
+  /// No description provided for @shareRunTabColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Color'**
+  String get shareRunTabColor;
+
+  /// No description provided for @shareRunTabSticker.
+  ///
+  /// In en, this message translates to:
+  /// **'Sticker'**
+  String get shareRunTabSticker;
+
+  /// No description provided for @shareRunPhotoAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get shareRunPhotoAdd;
+
+  /// No description provided for @shareRunPhotoCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo'**
+  String get shareRunPhotoCamera;
+
+  /// No description provided for @shareRunPhotoGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from gallery'**
+  String get shareRunPhotoGallery;
+
+  /// No description provided for @shareRunPhotoError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t open that photo.'**
+  String get shareRunPhotoError;
+
+  /// No description provided for @shareRunMapLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get shareRunMapLight;
+
+  /// No description provided for @shareRunMapSatellite.
+  ///
+  /// In en, this message translates to:
+  /// **'Satellite'**
+  String get shareRunMapSatellite;
+
+  /// No description provided for @shareRunMapDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get shareRunMapDark;
+
+  /// No description provided for @shareRunMapCartoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Run4Tree'**
+  String get shareRunMapCartoon;
+
+  /// No description provided for @shareRunColorForest.
+  ///
+  /// In en, this message translates to:
+  /// **'Forest'**
+  String get shareRunColorForest;
+
+  /// No description provided for @shareRunColorSunrise.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunrise'**
+  String get shareRunColorSunrise;
+
+  /// No description provided for @shareRunColorNight.
+  ///
+  /// In en, this message translates to:
+  /// **'Night'**
+  String get shareRunColorNight;
+
+  /// No description provided for @shareRunColorTransparent.
+  ///
+  /// In en, this message translates to:
+  /// **'Transparent'**
+  String get shareRunColorTransparent;
+
+  /// No description provided for @shareRunStickerNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get shareRunStickerNone;
+
+  /// No description provided for @shareRunStickerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag the sticker to move it'**
+  String get shareRunStickerHint;
+
+  /// No description provided for @shareRunNoRoute.
+  ///
+  /// In en, this message translates to:
+  /// **'This activity has no GPS route to show on a map.'**
+  String get shareRunNoRoute;
+
+  /// No description provided for @shareRunExportError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t create the image. Please try again.'**
+  String get shareRunExportError;
+
+  /// No description provided for @shareRunCaptionFooter.
+  ///
+  /// In en, this message translates to:
+  /// **'Every km I move helps plant real trees 🌳 #Run4Tree'**
+  String get shareRunCaptionFooter;
+
+  /// No description provided for @shareCardDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get shareCardDistance;
+
+  /// No description provided for @shareCardSeeds.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{+1 seed for real trees} other{+{count} seeds for real trees}}'**
+  String shareCardSeeds(int count);
+
+  /// No description provided for @shareCardTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Moving for a greener planet'**
+  String get shareCardTagline;
+
   /// No description provided for @stickerCollectionTitle.
   ///
   /// In en, this message translates to:

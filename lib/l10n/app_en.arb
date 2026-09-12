@@ -217,6 +217,39 @@
   "runCompletedShareButton": "Share",
   "runCompletedShareSummary": "{exercise} • {distance} km\n\n⏱️ {duration}\n🔥 {calories} kcal\n⚡ Avg. speed: {speed} km/h\n📍 Avg. pace: {pace} min/km",
 
+  "shareRunTitle": "Share your progress",
+  "shareRunFormatStory": "Stories",
+  "shareRunFormatSquare": "Square",
+  "shareRunTabPhoto": "Photo",
+  "shareRunTabMap": "Map",
+  "shareRunTabColor": "Color",
+  "shareRunTabSticker": "Sticker",
+  "shareRunPhotoAdd": "Add",
+  "shareRunPhotoCamera": "Take a photo",
+  "shareRunPhotoGallery": "Choose from gallery",
+  "shareRunPhotoError": "We couldn't open that photo.",
+  "shareRunMapLight": "Light",
+  "shareRunMapSatellite": "Satellite",
+  "shareRunMapDark": "Dark",
+  "shareRunMapCartoon": "Run4Tree",
+  "shareRunColorForest": "Forest",
+  "shareRunColorSunrise": "Sunrise",
+  "shareRunColorNight": "Night",
+  "shareRunColorTransparent": "Transparent",
+  "shareRunStickerNone": "None",
+  "shareRunStickerHint": "Drag the sticker to move it",
+  "shareRunNoRoute": "This activity has no GPS route to show on a map.",
+  "shareRunExportError": "We couldn't create the image. Please try again.",
+  "shareRunCaptionFooter": "Every km I move helps plant real trees 🌳 #Run4Tree",
+  "shareCardDistance": "Distance",
+  "shareCardSeeds": "{count, plural, =1{+1 seed for real trees} other{+{count} seeds for real trees}}",
+  "@shareCardSeeds": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "shareCardTagline": "Moving for a greener planet",
+
   "stickerCollectionTitle": "Sticker collection",
   "stickerCollectionProgress": "{unlocked} of {total} unlocked",
   "@stickerCollectionProgress": {
