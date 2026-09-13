@@ -28,18 +28,12 @@ class ExerciseRecordsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: ExerciseSectionHeader(
-            title: l10n.exercisesRecordsTitle,
-            onMoreTap: records.isEmpty ? null : () => _openAllRecords(context),
-          ),
-        ),
-        const SizedBox(height: 14),
         if (records.isEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: _EmptyRecordsCard(message: l10n.exercisesRecordsEmptyMessage),
+            child: _EmptyRecordsCard(
+              message: l10n.exercisesRecordsEmptyMessage,
+            ),
           )
         else
           SizedBox(
@@ -59,50 +53,6 @@ class ExerciseRecordsSection extends StatelessWidget {
             ),
           ),
       ],
-    );
-  }
-
-  void _openAllRecords(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: Colors.white,
-      showDragHandle: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (sheetContext) {
-        final l10n = AppLocalizations.of(sheetContext)!;
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.exercisesAllRecordsTitle.toUpperCase(),
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.1,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                ...records.map(
-                  (record) => _RecordRow(
-                    record: record,
-                    onTap: () {
-                      Navigator.pop(sheetContext);
-                      onRecordTap(record.run);
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 }
