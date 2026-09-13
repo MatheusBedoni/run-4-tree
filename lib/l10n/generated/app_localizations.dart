@@ -202,6 +202,150 @@ abstract class AppLocalizations {
   /// **'Getting GPS location'**
   String get homeMapLoadingSubtitle;
 
+  /// No description provided for @homeRunAdStartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'READY TO GROW'**
+  String get homeRunAdStartTitle;
+
+  /// No description provided for @homeRunAdStartSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your ads become seeds — 10 seeds plant one real tree.'**
+  String get homeRunAdStartSubtitle;
+
+  /// No description provided for @homeRunAdFinishTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'GREAT WORK!'**
+  String get homeRunAdFinishTitle;
+
+  /// No description provided for @homeRunAdFinishSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving your activity while this ad turns into seeds.'**
+  String get homeRunAdFinishSubtitle;
+
+  /// No description provided for @homeRunAdLoopWatch.
+  ///
+  /// In en, this message translates to:
+  /// **'AD'**
+  String get homeRunAdLoopWatch;
+
+  /// No description provided for @homeRunAdLoopSeeds.
+  ///
+  /// In en, this message translates to:
+  /// **'SEEDS'**
+  String get homeRunAdLoopSeeds;
+
+  /// No description provided for @homeRunAdLoopTree.
+  ///
+  /// In en, this message translates to:
+  /// **'REAL TREE'**
+  String get homeRunAdLoopTree;
+
+  /// No description provided for @homeRunAdSeedsToNextTree.
+  ///
+  /// In en, this message translates to:
+  /// **'{accumulated}/{total} seeds to your next tree'**
+  String homeRunAdSeedsToNextTree(int accumulated, int total);
+
+  /// No description provided for @homeRunAdSeedsGainedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{+1 seed} other{+{count} seeds}}'**
+  String homeRunAdSeedsGainedBadge(int count);
+
+  /// No description provided for @homeRunAdSeedsEarnedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{+1 SEED EARNED} other{+{count} SEEDS EARNED}}'**
+  String homeRunAdSeedsEarnedTitle(int count);
+
+  /// No description provided for @homeRunAdRewardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'SEEDS EARNED'**
+  String get homeRunAdRewardTitle;
+
+  /// No description provided for @homeRunAdRewardSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This ad\'s revenue just went into your next real tree.'**
+  String get homeRunAdRewardSubtitle;
+
+  /// No description provided for @homeRunAdRewardExplainer.
+  ///
+  /// In en, this message translates to:
+  /// **'Reward confirmed: the revenue from this ad was added to your tree fund.'**
+  String get homeRunAdRewardExplainer;
+
+  /// No description provided for @homeRunAdTreeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'TREE COMPLETE!'**
+  String get homeRunAdTreeTitle;
+
+  /// No description provided for @homeRunAdTreeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your seeds filled up — a real tree is being planted for you.'**
+  String get homeRunAdTreeSubtitle;
+
+  /// No description provided for @homeRunAdMissedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'NO SEEDS THIS TIME'**
+  String get homeRunAdMissedTitle;
+
+  /// No description provided for @homeRunAdMissedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Seeds only come from ads watched to the end.'**
+  String get homeRunAdMissedSubtitle;
+
+  /// No description provided for @homeRunAdMissedExplainer.
+  ///
+  /// In en, this message translates to:
+  /// **'The ad did not finish, so nothing was credited. Your next one still counts.'**
+  String get homeRunAdMissedExplainer;
+
+  /// No description provided for @homeRunTreeEarnedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'+1 tree'**
+  String get homeRunTreeEarnedBadge;
+
+  /// No description provided for @homeRunAdFooterNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Ads are how you grow seeds — no purchase needed. Rewards verified by RevenueCat, trees planted by Tree-Nation.'**
+  String get homeRunAdFooterNote;
+
+  /// No description provided for @homeRunAdTip1.
+  ///
+  /// In en, this message translates to:
+  /// **'Ads are the only way to earn seeds — 10 seeds become one real tree.'**
+  String get homeRunAdTip1;
+
+  /// No description provided for @homeRunAdTip2.
+  ///
+  /// In en, this message translates to:
+  /// **'Every ad you watch waters the seedling growing in your garden.'**
+  String get homeRunAdTip2;
+
+  /// No description provided for @homeRunAdTip3.
+  ///
+  /// In en, this message translates to:
+  /// **'A single tree can absorb around 22 kg of CO2 every year.'**
+  String get homeRunAdTip3;
+
+  /// No description provided for @homeRunAdTip4.
+  ///
+  /// In en, this message translates to:
+  /// **'Trees are planted by Tree-Nation, with a real certificate for each one.'**
+  String get homeRunAdTip4;
+
   /// No description provided for @homeUnitKm.
   ///
   /// In en, this message translates to:
@@ -225,6 +369,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'PAUSED'**
   String get homeHudPausedValue;
+
+  /// No description provided for @homeHudPaceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'MIN/KM'**
+  String get homeHudPaceLabel;
+
+  /// No description provided for @homeHudSpeedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'KM/H'**
+  String get homeHudSpeedLabel;
+
+  /// No description provided for @homeHudCaloriesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'KCAL'**
+  String get homeHudCaloriesLabel;
+
+  /// No description provided for @homeHudLiveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'LIVE'**
+  String get homeHudLiveLabel;
 
   /// No description provided for @homeExerciseBike.
   ///

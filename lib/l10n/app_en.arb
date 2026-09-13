@@ -33,10 +33,59 @@
   "homeRunSaveErrorMessage": "Error saving the run.",
   "homeMapLoadingTitle": "Let's plant a forest...",
   "homeMapLoadingSubtitle": "Getting GPS location",
+
+  "homeRunAdStartTitle": "READY TO GROW",
+  "homeRunAdStartSubtitle": "Your ads become seeds — 10 seeds plant one real tree.",
+  "homeRunAdFinishTitle": "GREAT WORK!",
+  "homeRunAdFinishSubtitle": "Saving your activity while this ad turns into seeds.",
+
+  "homeRunAdLoopWatch": "AD",
+  "homeRunAdLoopSeeds": "SEEDS",
+  "homeRunAdLoopTree": "REAL TREE",
+
+  "homeRunAdSeedsToNextTree": "{accumulated}/{total} seeds to your next tree",
+  "@homeRunAdSeedsToNextTree": {
+    "placeholders": {
+      "accumulated": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "homeRunAdSeedsGainedBadge": "{count, plural, =1{+1 seed} other{+{count} seeds}}",
+  "@homeRunAdSeedsGainedBadge": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "homeRunAdSeedsEarnedTitle": "{count, plural, =1{+1 SEED EARNED} other{+{count} SEEDS EARNED}}",
+  "@homeRunAdSeedsEarnedTitle": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "homeRunAdRewardTitle": "SEEDS EARNED",
+  "homeRunAdRewardSubtitle": "This ad's revenue just went into your next real tree.",
+  "homeRunAdRewardExplainer": "Reward confirmed: the revenue from this ad was added to your tree fund.",
+  "homeRunAdTreeTitle": "TREE COMPLETE!",
+  "homeRunAdTreeSubtitle": "Your seeds filled up — a real tree is being planted for you.",
+  "homeRunAdMissedTitle": "NO SEEDS THIS TIME",
+  "homeRunAdMissedSubtitle": "Seeds only come from ads watched to the end.",
+  "homeRunAdMissedExplainer": "The ad did not finish, so nothing was credited. Your next one still counts.",
+  "homeRunTreeEarnedBadge": "+1 tree",
+  "homeRunAdFooterNote": "Ads are how you grow seeds — no purchase needed. Rewards verified by RevenueCat, trees planted by Tree-Nation.",
+
+  "homeRunAdTip1": "Ads are the only way to earn seeds — 10 seeds become one real tree.",
+  "homeRunAdTip2": "Every ad you watch waters the seedling growing in your garden.",
+  "homeRunAdTip3": "A single tree can absorb around 22 kg of CO2 every year.",
+  "homeRunAdTip4": "Trees are planted by Tree-Nation, with a real certificate for each one.",
+
   "homeUnitKm": "km",
   "homeHudTimeLabel": "TIME",
   "homeHudKmLabel": "KM",
   "homeHudPausedValue": "PAUSED",
+  "homeHudPaceLabel": "MIN/KM",
+  "homeHudSpeedLabel": "KM/H",
+  "homeHudCaloriesLabel": "KCAL",
+  "homeHudLiveLabel": "LIVE",
   "homeExerciseBike": "BIKE",
   "homeExerciseWalk": "WALK",
   "homeExerciseRun": "RUN",

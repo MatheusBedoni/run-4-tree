@@ -67,6 +67,108 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeMapLoadingSubtitle => 'Getting GPS location';
 
   @override
+  String get homeRunAdStartTitle => 'READY TO GROW';
+
+  @override
+  String get homeRunAdStartSubtitle =>
+      'Your ads become seeds — 10 seeds plant one real tree.';
+
+  @override
+  String get homeRunAdFinishTitle => 'GREAT WORK!';
+
+  @override
+  String get homeRunAdFinishSubtitle =>
+      'Saving your activity while this ad turns into seeds.';
+
+  @override
+  String get homeRunAdLoopWatch => 'AD';
+
+  @override
+  String get homeRunAdLoopSeeds => 'SEEDS';
+
+  @override
+  String get homeRunAdLoopTree => 'REAL TREE';
+
+  @override
+  String homeRunAdSeedsToNextTree(int accumulated, int total) {
+    return '$accumulated/$total seeds to your next tree';
+  }
+
+  @override
+  String homeRunAdSeedsGainedBadge(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '+$count seeds',
+      one: '+1 seed',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String homeRunAdSeedsEarnedTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '+$count SEEDS EARNED',
+      one: '+1 SEED EARNED',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get homeRunAdRewardTitle => 'SEEDS EARNED';
+
+  @override
+  String get homeRunAdRewardSubtitle =>
+      'This ad\'s revenue just went into your next real tree.';
+
+  @override
+  String get homeRunAdRewardExplainer =>
+      'Reward confirmed: the revenue from this ad was added to your tree fund.';
+
+  @override
+  String get homeRunAdTreeTitle => 'TREE COMPLETE!';
+
+  @override
+  String get homeRunAdTreeSubtitle =>
+      'Your seeds filled up — a real tree is being planted for you.';
+
+  @override
+  String get homeRunAdMissedTitle => 'NO SEEDS THIS TIME';
+
+  @override
+  String get homeRunAdMissedSubtitle =>
+      'Seeds only come from ads watched to the end.';
+
+  @override
+  String get homeRunAdMissedExplainer =>
+      'The ad did not finish, so nothing was credited. Your next one still counts.';
+
+  @override
+  String get homeRunTreeEarnedBadge => '+1 tree';
+
+  @override
+  String get homeRunAdFooterNote =>
+      'Ads are how you grow seeds — no purchase needed. Rewards verified by RevenueCat, trees planted by Tree-Nation.';
+
+  @override
+  String get homeRunAdTip1 =>
+      'Ads are the only way to earn seeds — 10 seeds become one real tree.';
+
+  @override
+  String get homeRunAdTip2 =>
+      'Every ad you watch waters the seedling growing in your garden.';
+
+  @override
+  String get homeRunAdTip3 =>
+      'A single tree can absorb around 22 kg of CO2 every year.';
+
+  @override
+  String get homeRunAdTip4 =>
+      'Trees are planted by Tree-Nation, with a real certificate for each one.';
+
+  @override
   String get homeUnitKm => 'km';
 
   @override
@@ -77,6 +179,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeHudPausedValue => 'PAUSED';
+
+  @override
+  String get homeHudPaceLabel => 'MIN/KM';
+
+  @override
+  String get homeHudSpeedLabel => 'KM/H';
+
+  @override
+  String get homeHudCaloriesLabel => 'KCAL';
+
+  @override
+  String get homeHudLiveLabel => 'LIVE';
 
   @override
   String get homeExerciseBike => 'BIKE';

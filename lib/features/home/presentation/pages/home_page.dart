@@ -17,6 +17,7 @@ import '../../../../../core/services/rewarded_interstitial_ad_service.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../l10n/generated/app_localizations.dart';
 import '../../../garden/data/repositories/tree_garden_repository_impl.dart';
+import '../../../garden/domain/entities/tree_progress_entity.dart';
 import '../../../garden/domain/usecases/credit_ad_revenue_usecase.dart';
 import '../../../runs/data/datasources/run_session_local_datasource_impl.dart';
 import '../../../runs/data/repositories/run_session_repository_impl.dart';
@@ -31,7 +32,9 @@ import '../../data/repositories/home_repository_impl.dart';
 import '../../domain/entities/run_stats_entity.dart';
 import '../../domain/usecases/get_run_stats_usecase.dart';
 import '../controllers/home_controller.dart';
+import '../widgets/run_ad_loading_overlay.dart';
 import '../widgets/run_banner_ad.dart';
+import '../widgets/run_seed_ticker.dart';
 
 enum RunState { idle, running, paused }
 
@@ -64,6 +67,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final _runAdService = const RewardedInterstitialAdService();
   late final CreditAdRevenueUseCase _creditAdRevenueUseCase;
   bool _isShowingRunAd = false;
+
+  /// Tempo mínimo da tela de carregamento do anúncio — evita o flash
+  /// desagradável quando o anúncio falha instantaneamente.
+  static const _minRunAdOverlayDuration = Duration(milliseconds: 900);
+
+  /// Quanto tempo a tela segura o resultado do anúncio antes de voltar ao
+  /// mapa: o suficiente para ver as sementes creditadas.
+  static const _runAdRewardDuration = Duration(milliseconds: 2400);
+  static const _runAdMissedDuration = Duration(milliseconds: 1500);
 
   // ─── Garden tab (refresh ao navegar após uma corrida) ───────────────────────
   final _gardenPageKey = GlobalKey<GardenPageState>();
@@ -120,6 +132,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   StreamSubscription<Position>? _locationSub;
   double _runDistanceKm = 0.0;
   LatLng? _lastTrackingPosition;
+
+  /// Amostras (segundo da corrida, km acumulado) que alimentam o pace e a
+  /// velocidade em tempo real. O tempo guardado é o da corrida, não o do
+  /// relógio, então pausas não entram na conta.
+  final List<_PaceSample> _paceSamples = [];
+
+  /// Janela do pace instantâneo, em segundos de corrida.
+  static const int _paceWindowSeconds = 30;
 
   bool _isMapReady = false;
 
@@ -293,7 +313,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Future<void> _startTimer() async {
-    await _showBlockingRunAd(placement: 'run_start');
+    await _showBlockingRunAd(placement: 'run_start', phase: RunAdPhase.start);
     if (!mounted) return;
 
     setState(() => _runState = RunState.running);
@@ -325,7 +345,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
     _stopTracking();
 
-    await _showBlockingRunAd(placement: 'run_end');
+    await _showBlockingRunAd(placement: 'run_end', phase: RunAdPhase.finish);
     if (!mounted) return;
 
     setState(() {
@@ -351,16 +371,32 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   /// momentos de início e fim de uma corrida. Se falhar ao carregar ou for
   /// fechado sem recompensa, o fluxo segue normalmente sem crédito de
   /// progresso. Reentrância é bloqueada por [_isShowingRunAd].
-  Future<void> _showBlockingRunAd({required String placement}) async {
+  Future<void> _showBlockingRunAd({
+    required String placement,
+    required RunAdPhase phase,
+  }) async {
     if (_isShowingRunAd) return;
     _isShowingRunAd = true;
 
+    // Base de comparação para mostrar quantas sementes ESTE anúncio rendeu.
+    final statsBefore = _controller.stats;
+    final overlayController = RunAdOverlayController(
+      phase: phase,
+      progressBefore: statsBefore?.progressPercent,
+      treesBefore: statsBefore?.treesPlanted,
+    );
+
+    final startedAt = DateTime.now();
+    var overlayVisible = false;
+
     if (mounted) {
+      overlayVisible = true;
       showDialog<void>(
         context: context,
         barrierDismissible: false,
-        builder: (_) =>
-            const Center(child: CircularProgressIndicator(color: Colors.white)),
+        barrierColor: Colors.transparent,
+        useSafeArea: false,
+        builder: (_) => RunAdLoadingOverlay(controller: overlayController),
       );
     }
 
@@ -374,19 +410,38 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         final progress = await _creditAdRevenueUseCase(result.revenueUsd);
         unawaited(CriticalFlowTelemetry.seedRewarded(source: placement));
         _controller.applyTreeProgress(progress);
+        // Mostra o crédito antes de sair: é o momento em que o loop
+        // anúncio → sementes → árvore real fica visível para o usuário.
+        overlayController.markRewarded(progress);
+        await Future<void>.delayed(_runAdRewardDuration);
       } else {
         debugPrint('Anúncio de $placement não exibido: ${result.errorMessage}');
+        overlayController.markMissed();
+        await Future<void>.delayed(_runAdMissedDuration);
       }
     } catch (e, st) {
-      unawaited(CriticalFlowTelemetry.seedRewardFailed(
-        source: placement,
-        error: e,
-        stackTrace: st,
-      ));
+      unawaited(
+        CriticalFlowTelemetry.seedRewardFailed(
+          source: placement,
+          error: e,
+          stackTrace: st,
+        ),
+      );
       debugPrint('Erro no anúncio de $placement: $e');
+      overlayController.markMissed();
+      await Future<void>.delayed(_runAdMissedDuration);
     } finally {
       _isShowingRunAd = false;
-      if (mounted) Navigator.of(context, rootNavigator: true).pop();
+      // Se o anúncio falhar na hora (sem unidade configurada, sem rede...),
+      // a animação não some num piscar de olhos.
+      final elapsed = DateTime.now().difference(startedAt);
+      if (elapsed < _minRunAdOverlayDuration) {
+        await Future<void>.delayed(_minRunAdOverlayDuration - elapsed);
+      }
+      if (overlayVisible && mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+      overlayController.dispose();
     }
   }
 
@@ -398,11 +453,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       unawaited(CriticalFlowTelemetry.seedRewarded(source: 'run_banner'));
       if (mounted) _controller.applyTreeProgress(progress);
     } catch (e, st) {
-      unawaited(CriticalFlowTelemetry.seedRewardFailed(
-        source: 'run_banner',
-        error: e,
-        stackTrace: st,
-      ));
+      unawaited(
+        CriticalFlowTelemetry.seedRewardFailed(
+          source: 'run_banner',
+          error: e,
+          stackTrace: st,
+        ),
+      );
       debugPrint('Erro ao creditar receita do banner: $e');
     }
   }
@@ -427,12 +484,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           : 0.0;
 
       // Estimativa simples de calorias (MET * peso_medio * horas)
-      final met = _selectedExerciseType == ExerciseType.run
-          ? 9.8
-          : _selectedExerciseType == ExerciseType.bike
-          ? 7.5
-          : 3.8;
-      final calories = met * 70.0 * durationHours; // 70kg como peso padrão
+      final calories = _exerciseMet * 70.0 * durationHours; // 70kg padrão
 
       final entity = RunSessionEntity(
         durationSeconds: _runSeconds,
@@ -496,6 +548,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _routePoints = [];
     _lastTrackingPosition = null;
     _runDistanceKm = 0.0;
+    _paceSamples.clear();
     _subscribeToLocationStream();
   }
 
@@ -517,6 +570,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       _polylines = {};
       _runDistanceKm = 0.0;
       _lastTrackingPosition = null;
+      _paceSamples.clear();
     });
     _subscribeToAmbientLocation();
   }
@@ -543,6 +597,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               }
               _routePoints.add(newPoint);
               _lastTrackingPosition = newPoint;
+              _paceSamples.add(
+                _PaceSample(seconds: _runSeconds, km: _runDistanceKm),
+              );
+              _prunePaceSamples();
               _currentPosition = newPoint;
               _updateUserMarker();
               _polylines = {
@@ -562,6 +620,61 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           },
         );
   }
+
+  // ─── Pace / velocidade em tempo real ──────────────────────────────────────
+
+  /// Descarta amostras velhas demais para a janela — a lista não cresce com a
+  /// duração da corrida.
+  void _prunePaceSamples() {
+    final cutoff = _runSeconds - _paceWindowSeconds * 2;
+    while (_paceSamples.length > 2 && _paceSamples.first.seconds < cutoff) {
+      _paceSamples.removeAt(0);
+    }
+  }
+
+  /// Velocidade dos últimos [_paceWindowSeconds] segundos, em km/h.
+  ///
+  /// `null` quando não há movimento recente suficiente para um número honesto
+  /// (parado num semáforo, por exemplo) — a UI mostra "--" em vez de um valor
+  /// congelado do último ponto de GPS.
+  double? get _currentSpeedKmh {
+    if (_paceSamples.isEmpty) return null;
+    final cutoff = _runSeconds - _paceWindowSeconds;
+
+    _PaceSample? windowStart;
+    for (final sample in _paceSamples) {
+      if (sample.seconds >= cutoff) {
+        windowStart = sample;
+        break;
+      }
+    }
+    // Nenhum ponto novo na janela: o usuário não está se movendo.
+    if (windowStart == null) return null;
+
+    final km = _paceSamples.last.km - windowStart.km;
+    final seconds = _runSeconds - windowStart.seconds;
+    if (seconds <= 0 || km < 0.02) return null;
+    return km / (seconds / 3600.0);
+  }
+
+  /// Pace atual em minutos por quilômetro. `null` quando parado ou lento
+  /// demais para um número útil.
+  double? get _currentPaceMinPerKm {
+    final speed = _currentSpeedKmh;
+    if (speed == null || speed <= 0) return null;
+    final pace = 60.0 / speed;
+    return pace > 30 ? null : pace;
+  }
+
+  /// MET aproximado do exercício selecionado, usado nas calorias.
+  double get _exerciseMet => switch (_selectedExerciseType) {
+    ExerciseType.run => 9.8,
+    ExerciseType.bike => 7.5,
+    ExerciseType.walk => 3.8,
+  };
+
+  /// Calorias estimadas até agora (70 kg como peso padrão).
+  double get _currentCalories => _exerciseMet * 70.0 * (_runSeconds / 3600.0);
 
   // ─── Build ─────────────────────────────────────────────────────────────────
 
@@ -1002,9 +1115,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  // ─── Run HUD (tempo + km durante a corrida) ───────────────────────────────
+  // ─── Run HUD (tempo, distância, pace e calorias ao vivo) ─────────────────
 
   Widget _buildRunHUD() {
+    final l10n = AppLocalizations.of(context)!;
+    final isPaused = _runState == RunState.paused;
+    final accent = isPaused ? Colors.amber.shade700 : AppColors.progressGreen;
+
     final h = _runSeconds ~/ 3600;
     final m = (_runSeconds % 3600) ~/ 60;
     final s = _runSeconds % 60;
@@ -1012,23 +1129,24 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ? '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}'
         : '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
 
+    // Na bike, pace em min/km não diz nada — a métrica útil é velocidade.
+    final isBike = _selectedExerciseType == ExerciseType.bike;
+    final (rhythmValue, rhythmLabel) = isBike
+        ? (_currentSpeedKmh?.toStringAsFixed(1) ?? '--', l10n.homeHudSpeedLabel)
+        : (_formatPace(_currentPaceMinPerKm), l10n.homeHudPaceLabel);
+
     return Positioned(
-      top: MediaQuery.of(context).padding.top + 22,
+      top: MediaQuery.of(context).padding.top,
       left: 16,
       right: 16,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: _runState == RunState.paused
-                ? Colors.amber.withValues(alpha: 0.5)
-                : AppColors.progressGreen.withValues(alpha: 0.3),
-            width: 2,
-          ),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: accent.withValues(alpha: 0.35), width: 2),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.08),
@@ -1038,42 +1156,173 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ),
           ],
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            _buildHUDStat(
-              icon: Icons.timer_outlined,
-              value: timeStr,
-              label: AppLocalizations.of(context)!.homeHudTimeLabel,
-              color: AppColors.accentOrange,
+            // ── Cabeçalho: tipo de exercício + estado da sessão ──────────
+            Row(
+              children: [
+                _buildHUDExerciseChip(),
+                const Spacer(),
+                _buildHUDStatusPill(isPaused: isPaused, accent: accent),
+              ],
             ),
-            Container(
-              width: 1,
-              height: 48,
-              color: Colors.grey.withValues(alpha: 0.2),
-            ),
-            _buildHUDStat(
-              icon: Icons.route_outlined,
-              value: _runDistanceKm.toStringAsFixed(2),
-              label: AppLocalizations.of(context)!.homeHudKmLabel,
-              color: AppColors.progressGreen,
-            ),
-            if (_runState == RunState.paused) ...[
-              Container(
-                width: 1,
-                height: 48,
-                color: Colors.grey.withValues(alpha: 0.2),
+            const SizedBox(height: 6),
+
+            // ── Tempo em destaque ────────────────────────────────────────
+            Text(
+              timeStr,
+              style: TextStyle(
+                fontSize: 46,
+                fontFamily: GoogleFonts.bebasNeue().fontFamily,
+                color: isPaused
+                    ? AppColors.textSecondary
+                    : AppColors.textPrimary,
+                letterSpacing: 2.5,
+                height: 1.0,
               ),
-              _buildHUDStat(
-                icon: Icons.pause_circle_outline,
-                value: AppLocalizations.of(context)!.homeHudPausedValue,
-                label: '',
-                color: Colors.amber,
+            ),
+            Text(
+              l10n.homeHudTimeLabel,
+              style: const TextStyle(
+                fontSize: 10,
+                color: AppColors.textSecondary,
+                letterSpacing: 2.0,
+                fontWeight: FontWeight.w600,
               ),
-            ],
+            ),
+            const SizedBox(height: 10),
+            Divider(
+              height: 1,
+              thickness: 1,
+              color: Colors.grey.withValues(alpha: 0.15),
+            ),
+            const SizedBox(height: 10),
+
+            // ── Distância · ritmo · calorias ─────────────────────────────
+            Row(
+              children: [
+                Expanded(
+                  child: _buildHUDStat(
+                    icon: Icons.route_outlined,
+                    value: _runDistanceKm.toStringAsFixed(2),
+                    label: l10n.homeHudKmLabel,
+                    color: AppColors.progressGreen,
+                  ),
+                ),
+                _buildHUDDivider(),
+                Expanded(
+                  child: _buildHUDStat(
+                    icon: isBike ? Icons.speed_rounded : Icons.bolt_rounded,
+                    value: rhythmValue,
+                    label: rhythmLabel,
+                    color: AppColors.accentOrange,
+                  ),
+                ),
+                _buildHUDDivider(),
+                Expanded(
+                  child: _buildHUDStat(
+                    icon: Icons.local_fire_department_rounded,
+                    value: _currentCalories.round().toString(),
+                    label: l10n.homeHudCaloriesLabel,
+                    color: Colors.redAccent,
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  /// Pace legível (ex: 5'12"); "--" enquanto não há movimento suficiente.
+  String _formatPace(double? paceMinPerKm) {
+    if (paceMinPerKm == null) return '--';
+    var minutes = paceMinPerKm.floor();
+    var seconds = ((paceMinPerKm - minutes) * 60).round();
+    // 4'60" não existe: o arredondamento sobe para o minuto seguinte.
+    if (seconds == 60) {
+      minutes += 1;
+      seconds = 0;
+    }
+    return '$minutes\'${seconds.toString().padLeft(2, '0')}"';
+  }
+
+  Widget _buildHUDExerciseChip() {
+    final icon = switch (_selectedExerciseType) {
+      ExerciseType.bike => Icons.directions_bike_rounded,
+      ExerciseType.walk => Icons.directions_walk_rounded,
+      ExerciseType.run => Icons.directions_run_rounded,
+    };
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+      decoration: BoxDecoration(
+        color: AppColors.progressTrack,
+        borderRadius: BorderRadius.circular(99),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: AppColors.primaryDark),
+          const SizedBox(width: 5),
+          Text(
+            _getExerciseName(),
+            style: const TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primaryDark,
+              letterSpacing: 1.0,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Ponto pulsante "ao vivo" — reaproveita o pulso do mascote.
+  Widget _buildHUDStatusPill({required bool isPaused, required Color accent}) {
+    final l10n = AppLocalizations.of(context)!;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AnimatedBuilder(
+          animation: _pulseAnim,
+          builder: (context, child) {
+            // O pulso do mascote varia de 0.95 a 1.06 — remapeia para uma
+            // opacidade que pisca de verdade.
+            final t = ((_pulseAnim.value - 0.95) / 0.11).clamp(0.0, 1.0);
+            return Opacity(
+              opacity: isPaused ? 1.0 : 0.35 + 0.65 * t,
+              child: child,
+            );
+          },
+          child: Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(color: accent, shape: BoxShape.circle),
+          ),
+        ),
+        const SizedBox(width: 6),
+        Text(
+          isPaused ? l10n.homeHudPausedValue : l10n.homeHudLiveLabel,
+          style: TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.bold,
+            color: accent,
+            letterSpacing: 1.5,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHUDDivider() {
+    return Container(
+      width: 1,
+      height: 36,
+      color: Colors.grey.withValues(alpha: 0.15),
     );
   }
 
@@ -1085,19 +1334,43 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       left: 0,
       right: 0,
       child: Center(
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.15),
-                blurRadius: 10,
-                offset: const Offset(0, 3),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Torna visível o que o banner credita: sem isso o progresso
+            // sobe sozinho e o usuário não liga uma coisa à outra.
+            ListenableBuilder(
+              listenable: _controller,
+              builder: (context, _) {
+                final stats = _controller.stats;
+                if (stats == null) return const SizedBox.shrink();
+                const total = TreeProgressEntity.seedsPerTree;
+                return RunSeedTicker(
+                  seeds: (stats.progressPercent * total).floor().clamp(
+                    0,
+                    total,
+                  ),
+                  treesPlanted: stats.treesPlanted,
+                );
+              },
+            ),
+            const SizedBox(height: 8),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.15),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: RunBannerAd(onAdRevenue: _onBannerAdRevenue),
+              child: RunBannerAd(onAdRevenue: _onBannerAdRevenue),
+            ),
+          ],
         ),
       ),
     );
@@ -1112,26 +1385,29 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, color: color, size: 20),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 26,
-            fontWeight: FontWeight.bold,
-            fontFamily: GoogleFonts.bebasNeue().fontFamily,
-            color: AppColors.textPrimary,
-            letterSpacing: 1.0,
-            height: 1.1,
+        Icon(icon, color: color, size: 16),
+        const SizedBox(height: 3),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            value,
+            maxLines: 1,
+            style: TextStyle(
+              fontSize: 24,
+              fontFamily: GoogleFonts.bebasNeue().fontFamily,
+              color: AppColors.textPrimary,
+              letterSpacing: 1.0,
+              height: 1.1,
+            ),
           ),
         ),
         if (label.isNotEmpty)
           Text(
             label,
             style: const TextStyle(
-              fontSize: 10,
+              fontSize: 9,
               color: AppColors.textSecondary,
-              letterSpacing: 1.5,
+              letterSpacing: 1.2,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -1524,4 +1800,15 @@ class _ProgressRingPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_ProgressRingPainter old) => old.progress != progress;
+}
+
+/// Um ponto de GPS reduzido ao que o cálculo de pace precisa.
+class _PaceSample {
+  /// Segundo da corrida (não do relógio) em que a amostra foi coletada.
+  final int seconds;
+
+  /// Distância acumulada da corrida até esta amostra, em km.
+  final double km;
+
+  const _PaceSample({required this.seconds, required this.km});
 }
