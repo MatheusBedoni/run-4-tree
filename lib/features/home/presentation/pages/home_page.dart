@@ -67,6 +67,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final _runAdService = const RewardedInterstitialAdService();
   late final CreditAdRevenueUseCase _creditAdRevenueUseCase;
   bool _isShowingRunAd = false;
+  bool _didPrecacheAdIllustrations = false;
 
   /// Tempo mínimo da tela de carregamento do anúncio — evita o flash
   /// desagradável quando o anúncio falha instantaneamente.
@@ -201,6 +202,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       begin: -6.0,
       end: 6.0,
     ).animate(CurvedAnimation(parent: _floatCtrl, curve: Curves.easeInOut));
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Decodifica as ilustrações da tela de anúncio bem antes do primeiro
+    // "Start", para a transição já abrir com a imagem pronta.
+    if (!_didPrecacheAdIllustrations) {
+      _didPrecacheAdIllustrations = true;
+      unawaited(RunAdLoadingOverlay.precacheIllustrations(context));
+    }
   }
 
   void _onStatsLoaded() {

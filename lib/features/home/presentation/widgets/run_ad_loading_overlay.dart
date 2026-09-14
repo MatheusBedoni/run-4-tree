@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -110,18 +111,36 @@ class RunAdOverlayController extends ChangeNotifier {
   }
 }
 
-/// Paleta e ícone de cada fase, para manter o build enxuto.
+/// Fundo da tela de anúncio. Em teste: ilustração vs. cena animada.
+enum RunAdBackground {
+  /// Degradê, partículas e anel orbital desenhados em código.
+  animated,
+
+  /// Ilustração da fase em tela cheia, com a mensagem num painel de vidro.
+  illustration,
+}
+
+/// Paleta, ícone e ilustração de cada fase, para manter o build enxuto.
 class _PhaseStyle {
   final List<Color> background;
   final Color accent;
   final Color glow;
   final FaIconData icon;
 
+  /// Ilustração usada no modo [RunAdBackground.illustration].
+  final String illustration;
+
+  /// Onde fica o painel de texto sobre a ilustração — sempre do lado oposto
+  /// ao assunto da imagem, para não cobri-lo.
+  final Alignment contentAlignment;
+
   const _PhaseStyle({
     required this.background,
     required this.accent,
     required this.glow,
     required this.icon,
+    required this.illustration,
+    required this.contentAlignment,
   });
 
   static const start = _PhaseStyle(
@@ -133,6 +152,9 @@ class _PhaseStyle {
     accent: AppColors.progressGreen,
     glow: AppColors.white,
     icon: FontAwesomeIcons.personRunning,
+    // Árvore + ciclista na base: o painel vai para o topo.
+    illustration: 'assets/images/primeira_transicao_anuncio.jpg',
+    contentAlignment: Alignment.topCenter,
   );
 
   static const finish = _PhaseStyle(
@@ -144,6 +166,9 @@ class _PhaseStyle {
     accent: AppColors.accentOrange,
     glow: Color(0xFFFFC776),
     icon: FontAwesomeIcons.seedling,
+    // Garças voando pelo alto da floresta: o painel vai para a base.
+    illustration: 'assets/images/segunda_transicao_anuncio.jpg',
+    contentAlignment: Alignment.bottomCenter,
   );
 }
 
@@ -156,7 +181,23 @@ class _PhaseStyle {
 class RunAdLoadingOverlay extends StatefulWidget {
   final RunAdOverlayController controller;
 
-  const RunAdLoadingOverlay({super.key, required this.controller});
+  /// Troque para [RunAdBackground.animated] para voltar ao fundo desenhado.
+  final RunAdBackground background;
+
+  const RunAdLoadingOverlay({
+    super.key,
+    required this.controller,
+    this.background = RunAdBackground.illustration,
+  });
+
+  /// Decodifica as ilustrações com antecedência — sem isso a tela de
+  /// transição abre com um frame vazio enquanto o JPG é decodificado.
+  static Future<void> precacheIllustrations(BuildContext context) {
+    return Future.wait([
+      for (final style in const [_PhaseStyle.start, _PhaseStyle.finish])
+        precacheImage(AssetImage(style.illustration), context),
+    ]);
+  }
 
   @override
   State<RunAdLoadingOverlay> createState() => _RunAdLoadingOverlayState();
@@ -178,6 +219,9 @@ class _RunAdLoadingOverlayState extends State<RunAdLoadingOverlay>
 
   /// Entrada (fade + slide) dos textos.
   late final AnimationController _entryCtrl;
+
+  /// Zoom lento sobre a ilustração, para a tela não parecer congelada.
+  late final AnimationController _kenBurnsCtrl;
 
   /// Alterna a dica exibida enquanto o anúncio carrega.
   Timer? _tipTimer;
@@ -212,6 +256,11 @@ class _RunAdLoadingOverlayState extends State<RunAdLoadingOverlay>
       vsync: this,
     )..forward();
 
+    _kenBurnsCtrl = AnimationController(
+      duration: const Duration(seconds: 18),
+      vsync: this,
+    )..repeat(reverse: true);
+
     _tipTimer = Timer.periodic(const Duration(milliseconds: 3400), (_) {
       if (!mounted) return;
       setState(() => _tipIndex++);
@@ -226,6 +275,7 @@ class _RunAdLoadingOverlayState extends State<RunAdLoadingOverlay>
     _rippleCtrl.dispose();
     _particleCtrl.dispose();
     _entryCtrl.dispose();
+    _kenBurnsCtrl.dispose();
     super.dispose();
   }
 
@@ -248,6 +298,10 @@ class _RunAdLoadingOverlayState extends State<RunAdLoadingOverlay>
             final l10n = AppLocalizations.of(context)!;
             final controller = widget.controller;
             final status = controller.status;
+
+            if (widget.background == RunAdBackground.illustration) {
+              return _buildIllustratedLayout(l10n, style, controller);
+            }
 
             return Stack(
               fit: StackFit.expand,
@@ -272,16 +326,7 @@ class _RunAdLoadingOverlayState extends State<RunAdLoadingOverlay>
                         const SizedBox(height: 16),
                         _buildProgressBar(style, status),
                         const SizedBox(height: 12),
-                        Text(
-                          l10n.homeRunAdFooterNote,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.45),
-                            fontSize: 11,
-                            letterSpacing: 0.4,
-                            height: 1.3,
-                          ),
-                        ),
+                        _buildFooterNote(l10n),
                         const SizedBox(height: 16),
                       ],
                     ),
@@ -291,6 +336,130 @@ class _RunAdLoadingOverlayState extends State<RunAdLoadingOverlay>
             );
           },
         ),
+      ),
+    );
+  }
+
+  // ─── Layout com ilustração ─────────────────────────────────────────────────
+
+  Widget _buildIllustratedLayout(
+    AppLocalizations l10n,
+    _PhaseStyle style,
+    RunAdOverlayController controller,
+  ) {
+    final panelOnTop = style.contentAlignment.y < 0;
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        // Cor de base enquanto a imagem decodifica (se o precache não chegou).
+        ColoredBox(color: style.background.first),
+        _buildIllustration(style),
+        // Escurece só o lado do painel; o assunto da imagem fica limpo.
+        DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: panelOnTop ? Alignment.topCenter : Alignment.bottomCenter,
+              end: panelOnTop ? Alignment.bottomCenter : Alignment.topCenter,
+              colors: [
+                Colors.black.withValues(alpha: 0.55),
+                Colors.transparent,
+              ],
+              stops: const [0.0, 0.65],
+            ),
+          ),
+        ),
+        SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+            child: Align(
+              alignment: style.contentAlignment,
+              child: _buildGlassPanel(l10n, style, controller),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildIllustration(_PhaseStyle style) {
+    return AnimatedBuilder(
+      animation: _kenBurnsCtrl,
+      builder: (context, child) {
+        final t = Curves.easeInOut.transform(_kenBurnsCtrl.value);
+        return Transform.scale(
+          scale: 1.02 + 0.07 * t,
+          // Aproxima em direção ao assunto (lado oposto ao painel), para o
+          // zoom nunca empurrar o ciclista ou as garças para fora da tela.
+          alignment: Alignment(0, -style.contentAlignment.y),
+          child: child,
+        );
+      },
+      child: Image.asset(
+        style.illustration,
+        fit: BoxFit.cover,
+        frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+          if (wasSynchronouslyLoaded) return child;
+          return AnimatedOpacity(
+            opacity: frame == null ? 0 : 1,
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeOut,
+            child: child,
+          );
+        },
+      ),
+    );
+  }
+
+  /// Painel de vidro fosco com toda a mensagem do loop anúncio → árvore.
+  Widget _buildGlassPanel(
+    AppLocalizations l10n,
+    _PhaseStyle style,
+    RunAdOverlayController controller,
+  ) {
+    final status = controller.status;
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: BackdropFilter(
+        filter: ui.ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(18, 16, 18, 14),
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.42),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.14)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildLoopTrack(l10n, style, status),
+              const SizedBox(height: 18),
+              _buildTexts(l10n, controller),
+              const SizedBox(height: 16),
+              _buildSeedMeter(l10n, style, controller),
+              const SizedBox(height: 16),
+              _buildBottomSlot(l10n, style, status),
+              const SizedBox(height: 14),
+              _buildProgressBar(style, status),
+              const SizedBox(height: 10),
+              _buildFooterNote(l10n),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFooterNote(AppLocalizations l10n) {
+    return Text(
+      l10n.homeRunAdFooterNote,
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        color: Colors.white.withValues(alpha: 0.55),
+        fontSize: 11,
+        letterSpacing: 0.4,
+        height: 1.3,
       ),
     );
   }
