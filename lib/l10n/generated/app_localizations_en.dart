@@ -897,4 +897,188 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get educationCo2Body =>
       'Carbon dioxide (CO2) is the primary greenhouse gas driving climate change. Human activities release over 35 billion tons of CO2 into the atmosphere each year. Trees play a critical role in mitigating this by absorbing CO2 and storing carbon in their trunks, branches, and roots.';
+
+  @override
+  String get homeCommunityButtonLabel => 'GROUP';
+
+  @override
+  String get homeCommunityBadge => 'NEW';
+
+  @override
+  String get communityPageTitle => 'Group Challenge';
+
+  @override
+  String get communityHeroTitle => 'Plant trees together';
+
+  @override
+  String get communityHeroSubtitle =>
+      'Exercise together: every group workout grows the group\'s forest and climbs the ranking.';
+
+  @override
+  String get communityCurrentChallengeTitle => 'Current challenge';
+
+  @override
+  String get communityNoChallengeTitle => 'No active challenge yet';
+
+  @override
+  String get communityNoChallengeBody =>
+      'A new group challenge is coming soon. Stay tuned!';
+
+  @override
+  String get communityComingSoon => 'COMING SOON';
+
+  @override
+  String get communitySeedsLabel => 'Seeds';
+
+  @override
+  String get communityTreesLabel => 'Trees';
+
+  @override
+  String get communityParticipantsLabel => 'Participants';
+
+  @override
+  String get communityJoinButton => 'Join challenge';
+
+  @override
+  String get communityHowItWorksTitle => 'How it works';
+
+  @override
+  String get communityStepJoinTitle => 'Join a challenge';
+
+  @override
+  String get communityStepJoinBody =>
+      'Each challenge runs for a limited time with a shared goal.';
+
+  @override
+  String get communityStepWatchTitle => 'Exercise with your group';
+
+  @override
+  String get communityStepWatchBody =>
+      'Start exercises from the group. Their ads add seeds to the group\'s forest, and every exercise counts in the ranking.';
+
+  @override
+  String get communityStepPlantTitle => 'Plant real trees';
+
+  @override
+  String get communityStepPlantBody =>
+      'When the group reaches the goal, real trees are planted. Your personal runs are not affected.';
+
+  @override
+  String communitySeedsProgress(int collected, int goal) {
+    return '$collected / $goal seeds';
+  }
+
+  @override
+  String communityTimeLeftDays(int count) {
+    return '${count}d left';
+  }
+
+  @override
+  String communityTimeLeftHours(int count) {
+    return '${count}h left';
+  }
+
+  @override
+  String communityTimeLeftMinutes(int count) {
+    return '${count}m left';
+  }
+
+  @override
+  String communityRealTreesPlanted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count real trees already planted by this group',
+      one: '1 real tree already planted by this group',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get communityGoalReached => 'Goal reached! Thank you, team.';
+
+  @override
+  String get communityJoinedLabel => 'You\'re in this group!';
+
+  @override
+  String get communityJoinError =>
+      'Couldn\'t join the challenge. Check your connection and try again.';
+
+  @override
+  String get communityParticipantsTitle => 'Ranking';
+
+  @override
+  String get communityNoParticipants =>
+      'No one here yet. Be the first to join!';
+
+  @override
+  String get communityParticipantFallbackName => 'Runner';
+
+  @override
+  String get communityYouTag => 'YOU';
+
+  @override
+  String get communityStartExerciseButton => 'Start a group exercise';
+
+  @override
+  String get communityGroupExerciseCaption =>
+      'Every group exercise counts in the ranking. Its ads grow the group\'s forest, verified by RevenueCat.';
+
+  @override
+  String get communityExercisesLabel => 'Exercises';
+
+  @override
+  String communityParticipantWorkouts(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count exercises',
+      one: '1 exercise',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String communityParticipantMinutes(int count) {
+    return '$count min';
+  }
+
+  @override
+  String communityWorkoutCounted(String group) {
+    return 'Exercise counted for $group!';
+  }
+
+  @override
+  String get communityWorkoutTooShort =>
+      'This exercise was too short to count in the ranking.';
+
+  @override
+  String get communityWorkoutFailed =>
+      'Couldn\'t record this exercise in the group. Check your connection.';
+
+  @override
+  String get homeGroupExerciseLabel => 'GROUP EXERCISE';
+
+  @override
+  String get homeGroupExerciseHint => 'Counts in the group ranking';
+
+  @override
+  String get homeGroupExerciseCancel => 'Exercise solo instead';
+
+  @override
+  String homeRunAdGroupRewardSubtitle(String group) {
+    return 'Verified by RevenueCat and added to $group\'s forest.';
+  }
+
+  @override
+  String get homeRunAdGroupTreeTitle => 'GROUP TREE GROWN!';
+
+  @override
+  String homeRunAdGroupTreeSubtitle(String group) {
+    return '$group gathered enough seeds for another tree.';
+  }
+
+  @override
+  String get homeRunAdGroupRewardExplainer =>
+      'In group exercises, ad seeds go to the group\'s forest instead of your personal tree.';
 }

@@ -406,5 +406,86 @@
   "educationGlobalWarmingTitle": "Global Warming & Risks",
   "educationGlobalWarmingBody": "Global temperatures have risen by approximately 1.1°C since the pre-industrial era, leading to extreme weather, rising sea levels, and loss of biodiversity. Without significant action to reduce emissions, we risk irreversible damage to our planet's climate systems.",
   "educationCo2Title": "The Role of CO2",
-  "educationCo2Body": "Carbon dioxide (CO2) is the primary greenhouse gas driving climate change. Human activities release over 35 billion tons of CO2 into the atmosphere each year. Trees play a critical role in mitigating this by absorbing CO2 and storing carbon in their trunks, branches, and roots."
+  "educationCo2Body": "Carbon dioxide (CO2) is the primary greenhouse gas driving climate change. Human activities release over 35 billion tons of CO2 into the atmosphere each year. Trees play a critical role in mitigating this by absorbing CO2 and storing carbon in their trunks, branches, and roots.",
+
+  "homeCommunityButtonLabel": "GROUP",
+  "homeCommunityBadge": "NEW",
+  "communityPageTitle": "Group Challenge",
+  "communityHeroTitle": "Plant trees together",
+  "communityHeroSubtitle": "Exercise together: every group workout grows the group's forest and climbs the ranking.",
+  "communityCurrentChallengeTitle": "Current challenge",
+  "communityNoChallengeTitle": "No active challenge yet",
+  "communityNoChallengeBody": "A new group challenge is coming soon. Stay tuned!",
+  "communityComingSoon": "COMING SOON",
+  "communitySeedsLabel": "Seeds",
+  "communityTreesLabel": "Trees",
+  "communityParticipantsLabel": "Participants",
+  "communityJoinButton": "Join challenge",
+  "communityHowItWorksTitle": "How it works",
+  "communityStepJoinTitle": "Join a challenge",
+  "communityStepJoinBody": "Each challenge runs for a limited time with a shared goal.",
+  "communityStepWatchTitle": "Exercise with your group",
+  "communityStepWatchBody": "Start exercises from the group. Their ads add seeds to the group's forest, and every exercise counts in the ranking.",
+  "communityStepPlantTitle": "Plant real trees",
+  "communityStepPlantBody": "When the group reaches the goal, real trees are planted. Your personal runs are not affected.",
+  "communitySeedsProgress": "{collected} / {goal} seeds",
+  "@communitySeedsProgress": {
+    "placeholders": {
+      "collected": { "type": "int" },
+      "goal": { "type": "int" }
+    }
+  },
+  "communityTimeLeftDays": "{count}d left",
+  "@communityTimeLeftDays": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "communityTimeLeftHours": "{count}h left",
+  "@communityTimeLeftHours": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "communityTimeLeftMinutes": "{count}m left",
+  "@communityTimeLeftMinutes": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "communityRealTreesPlanted": "{count, plural, =1{1 real tree already planted by this group} other{{count} real trees already planted by this group}}",
+  "@communityRealTreesPlanted": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "communityGoalReached": "Goal reached! Thank you, team.",
+  "communityJoinedLabel": "You're in this group!",
+  "communityJoinError": "Couldn't join the challenge. Check your connection and try again.",
+  "communityParticipantsTitle": "Ranking",
+  "communityNoParticipants": "No one here yet. Be the first to join!",
+  "communityParticipantFallbackName": "Runner",
+  "communityYouTag": "YOU",
+  "communityStartExerciseButton": "Start a group exercise",
+  "communityGroupExerciseCaption": "Every group exercise counts in the ranking. Its ads grow the group's forest, verified by RevenueCat.",
+  "communityExercisesLabel": "Exercises",
+  "communityParticipantWorkouts": "{count, plural, =1{1 exercise} other{{count} exercises}}",
+  "@communityParticipantWorkouts": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "communityParticipantMinutes": "{count} min",
+  "@communityParticipantMinutes": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "communityWorkoutCounted": "Exercise counted for {group}!",
+  "@communityWorkoutCounted": {
+    "placeholders": { "group": { "type": "String" } }
+  },
+  "communityWorkoutTooShort": "This exercise was too short to count in the ranking.",
+  "communityWorkoutFailed": "Couldn't record this exercise in the group. Check your connection.",
+  "homeGroupExerciseLabel": "GROUP EXERCISE",
+  "homeGroupExerciseHint": "Counts in the group ranking",
+  "homeGroupExerciseCancel": "Exercise solo instead",
+  "homeRunAdGroupRewardSubtitle": "Verified by RevenueCat and added to {group}'s forest.",
+  "@homeRunAdGroupRewardSubtitle": {
+    "placeholders": { "group": { "type": "String" } }
+  },
+  "homeRunAdGroupTreeTitle": "GROUP TREE GROWN!",
+  "homeRunAdGroupTreeSubtitle": "{group} gathered enough seeds for another tree.",
+  "@homeRunAdGroupTreeSubtitle": {
+    "placeholders": { "group": { "type": "String" } }
+  },
+  "homeRunAdGroupRewardExplainer": "In group exercises, ad seeds go to the group's forest instead of your personal tree."
 }

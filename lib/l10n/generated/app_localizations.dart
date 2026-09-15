@@ -1570,6 +1570,288 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Carbon dioxide (CO2) is the primary greenhouse gas driving climate change. Human activities release over 35 billion tons of CO2 into the atmosphere each year. Trees play a critical role in mitigating this by absorbing CO2 and storing carbon in their trunks, branches, and roots.'**
   String get educationCo2Body;
+
+  /// No description provided for @homeCommunityButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'GROUP'**
+  String get homeCommunityButtonLabel;
+
+  /// No description provided for @homeCommunityBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'NEW'**
+  String get homeCommunityBadge;
+
+  /// No description provided for @communityPageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Group Challenge'**
+  String get communityPageTitle;
+
+  /// No description provided for @communityHeroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Plant trees together'**
+  String get communityHeroTitle;
+
+  /// No description provided for @communityHeroSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise together: every group workout grows the group\'s forest and climbs the ranking.'**
+  String get communityHeroSubtitle;
+
+  /// No description provided for @communityCurrentChallengeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Current challenge'**
+  String get communityCurrentChallengeTitle;
+
+  /// No description provided for @communityNoChallengeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No active challenge yet'**
+  String get communityNoChallengeTitle;
+
+  /// No description provided for @communityNoChallengeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A new group challenge is coming soon. Stay tuned!'**
+  String get communityNoChallengeBody;
+
+  /// No description provided for @communityComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'COMING SOON'**
+  String get communityComingSoon;
+
+  /// No description provided for @communitySeedsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Seeds'**
+  String get communitySeedsLabel;
+
+  /// No description provided for @communityTreesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Trees'**
+  String get communityTreesLabel;
+
+  /// No description provided for @communityParticipantsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Participants'**
+  String get communityParticipantsLabel;
+
+  /// No description provided for @communityJoinButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Join challenge'**
+  String get communityJoinButton;
+
+  /// No description provided for @communityHowItWorksTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How it works'**
+  String get communityHowItWorksTitle;
+
+  /// No description provided for @communityStepJoinTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Join a challenge'**
+  String get communityStepJoinTitle;
+
+  /// No description provided for @communityStepJoinBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Each challenge runs for a limited time with a shared goal.'**
+  String get communityStepJoinBody;
+
+  /// No description provided for @communityStepWatchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise with your group'**
+  String get communityStepWatchTitle;
+
+  /// No description provided for @communityStepWatchBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Start exercises from the group. Their ads add seeds to the group\'s forest, and every exercise counts in the ranking.'**
+  String get communityStepWatchBody;
+
+  /// No description provided for @communityStepPlantTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Plant real trees'**
+  String get communityStepPlantTitle;
+
+  /// No description provided for @communityStepPlantBody.
+  ///
+  /// In en, this message translates to:
+  /// **'When the group reaches the goal, real trees are planted. Your personal runs are not affected.'**
+  String get communityStepPlantBody;
+
+  /// No description provided for @communitySeedsProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{collected} / {goal} seeds'**
+  String communitySeedsProgress(int collected, int goal);
+
+  /// No description provided for @communityTimeLeftDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}d left'**
+  String communityTimeLeftDays(int count);
+
+  /// No description provided for @communityTimeLeftHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}h left'**
+  String communityTimeLeftHours(int count);
+
+  /// No description provided for @communityTimeLeftMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}m left'**
+  String communityTimeLeftMinutes(int count);
+
+  /// No description provided for @communityRealTreesPlanted.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 real tree already planted by this group} other{{count} real trees already planted by this group}}'**
+  String communityRealTreesPlanted(int count);
+
+  /// No description provided for @communityGoalReached.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal reached! Thank you, team.'**
+  String get communityGoalReached;
+
+  /// No description provided for @communityJoinedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re in this group!'**
+  String get communityJoinedLabel;
+
+  /// No description provided for @communityJoinError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t join the challenge. Check your connection and try again.'**
+  String get communityJoinError;
+
+  /// No description provided for @communityParticipantsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ranking'**
+  String get communityParticipantsTitle;
+
+  /// No description provided for @communityNoParticipants.
+  ///
+  /// In en, this message translates to:
+  /// **'No one here yet. Be the first to join!'**
+  String get communityNoParticipants;
+
+  /// No description provided for @communityParticipantFallbackName.
+  ///
+  /// In en, this message translates to:
+  /// **'Runner'**
+  String get communityParticipantFallbackName;
+
+  /// No description provided for @communityYouTag.
+  ///
+  /// In en, this message translates to:
+  /// **'YOU'**
+  String get communityYouTag;
+
+  /// No description provided for @communityStartExerciseButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a group exercise'**
+  String get communityStartExerciseButton;
+
+  /// No description provided for @communityGroupExerciseCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'Every group exercise counts in the ranking. Its ads grow the group\'s forest, verified by RevenueCat.'**
+  String get communityGroupExerciseCaption;
+
+  /// No description provided for @communityExercisesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercises'**
+  String get communityExercisesLabel;
+
+  /// No description provided for @communityParticipantWorkouts.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 exercise} other{{count} exercises}}'**
+  String communityParticipantWorkouts(int count);
+
+  /// No description provided for @communityParticipantMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min'**
+  String communityParticipantMinutes(int count);
+
+  /// No description provided for @communityWorkoutCounted.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise counted for {group}!'**
+  String communityWorkoutCounted(String group);
+
+  /// No description provided for @communityWorkoutTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'This exercise was too short to count in the ranking.'**
+  String get communityWorkoutTooShort;
+
+  /// No description provided for @communityWorkoutFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t record this exercise in the group. Check your connection.'**
+  String get communityWorkoutFailed;
+
+  /// No description provided for @homeGroupExerciseLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'GROUP EXERCISE'**
+  String get homeGroupExerciseLabel;
+
+  /// No description provided for @homeGroupExerciseHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Counts in the group ranking'**
+  String get homeGroupExerciseHint;
+
+  /// No description provided for @homeGroupExerciseCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise solo instead'**
+  String get homeGroupExerciseCancel;
+
+  /// No description provided for @homeRunAdGroupRewardSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified by RevenueCat and added to {group}\'s forest.'**
+  String homeRunAdGroupRewardSubtitle(String group);
+
+  /// No description provided for @homeRunAdGroupTreeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'GROUP TREE GROWN!'**
+  String get homeRunAdGroupTreeTitle;
+
+  /// No description provided for @homeRunAdGroupTreeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{group} gathered enough seeds for another tree.'**
+  String homeRunAdGroupTreeSubtitle(String group);
+
+  /// No description provided for @homeRunAdGroupRewardExplainer.
+  ///
+  /// In en, this message translates to:
+  /// **'In group exercises, ad seeds go to the group\'s forest instead of your personal tree.'**
+  String get homeRunAdGroupRewardExplainer;
 }
 
 class _AppLocalizationsDelegate
